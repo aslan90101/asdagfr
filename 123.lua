@@ -1,0 +1,6750 @@
+repeat task.wait() until game:IsLoaded()
+task.wait(2)
+
+-- Загружаем Kavo UI безопасно
+local success, kavo = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/aslan90101/gracity-speed-jump/refs/heads/main/ui.lua"))()
+end)
+
+if not success or not kavo then
+    repeat
+        warn("Kavo UI не загрузить не удалось — повтор...")
+        task.wait(3)
+        success, kavo = pcall(function()
+            return loadstring(game:HttpGet("https://raw.githubusercontent.com/aslan90101/gracity-speed-jump/refs/heads/main/ui.lua"))()
+        end)
+    until success and kavo
+end
+
+local Library = kavo
+
+_G.Kavo = kavo
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/aslan90101/gracity-speed-jump/refs/heads/main/esp.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/aslan90101/gracity-speed-jump/refs/heads/main/warningFTAP.lua"))()
+local AntiVoidEnabled = false
+local AntiLagEnabled = false
+local SelectGeneralPartEnabled = false
+local ResetGeneralPartEnabled = false
+local SelectedGeneralPart = nil
+local OriginalAuraCenter = nil
+local kickGrabConnections = {}
+local anchorKickCoroutine = nil
+local PalletFlingEnabled = false
+local PalletFlingConnection = nil
+local PalletFlingTargets = {}
+local PalletFlingSpeed = 400
+local PalletFlingCooldown = {}
+local PalletFlingStage = {}
+local MIN_HEIGHT = -13
+local PvpSafeEnabled = false
+local SafePlatform = nil
+local SafePlatformConnection = nil
+local MicrowareAllEnabled = false
+local MicrowareAllConnection = nil
+local MicrowareAllObjects = {}
+local MicrowareAllShakeIntensity = 0.5
+local MicrowareAllShakeSpeed = 30
+local followMode = true
+local decoyOffset = 15
+local stopDistance = 5
+local circleRadius = 10
+local circleSpeed = 2
+local connections = {}
+local decoys = {}
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local rs = game:GetService("ReplicatedStorage")
+local CarEnabled = false
+local CarSpeed = 300
+local CarConnection = nil
+local CarSoundPart = nil
+local CarMainPart = nil
+local CarHandbrakeEnabled = false
+local CarLastForwardDirection = nil
+local CarLastMoveDirection = nil
+local CarAccelerationTime = 2.5
+local CarDecelerationTime = 4
+local TrailerEnabled = false
+local TrailerObject = nil
+local AntiGrabTPEnabled = false
+local AntiGrabTPConnection = nil
+local TrailerPart = nil
+local CurrentTrailerObjectType = "GlassBoxGray\\Main"
+local TrailerConnection = nil
+local TargetPlayers = {}
+local RagdollEnabled = false
+local AllBananas = {}
+local AllCampFires = {}
+local AllSmokes = {}
+local RagdollConnection = nil
+local BananaSpeed = 120
+local LastBananaUpdate = 0
+local UPDATE_INTERVAL = 0.1
+local UseSmoothMode = false
+local UseCFrameMode = true
+local CurrentAttackMode = "TightCircle"
+local RagdollAllCurrentPlayerIndex = 1
+local RagdollAllLastTeleportTime = 0
+local RagdollAllTeleportInterval = 0.01
+local AttackAnimationSpeed = 1
+local FireModeEnabled = false
+local BananaModeEnabled = false
+local SmokeModeEnabled = false
+local ExtentedLineEnabled = false
+local lineDistanceV = 0
+local increaseLineExtendV = 1
+local RagdollAllEnabled = false
+local FireAllEnabled = false
+local RagdollAllConnection = nil
+local FireAllConnection = nil
+local BananaDanceEnabled = false
+local BananaDanceConnection = nil
+local CurrentDanceMode = "Tornado"
+local BananaAuraEnabled = false
+local BananaAuraConnection = nil
+local CurrentAuraMode = "Circle"
+local CurrentAuraObject = "FoodBanana\\Main"
+local AuraHeight = 25
+local AuraX = 35
+local AuraY = 35
+local AuraRotationX = 50
+local AuraRotationY = 50
+local AuraRotationZ = 50
+local AuraSpeed = 50
+local AllAuraObjects = {}
+local XSizeScale = 50
+local YSizeScale = 50
+local YHeightScale = 50
+local BananaFunnyJumpTimers = {}
+local BananaFunnyEnabled = false
+local BananaTeamsEnabled = false
+local BananaFunnyConnection = nil
+local AllFartObjects = {}
+local FartCollectionEnabled = false
+local FartCollectionConnection = nil
+local SelectedFartPlayer = nil
+local BananaTeamsConnection = nil
+local MAX_TELEPORT_DISTANCE = 2500
+local BananaAngryEnabled = false
+local BananaAngryFromListEnabled = false
+local BananaAngryConnection = nil
+local BananaAngryJumpCooldown = {}
+local FireSmokesActive = false
+local OriginalFirePositions = {}
+local TeleportZEnabled = false
+local AntiGrabEnabled = false
+local antiGrab1T = nil
+local antiGrab1AnchorT = true
+local ragdollAllCoroutine = nil
+local toysFolder = workspace:FindFirstChild(LocalPlayer.Name .. "SpawnedInToys") or workspace;
+local playerCharacter = LocalPlayer.Character;
+local function ragdollAll()
+    while true do
+        local success, err = pcall(function()
+            if not toysFolder:FindFirstChild("FoodBanana") then
+            end
+            local banana = toysFolder:WaitForChild("FoodBanana");
+            local bananaPeel;
+            for _, part in pairs(banana:GetChildren()) do
+                if ((part.Name == "BananaPeel") and part:FindFirstChild("TouchInterest")) then
+                    part.Size = Vector3.new(10, 10, 10);
+                    part.Transparency = 1;
+                    bananaPeel = part;
+                    break;
+                end
+            end
+            if not bananaPeel then
+                return;
+            end
+            local bodyPosition = Instance.new("BodyPosition");
+            bodyPosition.P = 20000;
+            bodyPosition.Parent = banana.Main;
+            while true do
+                for _, player in pairs(Players:GetChildren()) do
+                    pcall(function()
+                        if (player.Character and (player.Character ~= playerCharacter)) then
+                            bananaPeel.Position = player.Character.HumanoidRootPart.Position or player.Character.Head.Position;
+                            bodyPosition.Position = playerCharacter.Head.Position + Vector3.new(0, 600, 0);
+                            wait();
+                        end
+                    end);
+                end
+                wait();
+            end
+        end);
+        if not success then
+            warn("Error in ragdollAll: " .. tostring(err));
+        end
+        wait();
+    end
+end
+local AttackModes = {TightCircle=function(center, index, total, time, animSpeed)
+    local r = (1.8 + (index * 0.3)) * (XSizeScale / 50);
+    local angle = ((time * (3 + (index * 0.15)) * animSpeed) + ((index * 6.28318) / total)) % 6.28318;
+    local x, z = math.cos(angle) * r, math.sin(angle) * r;
+    local y = math.sin((time * (2 + (index * 0.1)) * animSpeed) + (index * 0.8)) * ((1.2 * YHeightScale) / 50) * (YSizeScale / 50);
+    return Vector3.new(center.X + x, center.Y + y, center.Z + z);
+end,HelixSpiral=function(center, index, total, time, animSpeed)
+    local r = (2.2 + (math.sin((time * 0.8 * animSpeed) + index) * 0.5)) * (XSizeScale / 50);
+    local angle = ((time * 2.5 * animSpeed) + ((index * 6.28318) / total)) % 6.28318;
+    local height = math.sin((time * 1.8 * animSpeed) + (index * 0.5)) * ((2.5 * YHeightScale) / 50);
+    local x, z = math.cos(angle) * r, math.sin(angle) * r;
+    return Vector3.new(center.X + x, center.Y + (height * (YSizeScale / 50)), center.Z + z);
+end,WaveFormation=function(center, index, total, time, animSpeed)
+    local waveOffset = (index / total) * 6.28318;
+    local waveX = math.sin((time * 2 * animSpeed) + waveOffset) * (((2 + (index * 0.2)) * XSizeScale) / 50);
+    local waveZ = math.cos((time * 1.5 * animSpeed) + waveOffset) * (((1.5 + (index * 0.15)) * XSizeScale) / 50);
+    local y = math.sin((time * 3 * animSpeed) + (waveOffset * 1.2)) * ((1.8 * YHeightScale) / 50) * (YSizeScale / 50);
+    return Vector3.new(center.X + waveX, center.Y + y, center.Z + waveZ);
+end,SphereOrbit=function(center, index, total, time, animSpeed)
+    local phi = (index / total) * math.pi * 2;
+    local theta = (time * 1.8 * animSpeed) + phi;
+    local r = (3 + (math.sin((time * 0.7 * animSpeed) + index) * 0.8)) * (XSizeScale / 50);
+    local x = r * math.sin(theta) * math.cos(phi);
+    local y = r * math.sin(phi) * (YHeightScale / 50) * (YSizeScale / 50);
+    local z = r * math.cos(theta) * math.cos(phi);
+    return Vector3.new(center.X + x, center.Y + y, center.Z + z);
+end,VortexSwirl=function(center, index, total, time, animSpeed)
+    local r = (1.5 + (index * 0.25) + (math.sin((time * 4 * animSpeed) + index) * 0.3)) * (XSizeScale / 50);
+    local angle = ((time * 4.5 * animSpeed) + (index * 8)) % 6.28318;
+    local spiral = math.log(index + 1) * 0.4 * (XSizeScale / 50);
+    local x = (math.cos(angle) * r) + (spiral * math.cos(angle * 0.5));
+    local z = (math.sin(angle) * r) + (spiral * math.sin(angle * 0.5));
+    local y = math.sin((time * 2.2 * animSpeed) + (index * 1.3)) * ((1.5 * YHeightScale) / 50) * (YSizeScale / 50);
+    return Vector3.new(center.X + x, center.Y + y, center.Z + z);
+end,ButterflyWave=function(center, index, total, time, animSpeed)
+    local t1 = (time * 2.3 * animSpeed) + (index * 0.7);
+    local t2 = (time * 1.9 * animSpeed) - (index * 0.5);
+    local butterflyX = math.sin(t1) * (((2.5 + (math.sin(t2) * 0.7)) * XSizeScale) / 50);
+    local butterflyZ = math.cos(t1) * 1.8 * math.cos(t2) * (XSizeScale / 50);
+    local y = ((math.sin(t1 * 1.4) * 1.6) + (math.sin(t2 * 1.1) * 0.8)) * (YHeightScale / 50) * (YSizeScale / 50);
+    return Vector3.new(center.X + butterflyX, center.Y + y, center.Z + butterflyZ);
+end,PentagonStar=function(center, index, total, time, animSpeed)
+    local r1 = 2 * (XSizeScale / 50);
+    local r2 = 1.2 * (XSizeScale / 50);
+    local angle = ((time * 2.8 * animSpeed) + (index * ((6.28318 * 2) / 5))) % 6.28318;
+    local starRadius = (((math.floor(angle / (6.28318 / 5)) % 2) == 0) and r1) or r2;
+    local x = math.cos(angle) * starRadius;
+    local z = math.sin(angle) * starRadius;
+    local y = math.sin((time * 2.1 * animSpeed) + (index * 2)) * ((1.4 * YHeightScale) / 50) * (YSizeScale / 50);
+    return Vector3.new(center.X + x, center.Y + y, center.Z + z);
+end,ChaosSwarm=function(center, index, total, time, animSpeed)
+    local chaosSeed = index + (time * 0.1);
+    local r = (2.1 + (math.noise(chaosSeed, time * 0.5 * animSpeed, index * 0.1) * 1.2)) * (XSizeScale / 50);
+    local angle = ((time * (2.7 + math.abs(math.noise(time * 0.3 * animSpeed, index, 0)))) + (index * 7)) % 6.28318;
+    local x = math.cos(angle) * r;
+    local z = math.sin(angle) * r;
+    local y = math.noise(time * 1.6 * animSpeed, index * 0.4, chaosSeed) * ((2.2 * YHeightScale) / 50) * (YSizeScale / 50);
+    return Vector3.new(center.X + x, center.Y + y, center.Z + z);
+end,Krest=function(center, index, total, time, animSpeed)
+    local crossSize = (4.5 + (index * 0.15)) * (XSizeScale / 50);
+    local crossSpeed = 3.2 * animSpeed;
+    local rayIndex = index % 4;
+    local phase = ((time * crossSpeed) + ((index / total) * 6.28318)) % 6.28318;
+    local progress = ((phase / 6.28318) * 2) - 1;
+    local x, z = 0, 0;
+    if (rayIndex == 0) then
+        x = progress * crossSize;
+    elseif (rayIndex == 1) then
+        x = -progress * crossSize;
+    elseif (rayIndex == 2) then
+        z = progress * crossSize;
+    else
+        z = -progress * crossSize;
+    end
+    local y = (math.sin((phase * 2) + index) * ((1.1 * YHeightScale) / 50) * (YSizeScale / 50)) + (math.sin(time * 4 * animSpeed) * 0.5);
+    if (index >= (total * 0.8)) then
+        local outerAngle = ((time * 2.5 * animSpeed) + (index * 0.4)) % 6.28318;
+        x = x + (math.cos(outerAngle) * ((2.8 * XSizeScale) / 50));
+        z = z + (math.sin(outerAngle) * ((2.8 * XSizeScale) / 50));
+    end
+    return Vector3.new(center.X + x, center.Y + y, center.Z + z);
+end,Haos=function(center, index, total, time, animSpeed)
+    local haosSpeed = 50 * animSpeed;
+    local haosRange = 25 * (XSizeScale / 50);
+    local haosHeight = 15 * (YHeightScale / 50);
+    local chaosX = math.noise(time * haosSpeed * 2, index * 10, 0) * haosRange;
+    local chaosX2 = math.sin((time * haosSpeed * 3) + (index * 5)) * haosRange * 0.7;
+    local chaosX3 = math.cos((time * haosSpeed * 1.5) + (index * 8)) * haosRange * 0.5;
+    local finalX = chaosX + chaosX2 + chaosX3;
+    local chaosZ = math.noise(time * haosSpeed * 2.5, index * 15, 100) * haosRange;
+    local chaosZ2 = math.sin((time * haosSpeed * 2.8) + (index * 7)) * haosRange * 0.6;
+    local chaosZ3 = math.cos((time * haosSpeed * 1.8) + (index * 12)) * haosRange * 0.4;
+    local finalZ = chaosZ + chaosZ2 + chaosZ3;
+    local y = (math.sin((time * 2) + index) * (haosHeight / 2)) + haosHeight;
+    if (math.random() < 0.3) then
+        finalX = finalX * 0.1;
+        finalZ = finalZ * 0.1;
+        y = math.random(1, 5);
+    end
+    return Vector3.new(center.X + finalX, center.Y + y, center.Z + finalZ);
+end,BananaTeams=function(center, index, total, time, animSpeed)
+    local jumpCooldown = 1.5;
+    local jumpPhase = ((time / jumpCooldown) + (index * 0.3)) % 1;
+    if (jumpPhase < 0.1) then
+        local jumpDirection = (center - Vector3.new(center.X, center.Y - 2, center.Z)).Unit;
+        local jumpPower = 25 + (math.sin((time * 2) + index) * 5);
+        return {jump=true,velocity=((jumpDirection * jumpPower) + Vector3.new(0, 35, 0)),angularVelocity=Vector3.new(math.random(5, 10), math.random(15, 25), math.random(3, 7))};
+    else
+        local radius = 3 + ((index % 4) * 0.8);
+        local angle = ((index / total) * math.pi * 2) + (time * 0.5);
+        local idleX = math.cos(angle) * radius * 0.3;
+        local idleZ = math.sin(angle) * radius * 0.3;
+        return Vector3.new(center.X + idleX, center.Y + 1, center.Z + idleZ);
+    end
+end};
+local DanceModes = {Tornado=function(banana, index, time)
+    local tornadoSpeed = 3;
+    local tornadoHeight = 6;
+    local tornadoRadius = 4;
+    local angle = (time * tornadoSpeed) + (index * 1.2);
+    local height = (math.sin((time * 2) + (index * 0.5)) * tornadoHeight) + 3;
+    local targetPos = Vector3.new(math.cos(angle) * tornadoRadius, height, math.sin(angle) * tornadoRadius);
+    local currentPos = banana.Position;
+    local direction = targetPos - currentPos;
+    banana.AssemblyLinearVelocity = direction.Unit * 8;
+    banana.AssemblyAngularVelocity = Vector3.new(0, 30, 0);
+end,Jumps=function(banana, index, time)
+    local jumpSpeed = 2;
+    local jumpHeight = 12;
+    local jumpPhase = ((time * jumpSpeed) + (index * 0.3)) % (2 * math.pi);
+    local jumpValue = math.sin(jumpPhase);
+    if (jumpValue > 0) then
+        banana.AssemblyLinearVelocity = Vector3.new(0, jumpValue * jumpHeight, 0);
+    else
+        banana.AssemblyLinearVelocity = Vector3.new(0, jumpValue * jumpHeight * 0.5, 0);
+    end
+    banana.AssemblyAngularVelocity = Vector3.new(10, 15, 5);
+end,Wave=function(banana, index, time)
+    local waveSpeed = 2.5;
+    local waveAmplitude = 3;
+    local linePos = (index % 5) - 2;
+    local waveOffset = time * waveSpeed;
+    local targetX = linePos * 2;
+    local targetZ = math.sin(waveOffset + (linePos * 0.8)) * waveAmplitude;
+    local targetY = 2 + (math.abs(math.sin(waveOffset * 1.5)) * 2);
+    local targetPos = Vector3.new(targetX, targetY, targetZ);
+    local currentPos = banana.Position;
+    local direction = targetPos - currentPos;
+    banana.AssemblyLinearVelocity = direction.Unit * 6;
+    banana.AssemblyAngularVelocity = Vector3.new(math.sin(time * 3) * 5, 10, math.cos(time * 3) * 5);
+end,Spin=function(banana, index, time)
+    local spinSpeed = 4;
+    local circleRadius = 3;
+    local spinAngle = (time * spinSpeed) + (index * 1.5);
+    local targetX = math.cos(spinAngle) * circleRadius;
+    local targetZ = math.sin(spinAngle) * circleRadius;
+    local targetY = 2;
+    local targetPos = Vector3.new(targetX, targetY, targetZ);
+    local currentPos = banana.Position;
+    local direction = targetPos - currentPos;
+    banana.AssemblyLinearVelocity = direction.Unit * 10;
+    banana.AssemblyAngularVelocity = Vector3.new(0, 40, 0);
+end,Chaos=function(banana, index, time)
+    local chaosSpeed = 4;
+    local chaosArea = 3;
+    local chaosX = math.noise(time * chaosSpeed, index, 0) * chaosArea;
+    local chaosZ = math.noise(time * chaosSpeed, index, 10) * chaosArea;
+    local chaosY = 2 + (math.noise(time * chaosSpeed * 1.5, index, 20) * 2);
+    local targetPos = Vector3.new(chaosX, chaosY, chaosZ);
+    local currentPos = banana.Position;
+    local direction = targetPos - currentPos;
+    banana.AssemblyLinearVelocity = direction.Unit * 8;
+    banana.AssemblyAngularVelocity = Vector3.new(math.noise(time * 5, index, 30) * 20, math.noise(time * 6, index, 40) * 25, math.noise(time * 7, index, 50) * 15);
+end,Bounce=function(banana, index, time)
+    local bounceSpeed = 3;
+    local bounceHeight = 8;
+    local bouncePhase = (time * bounceSpeed) + (index * 0.2);
+    local bounceValue = (math.sin(bouncePhase) + 1) * 0.5;
+    local angle = (index * 0.8) % (2 * math.pi);
+    local groundX = math.cos(angle) * 2;
+    local groundZ = math.sin(angle) * 2;
+    local targetPos = Vector3.new(groundX, 1 + (bounceValue * bounceHeight), groundZ);
+    local currentPos = banana.Position;
+    local direction = targetPos - currentPos;
+    banana.AssemblyLinearVelocity = direction.Unit * 12;
+    banana.AssemblyAngularVelocity = Vector3.new(8, 20, 4);
+end};
+local function isDescendantOf(target, other)
+    local currentParent = target.Parent;
+    while currentParent do
+        if (currentParent == other) then
+            return true;
+        end
+        currentParent = currentParent.Parent;
+    end
+    return false;
+end
+local AuraModes = {
+    Circle = function(obj, index, total, time, center)
+        local circleSpeed = (AuraSpeed / 50) * 4
+        local circleRadius = AuraX / 2
+        local heightVariation = AuraHeight / 2
+        local angle = ((time * circleSpeed) + (index * (6.28318 / total))) % 6.28318
+        local x = math.cos(angle) * circleRadius
+        local z = math.sin(angle) * circleRadius
+        local y = (math.sin((time * 3) + (index * 0.5)) * heightVariation) + AuraHeight
+        local targetPos = center + Vector3.new(x, y, z)
+
+        obj.CFrame = CFrame.new(targetPos) * CFrame.Angles(
+            math.rad((AuraRotationX / 50) * 180),
+            (AuraRotationY / 50) * 360,
+            math.rad((AuraRotationZ / 50) * 180)
+        )
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end,
+
+    Wings = function(obj, index, total, time, center)
+        local speed = (AuraSpeed / 50) * 6
+        local wingLength = AuraX / 2
+        local height = AuraHeight
+        local char = game.Players.LocalPlayer.Character
+        if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+        local root = char.HumanoidRootPart
+        local rightVec = root.CFrame.RightVector
+        local half = math.floor(total / 2)
+        local isRightWing = index > half
+        local wingIndex = isRightWing and (index - half) or index
+        local perWing = math.ceil(total / 2)
+        local t = (wingIndex - 1) / math.max(perWing - 1, 1)
+        local flapAngle = math.sin(time * speed) * math.rad(25)
+        local minFlap = 0.3
+        local maxFlap = 1
+        local flapPower = minFlap + ((maxFlap - minFlap) * t)
+        local verticalFlap = math.sin(flapAngle) * 8.5 * flapPower
+        local xOffset = (isRightWing and 1 or -1) * wingLength * (0.7 + (t * 1.2))
+        local targetPos = center + (rightVec * xOffset) + Vector3.new(0, verticalFlap, 0)
+
+        obj.CFrame = CFrame.new(targetPos, targetPos + root.CFrame.LookVector)
+            * CFrame.Angles(math.rad(90), 0, 0)
+            * CFrame.Angles(math.rad((AuraRotationX / 50) * 180), (AuraRotationY / 50) * math.pi * 2, math.rad((AuraRotationZ / 50) * 180))
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end,
+
+    Stay = function(obj, index, total, time, center)
+        local speed = (AuraSpeed / 50) * 6
+        local wingLength = AuraX / 2
+        local height = AuraHeight
+        local char = game.Players.LocalPlayer.Character
+        if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+        local root = char.HumanoidRootPart
+        local rightVec = root.CFrame.RightVector
+        local upVec = Vector3.new(0, 1, 0)
+        local half = math.floor(total / 2)
+        local isRightWing = index > half
+        local wingIndex = isRightWing and (index - half) or index
+        local perWing = math.ceil(total / 2)
+        local t = (wingIndex - 1) / math.max(perWing - 1, 1)
+        local flapAngle = math.sin(time * speed) * math.rad(50)
+        local shoulderOffset = rightVec * (isRightWing and 5 or -5)
+        local shoulderPos = center + shoulderOffset + Vector3.new(0, height - 5, 0)
+        local length = wingLength * (0.6 + (t * 1.4))
+        local wingCF = CFrame.new(shoulderPos)
+            * CFrame.fromMatrix(Vector3.new(0, 0, 0), rightVec * (isRightWing and 1 or -1), upVec)
+            * CFrame.Angles(flapAngle, 0, 0) * CFrame.new(length, 0, 0)
+        local targetPos = wingCF.Position
+        local dir = (targetPos - shoulderPos).Unit
+        local cf = CFrame.fromMatrix(targetPos, dir:Cross(upVec), upVec)
+
+        obj.CFrame = cf
+            * CFrame.Angles(math.rad(90), 0, 0)
+            * CFrame.Angles(math.rad((AuraRotationX / 50) * 180), (AuraRotationY / 50) * math.pi * 2, math.rad((AuraRotationZ / 50) * 180))
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end,
+
+    Star = function(obj, index, total, time, center)
+        local starSpeed = (AuraSpeed / 50) * 3.5
+        local starSize = AuraX / 2
+        local starHeight = AuraHeight
+        local t = ((time * starSpeed) + (index * (6.28318 / total))) % 6.28318
+        local points = 5
+        local innerRadius = starSize * 0.4
+        local outerRadius = starSize
+        local currentPoint = ((index % (points * 2)) / (points * 2)) * math.pi * 2
+        local radius = ((index % 2) == 0) and outerRadius or innerRadius
+        local angle = t + currentPoint
+        local x = math.cos(angle) * radius
+        local z = math.sin(angle) * radius
+        local y = (math.sin((time * 2) + (index * 0.3)) * (starHeight / 3)) + starHeight
+        local targetPos = center + Vector3.new(x, y, z)
+
+        obj.CFrame = CFrame.new(targetPos) * CFrame.Angles(
+            math.rad((AuraRotationX / 50) * 180),
+            (AuraRotationY / 50) * 360,
+            math.rad((AuraRotationZ / 50) * 180)
+        )
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end,
+
+    Haos1 = function(obj, index, total, time, center)
+        local haosSpeed = (AuraSpeed / 50) * 50
+        local haosRange = AuraX * 19
+        local haosHeight = AuraHeight
+        local chaosX = math.noise(time * haosSpeed * 2, index * 10, 0) * haosRange
+        local chaosX2 = math.sin((time * haosSpeed * 3) + (index * 5)) * haosRange * 0.7
+        local chaosX3 = math.cos((time * haosSpeed * 1.5) + (index * 8)) * haosRange * 0.5
+        local finalX = chaosX + chaosX2 + chaosX3
+        local chaosZ = math.noise(time * haosSpeed * 2.5, index * 15, 100) * haosRange
+        local chaosZ2 = math.sin((time * haosSpeed * 2.8) + (index * 7)) * haosRange * 0.6
+        local chaosZ3 = math.cos((time * haosSpeed * 1.8) + (index * 12)) * haosRange * 0.4
+        local finalZ = chaosZ + chaosZ2 + chaosZ3
+        local y = (math.sin((time * 2) + index) * (haosHeight / 4)) + haosHeight
+        local targetPos = center + Vector3.new(finalX, y, finalZ)
+
+        obj.CFrame = CFrame.new(targetPos) * CFrame.Angles(
+            math.rad((AuraRotationX / 50) * 180),
+            (AuraRotationY / 50) * 360,
+            math.rad((AuraRotationZ / 50) * 180)
+        )
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end,
+
+    Heart = function(obj, index, total, time, center)
+        local heartSpeed = (AuraSpeed / 50) * 3
+        local heartSize = AuraX / 4
+        local heartHeight = AuraHeight / 2
+        local t = ((time * heartSpeed) + (index * (6.28318 / total))) % 6.28318
+        local x = 16 * (math.sin(t) ^ 3)
+        local y = (((13 * math.cos(t)) - (5 * math.cos(2 * t))) - (2 * math.cos(3 * t))) - math.cos(4 * t)
+        local scale = heartSize / 16
+        x = x * scale
+        y = y * scale
+        local targetPos = center + Vector3.new(x, (y * 0.7) + heartHeight, 0)
+
+        obj.CFrame = CFrame.new(targetPos) * CFrame.Angles(
+            math.rad((AuraRotationX / 50) * 180),
+            (AuraRotationY / 50) * 360,
+            math.rad((AuraRotationZ / 50) * 180)
+        )
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end,
+
+    Penis = function(obj, index, total, time, center)
+        local penisSpeed = (AuraSpeed / 50) * 3
+        local penisSize = AuraX / 4
+        local penisHeight = AuraHeight / 2
+        local t = ((time * penisSpeed) + (index * (6.28318 / total))) % 6.28318
+        local segment = index % 3
+        local x, y, z = 0, 0, 0
+        local scale = penisSize / 16
+
+        if segment == 0 then
+            local circleRadius = 6 * scale
+            local circleAngle = t + (index * 0.7)
+            x = math.cos(circleAngle) * circleRadius
+            z = math.sin(circleAngle) * circleRadius
+            y = (-8 * scale) + penisHeight
+        elseif segment == 1 then
+            local circleRadius = 4 * scale
+            local circleAngle = (t * 1.5) + (index * 0.5)
+            x = math.cos(circleAngle) * circleRadius
+            z = math.sin(circleAngle) * circleRadius
+            y = (8 * scale) + penisHeight
+        else
+            local stripWidth = 2.5 * scale
+            local stripAngle = (t * 2) + (index * 0.3)
+            local stripProgress = (math.sin(t * 0.8) + 1) * 0.5
+            x = math.cos(stripAngle) * stripWidth
+            z = math.sin(stripAngle) * stripWidth
+            y = ((-8 + (stripProgress * 16)) * scale) + penisHeight
+        end
+
+        local targetPos = center + Vector3.new(x, y, z)
+        obj.CFrame = CFrame.new(targetPos) * CFrame.Angles(
+            math.rad((AuraRotationX / 50) * 180),
+            (AuraRotationY / 50) * 360,
+            math.rad((AuraRotationZ / 50) * 180)
+        )
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end,
+
+    HaosCrug = function(obj, index, total, time, center)
+        local crugSpeed = (AuraSpeed / 50) * 6
+        local crugRadius = AuraX / 2
+        local crugHeight = AuraHeight
+        local angle = ((time * crugSpeed) + (index * (6.28318 / total))) % 6.28318
+        local baseX = math.cos(angle) * crugRadius
+        local baseZ = math.sin(angle) * crugRadius
+        local circlePos = center + Vector3.new(baseX, crugHeight, baseZ)
+        local innerRadius = crugRadius * 0.6
+        local innerAngle = ((time * 15) + (index * 2.5)) % 6.28318
+        local innerX = math.cos(innerAngle) * innerRadius
+        local innerZ = math.sin(innerAngle) * innerRadius
+        local chaosOffset = Vector3.new(
+            math.noise((time * 12) + index, 0, 0) * innerRadius * 0.2,
+            0,
+            math.noise((time * 11) + index, 1, 0) * innerRadius * 0.2
+        )
+        local innerPos = circlePos + Vector3.new(innerX, 0, innerZ) + chaosOffset
+
+        obj.CFrame = CFrame.new(innerPos) * CFrame.Angles(
+            math.rad((AuraRotationX / 50) * 180),
+            (AuraRotationY / 50) * 360,
+            math.rad((AuraRotationZ / 50) * 180)
+        )
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end,
+
+    Spiral = function(obj, index, total, time, center)
+        local spiralSpeed = (AuraSpeed / 50) * 8
+        local spiralRadius = AuraX / 2
+        local spiralHeight = AuraHeight
+        local angle = ((time * spiralSpeed) + (index * (6.28318 / total))) % 6.28318
+        local heightAngle = (time * spiralSpeed * 2) + (index * 0.3)
+        local y = (math.sin(heightAngle) * spiralHeight) + spiralHeight
+        local x = math.cos(angle) * spiralRadius
+        local z = math.sin(angle) * spiralRadius
+        local targetPos = center + Vector3.new(x, y, z)
+
+        obj.CFrame = CFrame.new(targetPos) * CFrame.Angles(
+            math.rad((AuraRotationX / 50) * 180),
+            (AuraRotationY / 50) * 360,
+            math.rad((AuraRotationZ / 50) * 180)
+        )
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end,
+
+    Shield = function(obj, index, total, time, center)
+        local shieldSpeed = (AuraSpeed / 50) * 3
+        local shieldRadius = (AuraX / 2) + (math.sin((time * 2) + index) * 2)
+        local shieldHeight = AuraHeight
+        local angle = ((time * shieldSpeed) + (index * (6.28318 / total))) % 6.28318
+        local pulse = (math.sin((time * 4) + (index * 0.2)) * 0.3) + 1
+        local x = math.cos(angle) * shieldRadius * pulse
+        local z = math.sin(angle) * shieldRadius * pulse
+        local y = (math.sin((time * 2) + angle) * (shieldHeight / 3)) + shieldHeight
+        local targetPos = center + Vector3.new(x, y, z)
+
+        obj.CFrame = CFrame.new(targetPos) * CFrame.Angles(
+            math.rad((AuraRotationX / 50) * 180),
+            (AuraRotationY / 50) * 360,
+            math.rad((AuraRotationZ / 50) * 180)
+        )
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end,
+
+    Vortex = function(obj, index, total, time, center)
+        local vortexSpeed = (AuraSpeed / 50) * 6
+        local vortexRadius = (AuraX / 2) * (0.5 + ((index / total) * 0.5))
+        local vortexHeight = AuraHeight * 1.5
+        local angle = ((time * vortexSpeed) + (index * 0.1)) % 6.28318
+        local spiralProgress = (index / total) * 6.28318
+        local x = math.cos(angle + spiralProgress) * vortexRadius
+        local z = math.sin(angle + spiralProgress) * vortexRadius
+        local y = ((index / total) * vortexHeight) + (math.sin((time * 3) + angle) * 3)
+        local targetPos = center + Vector3.new(x, y, z)
+
+        obj.CFrame = CFrame.new(targetPos) * CFrame.Angles(
+            math.rad((AuraRotationX / 50) * 180),
+            (AuraRotationY / 50) * 360,
+            math.rad((AuraRotationZ / 50) * 180)
+        )
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end,
+
+    Orbit = function(obj, index, total, time, center)
+        local orbitSpeed = (AuraSpeed / 50) * 5
+        local orbitRadiusX = AuraX / 2
+        local orbitRadiusZ = AuraY / 2
+        local orbitHeight = AuraHeight
+        local angle = ((time * orbitSpeed) + (index * (6.28318 / total))) % 6.28318
+        local x = math.cos(angle) * orbitRadiusX
+        local z = math.sin(angle) * orbitRadiusZ
+        local y = (math.cos((angle * 0.7) + index) * (orbitHeight / 2)) + orbitHeight
+        local targetPos = center + Vector3.new(x, y, z)
+
+        obj.CFrame = CFrame.new(targetPos) * CFrame.Angles(
+            math.rad((AuraRotationX / 50) * 180),
+            (AuraRotationY / 50) * 360,
+            math.rad((AuraRotationZ / 50) * 180)
+        )
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end,
+
+    Crug = function(obj, index, total, time, center)
+        local crugSpeed = (AuraSpeed / 50) * 4.5
+        local crugRadius = AuraX / 2
+        local angle = ((time * crugSpeed) + (index * (6.28318 / total))) % 6.28318
+        local x = math.cos(angle) * crugRadius
+        local z = math.sin(angle) * crugRadius
+        local y = AuraHeight
+        local targetPos = center + Vector3.new(x, y, z)
+
+        obj.CFrame = CFrame.new(targetPos) * CFrame.Angles(
+            math.rad((AuraRotationX / 50) * 180),
+            (AuraRotationY / 50) * 360,
+            math.rad((AuraRotationZ / 50) * 180)
+        )
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    end
+}
+local function teleportToMouse()
+    if not TeleportZEnabled then
+        return;
+    end
+    local character = LocalPlayer.Character;
+    if not character then
+        return;
+    end
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart");
+    if not humanoidRootPart then
+        return;
+    end
+    local mouse = LocalPlayer:GetMouse();
+    local targetPosition = mouse.Hit.Position;
+    local targetPart = mouse.Target;
+    local distance = (humanoidRootPart.Position - targetPosition).Magnitude;
+    if (distance > 2500) then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ ОШИБКА!",Text="Слишком далеко! Макс. дистанция: 2500",Duration=2});
+        return;
+    end
+    if (not targetPart or not targetPart:IsA("BasePart")) then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ ОШИБКА!",Text="Можно телепортироваться только к Parts",Duration=2});
+        return;
+    end
+    humanoidRootPart.CFrame = CFrame.new(targetPosition + Vector3.new(0, 3, 0));
+    game.StarterGui:SetCore("SendNotification", {Title="🔮 TELEPORT!",Text="Телепортирован к курсору",Duration=2});
+end
+local function antiGrab1F()
+    local char = LocalPlayer.Character;
+    if not char then
+        return;
+    end
+    local hrp = char:WaitForChild("HumanoidRootPart");
+    local hum = char:WaitForChild("Humanoid");
+    while antiGrab1T and task.wait() do
+        if ((LocalPlayer.IsHeld.Value == true) and (antiGrab1T == true)) then
+            if (hrp ~= nil) then
+                if antiGrab1AnchorT then
+                    hrp.Anchored = true;
+                    while LocalPlayer.IsHeld.Value == true do
+                        rs.CharacterEvents.Struggle:FireServer(LocalPlayer);
+                        wait(0.001);
+                    end
+                    hrp.Anchored = false;
+                elseif not antiGrab1AnchorT then
+                    while LocalPlayer.IsHeld.Value == true do
+                        rs.CharacterEvents.Struggle:FireServer(LocalPlayer);
+                        wait(0.001);
+                    end
+                end
+            end
+        end
+    end
+end
+local function startPalletFling()
+    if PalletFlingConnection then
+        PalletFlingConnection:Disconnect();
+        PalletFlingConnection = nil;
+    end
+    local playerFolder = workspace:FindFirstChild(LocalPlayer.Name .. "SpawnedInToys");
+    local pallet = nil;
+    if playerFolder then
+        for _, toy in pairs(playerFolder:GetChildren()) do
+            if (toy.Name == "PalletLightBrown") then
+                pallet = toy:FindFirstChild("Main");
+                if (pallet and pallet:IsA("BasePart")) then
+                    break;
+                end
+            end
+        end
+    end
+    if not pallet then
+        game.StarterGui:SetCore("SendNotification", {Title="НЕТ ПАЛЛЕТЫ",Text="PalletLightBrown не найдена!",Duration=4});
+        PalletFlingEnabled = false;
+        return;
+    end
+    local BASE_WAIT = CFrame.new(-147.1, -10.3, 39.7);
+    local HEIGHT_KICK = 160;
+    local MIN_Y = -12;
+    local FLING_POWER = PalletFlingSpeed or 700;
+    pallet.Anchored = true;
+    task.wait(0.05);
+    pallet.Anchored = false;
+    PalletFlingConnection = RunService.Heartbeat:Connect(function()
+        if (not PalletFlingEnabled or (#PalletFlingTargets == 0)) then
+            return;
+        end
+        local hasValidTarget = false;
+        for _, targetPlayer in ipairs(PalletFlingTargets) do
+            if (not targetPlayer or not targetPlayer.Parent) then
+                continue;
+            end
+            local character = targetPlayer.Character or targetPlayer.CharacterAdded:Wait();
+            local hrp = character:FindFirstChild("HumanoidRootPart");
+            if (not hrp or not character:FindFirstChild("Humanoid") or (character.Humanoid.Health <= 0)) then
+                continue;
+            end
+            if (hrp.Position.Y > HEIGHT_KICK) then
+                continue;
+            end
+            hasValidTarget = true;
+            local targetPos = hrp.Position;
+            if (targetPos.Y < MIN_Y) then
+                targetPos = Vector3.new(targetPos.X, MIN_Y + 4, targetPos.Z);
+            end
+            pallet.CFrame = CFrame.new(targetPos + Vector3.new(0, -4.2, 0));
+            pallet.AssemblyLinearVelocity = Vector3.new(math.random(-80, 80), FLING_POWER * 1.7, math.random(-80, 80));
+            pallet.AssemblyAngularVelocity = Vector3.new(math.random(-400, 400), math.random(-500, 500), math.random(-400, 400));
+            task.delay(0.008, function()
+                if (pallet and pallet.Parent and hrp and hrp.Parent) then
+                    pallet.AssemblyLinearVelocity += Vector3.new(0, FLING_POWER * 0.9, 0)
+                end
+            end);
+        end
+        if not hasValidTarget then
+            pallet.CFrame = BASE_WAIT;
+            pallet.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+            pallet.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+        end
+    end);
+end
+function stopPalletFling()
+    if PalletFlingConnection then
+        PalletFlingConnection:Disconnect();
+        PalletFlingConnection = nil;
+    end
+    PalletFlingEnabled = false;
+end
+function addPalletFlingTarget(player)
+    if not table.find(PalletFlingTargets, player) then
+        table.insert(PalletFlingTargets, player);
+        PalletFlingStage[tostring(player.UserId)] = {lastAttackTime=0};
+        return true;
+    end
+    return false;
+end
+function removePalletFlingTarget(player)
+    for i, p in ipairs(PalletFlingTargets) do
+        if (p == player) then
+            table.remove(PalletFlingTargets, i);
+            PalletFlingStage[tostring(player.UserId)] = nil;
+            return true;
+        end
+    end
+    return false;
+end
+function clearPalletFlingTargets()
+    PalletFlingTargets = {};
+    PalletFlingStage = {};
+end
+local function addPalletFlingTarget(player)
+    for _, target in ipairs(PalletFlingTargets) do
+        if (target == player) then
+            return false;
+        end
+    end
+    table.insert(PalletFlingTargets, player);
+    local playerKey = tostring(player.UserId);
+    PalletFlingStage[playerKey] = {stage=1,lastStageChange=0};
+    return true;
+end
+local function removePalletFlingTarget(player)
+    for i, target in ipairs(PalletFlingTargets) do
+        if (target == player) then
+            table.remove(PalletFlingTargets, i);
+            local playerKey = tostring(player.UserId);
+            PalletFlingStage[playerKey] = nil;
+            return true;
+        end
+    end
+    return false;
+end
+local function clearPalletFlingTargets()
+    PalletFlingTargets = {};
+    PalletFlingStage = {};
+end
+local function startAntiGrab()
+    if antiGrab1T then
+        return;
+    end
+    antiGrab1T = true;
+    spawn(antiGrab1F);
+    game.StarterGui:SetCore("SendNotification", {Title="🛡️ ANTIGRAB ВКЛ!",Text="Защита от захвата активирована",Duration=3});
+end
+local function stopAntiGrab()
+    antiGrab1T = false;
+    local char = LocalPlayer.Character;
+    if char then
+        local hrp = char:FindFirstChild("HumanoidRootPart");
+        if hrp then
+            hrp.Anchored = false;
+        end
+    end
+    game.StarterGui:SetCore("SendNotification", {Title="🛡️ ANTIGRAB ВЫКЛ",Duration=2});
+end
+local playerNames = {"Klariti8","yakrutoistrelok_CRMP","butt_JK","n","b"};
+local player = game.Players.LocalPlayer;
+for _, name in pairs(playerNames) do
+    if (player.Name == name) then
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/aslan90101/gracity-speed-jump/refs/heads/main/AUDI.lua"))();
+        break;
+    end
+end
+local function refreshAuraCache()
+    local newAuraObjects = {};
+    local playerFolder = workspace:FindFirstChild(LocalPlayer.Name .. "SpawnedInToys");
+    if not playerFolder then
+        AllAuraObjects = {};
+        return 0;
+    end
+    local objectName, partName = CurrentAuraObject:match("([^\\]+)\\?(.+)");
+    if not partName then
+        partName = "Main";
+        objectName = CurrentAuraObject;
+    end
+    for _, toy in pairs(playerFolder:GetChildren()) do
+        if (toy.Name == objectName) then
+            local mainPart = toy:FindFirstChild(partName);
+            if (mainPart and mainPart:IsA("BasePart") and mainPart.Parent) then
+                table.insert(newAuraObjects, mainPart);
+            else
+                for _, child in pairs(toy:GetChildren()) do
+                    if child:IsA("BasePart") then
+                        table.insert(newAuraObjects, child);
+                        break;
+                    end
+                end
+            end
+        end
+    end
+    AllAuraObjects = newAuraObjects;
+    return #AllAuraObjects;
+end
+local function debugAuraObjects()
+    local playerFolder = workspace:FindFirstChild(LocalPlayer.Name .. "SpawnedInToys");
+    if not playerFolder then
+        return;
+    end
+    for _, toy in pairs(playerFolder:GetChildren()) do
+        for _, child in pairs(toy:GetChildren()) do
+            if child:IsA("BasePart") then
+            end
+        end
+    end
+end
+local function selectGeneralPart()
+    if not SelectGeneralPartEnabled then
+        return;
+    end
+    local mouse = LocalPlayer:GetMouse();
+    local target = mouse.Target;
+    if (target and target:IsA("BasePart")) then
+        SelectedGeneralPart = target;
+        OriginalAuraCenter = nil;
+        game.StarterGui:SetCore("SendNotification", {Title="🎯 GENERAL PART ВЫБРАН!",Text=("Аура теперь вокруг: " .. target.Name),Duration=3});
+        if not target:FindFirstChild("GeneralPartEffect") then
+            local highlight = Instance.new("Highlight");
+            highlight.Name = "GeneralPartEffect";
+            highlight.FillColor = Color3.new(0, 1, 0);
+            highlight.OutlineColor = Color3.new(0, 0.5, 0);
+            highlight.FillTransparency = 0.7;
+            highlight.Parent = target;
+        end
+    else
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ЧАСТИ",Text="Наведи курсор на часть и нажми F",Duration=3});
+    end
+end
+local function resetGeneralPart()
+    if not ResetGeneralPartEnabled then
+        return;
+    end
+    if (SelectedGeneralPart and SelectedGeneralPart:FindFirstChild("GeneralPartEffect")) then
+        SelectedGeneralPart.GeneralPartEffect:Destroy();
+    end
+    SelectedGeneralPart = nil;
+    OriginalAuraCenter = nil;
+    game.StarterGui:SetCore("SendNotification", {Title="🔄 GENERAL PART СБРОШЕН!",Text="Аура теперь вокруг игрока",Duration=3});
+end
+local function startBananaAura()
+    if BananaAuraConnection then
+        BananaAuraConnection:Disconnect();
+        BananaAuraConnection = nil;
+    end
+    BananaAuraConnection = RunService.Heartbeat:Connect(function()
+        if not BananaAuraEnabled then
+            return;
+        end
+        local auraCount = refreshAuraCache();
+        if (auraCount == 0) then
+            if ((tick() % 5) < 0.1) then
+                game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ОБЪЕКТОВ",Text=("Не найдены объекты: " .. CurrentAuraObject),Duration=3});
+            end
+            BananaAuraEnabled = false;
+            return;
+        end
+        local center;
+        local character = LocalPlayer.Character;
+        local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart");
+        if (SelectedGeneralPart and SelectedGeneralPart.Parent) then
+            center = SelectedGeneralPart.Position;
+        elseif humanoidRootPart then
+            center = humanoidRootPart.Position;
+        else
+            return;
+        end
+        local time = tick();
+        local total = auraCount;
+        local auraMode = AuraModes[CurrentAuraMode];
+        if not auraMode then
+            auraMode = AuraModes.Circle;
+        end
+        for index, auraObject in ipairs(AllAuraObjects) do
+            if (auraObject and auraObject.Parent) then
+                auraMode(auraObject, index, total, time, center);
+            end
+        end
+    end);
+end
+local function selectGeneralPart()
+    if not SelectGeneralPartEnabled then
+        return;
+    end
+    local mouse = LocalPlayer:GetMouse();
+    local target = mouse.Target;
+    if (target and target:IsA("BasePart")) then
+        if (SelectedGeneralPart and SelectedGeneralPart:FindFirstChild("GeneralPartEffect")) then
+            SelectedGeneralPart.GeneralPartEffect:Destroy();
+        end
+        SelectedGeneralPart = target;
+        game.StarterGui:SetCore("SendNotification", {Title="🎯 GENERAL PART ВЫБРАН!",Text=("Аура теперь вокруг: " .. target.Name),Duration=3});
+        if not target:FindFirstChild("GeneralPartEffect") then
+            local highlight = Instance.new("Highlight");
+            highlight.Name = "GeneralPartEffect";
+            highlight.FillColor = Color3.new(0, 1, 0);
+            highlight.OutlineColor = Color3.new(0, 0.5, 0);
+            highlight.FillTransparency = 0.7;
+            highlight.Parent = target;
+        end
+        if BananaAuraEnabled then
+            stopBananaAura();
+            startBananaAura();
+        end
+    else
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ЧАСТИ",Text="Наведи курсор на часть и нажми F",Duration=3});
+    end
+end
+local function resetGeneralPart()
+    if not ResetGeneralPartEnabled then
+        return;
+    end
+    if (SelectedGeneralPart and SelectedGeneralPart:FindFirstChild("GeneralPartEffect")) then
+        SelectedGeneralPart.GeneralPartEffect:Destroy();
+    end
+    SelectedGeneralPart = nil;
+    game.StarterGui:SetCore("SendNotification", {Title="🔄 GENERAL PART СБРОШЕН!",Text="Аура теперь вокруг игрока (HumanoidRootPart)",Duration=3});
+    if BananaAuraEnabled then
+        stopBananaAura();
+        startBananaAura();
+    end
+end
+local function stopBananaAura()
+    if BananaAuraConnection then
+        BananaAuraConnection:Disconnect();
+        BananaAuraConnection = nil;
+    end
+    BananaAuraEnabled = false;
+    for _, auraObject in ipairs(AllAuraObjects) do
+        if (auraObject and auraObject.Parent) then
+            pcall(function()
+                auraObject.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                auraObject.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+            end);
+        end
+    end
+end
+local function refreshCache()
+    local newBananas = {};
+    local newCampFires = {};
+    local newSmokes = {};
+    local playerFolder = workspace:FindFirstChild(LocalPlayer.Name .. "SpawnedInToys");
+    if not playerFolder then
+        AllBananas = {};
+        AllCampFires = {};
+        AllSmokes = {};
+        return 0, 0, 0;
+    end
+    if BananaModeEnabled then
+        for _, toy in pairs(playerFolder:GetChildren()) do
+            if (toy.Name == "FoodBanana") then
+                local mainPart = toy:FindFirstChild("Main");
+                if (mainPart and mainPart:IsA("BasePart") and mainPart.Parent) then
+                    table.insert(newBananas, mainPart);
+                end
+            end
+        end
+    end
+    if FireModeEnabled then
+        for _, toy in pairs(playerFolder:GetChildren()) do
+            if (toy.Name == "Campfire") then
+                local mainPart = toy:FindFirstChild("Main");
+                if (mainPart and mainPart:IsA("BasePart") and mainPart.Parent) then
+                    table.insert(newCampFires, mainPart);
+                end
+            end
+        end
+    end
+    if SmokeModeEnabled then
+        for _, toy in pairs(playerFolder:GetChildren()) do
+            if (toy.Name == "FireworkSmokeBomb") then
+                local soundPart = toy:FindFirstChild("SoundPart");
+                if (soundPart and soundPart:IsA("BasePart") and soundPart.Parent) then
+                    table.insert(newSmokes, soundPart);
+                end
+            end
+        end
+    end
+    AllBananas = newBananas;
+    AllCampFires = newCampFires;
+    AllSmokes = newSmokes;
+    return #AllBananas, #AllCampFires, #AllSmokes;
+end
+local function getTotalObjects()
+    return #AllBananas + #AllCampFires + #AllSmokes;
+end
+local function startFireSmokes()
+    if FireSmokesActive then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ УЖЕ АКТИВНО",Text="Fire Smokes уже работает!",Duration=2});
+        return;
+    end
+    local bCount, fCount, sCount = refreshCache();
+    if (sCount == 0) then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ДЫМОВ",Text="Включи режим дымов сначала!",Duration=3});
+        return;
+    end
+    if (fCount == 0) then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ОГНЯ",Text="Включи режим огня сначала!",Duration=3});
+        return;
+    end
+    FireSmokesActive = true;
+    OriginalFirePositions = {};
+    for _, fire in ipairs(AllCampFires) do
+        if (fire and fire.Parent) then
+            OriginalFirePositions[fire] = fire.Position;
+        end
+    end
+    local smokeActivationTime = 0.5;
+    local startTime = tick();
+    local playerFolder = workspace:FindFirstChild(LocalPlayer.Name .. "SpawnedInToys");
+    local allFuses = {};
+    if playerFolder then
+        for _, toy in pairs(playerFolder:GetChildren()) do
+            if (toy.Name == "FireworkSmokeBomb") then
+                local fusePart = toy:FindFirstChild("Fuse");
+                if (fusePart and fusePart:IsA("BasePart") and fusePart.Parent) then
+                    table.insert(allFuses, fusePart);
+                end
+            end
+        end
+    end
+    if (#allFuses == 0) then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ФИТИЛЕЙ",Text="Не найдены фитили у дымов!",Duration=3});
+        FireSmokesActive = false;
+        return;
+    end
+    game.StarterGui:SetCore("SendNotification", {Title="🔥💨 FIRE SMOKES!",Text=("Активируем " .. #allFuses .. " фитилей на " .. smokeActivationTime .. " сек"),Duration=3});
+    local fireAssignments = {};
+    for fuseIndex, fuse in ipairs(allFuses) do
+        local fireIndex = ((fuseIndex - 1) % fCount) + 1;
+        fireAssignments[fuse] = AllCampFires[fireIndex];
+    end
+    local fireSmokesConnection;
+    fireSmokesConnection = RunService.Heartbeat:Connect(function()
+        if not FireSmokesActive then
+            fireSmokesConnection:Disconnect();
+            return;
+        end
+        local currentTime = tick();
+        local elapsedTime = currentTime - startTime;
+        if (elapsedTime >= smokeActivationTime) then
+            FireSmokesActive = false;
+            fireSmokesConnection:Disconnect();
+            for fire, originalPos in pairs(OriginalFirePositions) do
+                if (fire and fire.Parent) then
+                    fire.CFrame = CFrame.new(originalPos);
+                    fire.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                    fire.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+                end
+            end
+            for _, fire in ipairs(AllCampFires) do
+                if (fire and fire.Parent) then
+                    local effect = fire:FindFirstChild("FireSmokesEffect");
+                    if effect then
+                        effect:Destroy();
+                    end
+                end
+            end
+            game.StarterGui:SetCore("SendNotification", {Title="✅ FIRE SMOKES ЗАВЕРШЕНО",Text=(#allFuses .. " фитилей активированы!"),Duration=2});
+            return;
+        end
+        for fuseIndex, fuse in ipairs(allFuses) do
+            if (fuse and fuse.Parent) then
+                local fire = fireAssignments[fuse];
+                if (fire and fire.Parent) then
+                    local fusePos = fuse.Position;
+                    local offset = Vector3.new(math.random(-0.8, 0.8), math.random(0.3, 0.8), math.random(-0.8, 0.8));
+                    local targetPos = fusePos + offset;
+                    local shakeIntensity = 0.08;
+                    local shakeOffset = Vector3.new(math.sin((currentTime * 35) + (fuseIndex * 2)) * shakeIntensity, math.cos((currentTime * 30) + (fuseIndex * 3)) * shakeIntensity * 0.5, math.sin((currentTime * 40) + (fuseIndex * 4)) * shakeIntensity);
+                    fire.CFrame = CFrame.new(targetPos + shakeOffset);
+                    fire.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                    fire.AssemblyAngularVelocity = Vector3.new(math.random(-2, 2), math.random(5, 12), math.random(-1, 1));
+                    if not fire:FindFirstChild("FireSmokesEffect") then
+                        local highlight = Instance.new("Highlight");
+                        highlight.Name = "FireSmokesEffect";
+                        highlight.FillColor = Color3.new(1, 0.3, 0);
+                        highlight.OutlineColor = Color3.new(1, 0.8, 0);
+                        highlight.FillTransparency = 0.6;
+                        highlight.Parent = fire;
+                    end
+                end
+            end
+        end
+    end);
+end
+local function refreshMicrowareCache()
+    local newMicrowareObjects = {};
+    local playerFolder = workspace:FindFirstChild(LocalPlayer.Name .. "SpawnedInToys");
+    if not playerFolder then
+        MicrowareAllObjects = {};
+        return 0;
+    end
+    for _, toy in pairs(playerFolder:GetChildren()) do
+        if (toy.Name == "OvenMicrowaveWhite") then
+            for _, child in pairs(toy:GetDescendants()) do
+                if child:IsA("BasePart") then
+                    table.insert(newMicrowareObjects, child);
+                end
+            end
+        end
+    end
+    MicrowareAllObjects = newMicrowareObjects;
+    return #MicrowareAllObjects;
+end
+local lastPlayerUpdate = 0;
+local playerUpdateInterval = 5;
+local cachedValidPlayers = {};
+local function getValidPlayers()
+    local currentTime = tick();
+    if ((currentTime - lastPlayerUpdate) >= playerUpdateInterval) then
+        local allPlayers = Players:GetPlayers();
+        local newValidPlayers = {};
+        for _, player in ipairs(allPlayers) do
+            if ((player ~= LocalPlayer) and player.Character) then
+                local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart");
+                if (humanoidRootPart and humanoidRootPart.Parent) then
+                    table.insert(newValidPlayers, {player=player,rootPart=humanoidRootPart});
+                end
+            end
+        end
+        cachedValidPlayers = newValidPlayers;
+        lastPlayerUpdate = currentTime;
+    end
+    return cachedValidPlayers;
+end
+local function forceUpdatePlayers()
+    lastPlayerUpdate = 0;
+    return getValidPlayers();
+end
+local function teleportToPlayerCenter(microwareObject, playerRootPart, objectIndex, currentTime)
+    if (not microwareObject or not microwareObject.Parent or not playerRootPart or not playerRootPart.Parent) then
+        return false;
+    end
+    local targetPosition = playerRootPart.Position;
+    local shakeOffset = Vector3.new(math.sin((currentTime * 10) + objectIndex) * 0.1, math.cos((currentTime * 8) + (objectIndex * 2)) * 0.1, math.sin((currentTime * 12) + (objectIndex * 3)) * 0.1);
+    local finalPosition = targetPosition + shakeOffset;
+    microwareObject.CFrame = CFrame.new(finalPosition);
+    microwareObject.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+    microwareObject.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+    if not microwareObject:FindFirstChild("MicrowareAllEffect") then
+        local highlight = Instance.new("Highlight");
+        highlight.Name = "MicrowareAllEffect";
+        highlight.FillColor = Color3.new(1, 0.3, 0);
+        highlight.OutlineColor = Color3.new(1, 0.8, 0);
+        highlight.FillTransparency = 0.4;
+        highlight.OutlineTransparency = 0;
+        highlight.Parent = microwareObject;
+    end
+    local effect = microwareObject:FindFirstChild("MicrowareAllEffect");
+    if effect then
+        effect.FillColor = Color3.new(1, 0.2 + (math.sin((currentTime * 6) + objectIndex) * 0.3), 0.1);
+    end
+    return true;
+end
+local function startMicrowareAll()
+    if MicrowareAllConnection then
+        MicrowareAllConnection:Disconnect();
+        MicrowareAllConnection = nil;
+    end
+    local currentPlayerIndex = 1;
+    local lastTeleportTime = 0;
+    local teleportInterval = 0.03;
+    local lastNotificationTime = 0;
+    forceUpdatePlayers();
+    MicrowareAllConnection = RunService.Heartbeat:Connect(function()
+        if not MicrowareAllEnabled then
+            return;
+        end
+        local currentTime = tick();
+        if ((currentTime - lastTeleportTime) < teleportInterval) then
+            return;
+        end
+        lastTeleportTime = currentTime;
+        local microwareCount = refreshMicrowareCache();
+        if (microwareCount == 0) then
+            if ((currentTime - lastNotificationTime) > 3) then
+                game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ МИКРОВОЛНОВОК",Text="Не найдены OvenMicrowaveWhite!",Duration=2});
+                lastNotificationTime = currentTime;
+            end
+            return;
+        end
+        local validPlayers = getValidPlayers();
+        if (#validPlayers == 0) then
+            if ((currentTime - lastNotificationTime) > 3) then
+                game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ИГРОКОВ",Text="На сервере нет других игроков!",Duration=2});
+                lastNotificationTime = currentTime;
+            end
+            return;
+        end
+        local targetPlayerIndex = ((currentPlayerIndex - 1) % #validPlayers) + 1;
+        local targetPlayer = validPlayers[targetPlayerIndex];
+        if (targetPlayer and targetPlayer.rootPart) then
+            local successCount = 0;
+            for microwareIndex, microwareObject in ipairs(MicrowareAllObjects) do
+                local success = teleportToPlayerCenter(microwareObject, targetPlayer.rootPart, microwareIndex, currentTime);
+                if success then
+                    successCount = successCount + 1;
+                end
+            end
+            if ((currentPlayerIndex % 10) == 0) then
+                game.StarterGui:SetCore("SendNotification", {Title="🔥 MICROWARE ALL",Text=string.format("%d частей → %s", successCount, targetPlayer.player.Name),Duration=1});
+                if ((currentPlayerIndex % 50) == 0) then
+                end
+            end
+        end
+        currentPlayerIndex = currentPlayerIndex + 1;
+        if (currentPlayerIndex > 10000) then
+            currentPlayerIndex = 1;
+        end
+    end);
+end
+local function stopMicrowareAll()
+    if MicrowareAllConnection then
+        MicrowareAllConnection:Disconnect();
+        MicrowareAllConnection = nil;
+    end
+    MicrowareAllEnabled = false;
+    for _, microwareObject in ipairs(MicrowareAllObjects) do
+        if (microwareObject and microwareObject.Parent) then
+            local effect = microwareObject:FindFirstChild("MicrowareAllEffect");
+            if effect then
+                effect:Destroy();
+            end
+        end
+    end
+    game.StarterGui:SetCore("SendNotification", {Title="🔥 MICROWARE ALL ВЫКЛ",Text="Телепортация микроволновок остановлена",Duration=2});
+end
+function updateMicrowarePlayers()
+    local players = forceUpdatePlayers();
+    game.StarterGui:SetCore("SendNotification", {Title="🔄 ОБНОВЛЕНО",Text=("Список игроков обновлен: " .. #players .. " игроков"),Duration=2});
+    return #players;
+end
+local function findNearestPlayer(excludePlayer)
+    local myCharacter = LocalPlayer.Character;
+    if not myCharacter then
+        return nil;
+    end
+    local myRoot = myCharacter:FindFirstChild("HumanoidRootPart");
+    if not myRoot then
+        return nil;
+    end
+    local nearestPlayer = nil;
+    local nearestDistance = math.huge;
+    for _, player in pairs(Players:GetPlayers()) do
+        if ((player ~= LocalPlayer) and (player ~= excludePlayer) and player.Character) then
+            local targetRoot = player.Character:FindFirstChild("HumanoidRootPart");
+            if targetRoot then
+                local distance = (myRoot.Position - targetRoot.Position).Magnitude;
+                if (distance < nearestDistance) then
+                    nearestDistance = distance;
+                    nearestPlayer = player;
+                end
+            end
+        end
+    end
+    return nearestPlayer, nearestDistance;
+end
+local function startBananaAngry()
+    if BananaAngryConnection then
+        BananaAngryConnection:Disconnect();
+        BananaAngryConnection = nil;
+    end
+    for _, banana in ipairs(AllBananas) do
+        if (banana and banana.Parent) then
+            BananaAngryJumpCooldown[banana] = tick() - math.random(0, 2);
+        end
+    end
+    BananaAngryConnection = RunService.Heartbeat:Connect(function()
+        if not BananaAngryEnabled then
+            return;
+        end
+        local bCount, fCount, sCount = refreshCache();
+        if (bCount == 0) then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ БАНАНОВ",Text="Включи режим бананов сначала!",Duration=3});
+            BananaAngryEnabled = false;
+            return;
+        end
+        local nearestPlayer, distance = findNearestPlayer(nil);
+        if not nearestPlayer then
+            return;
+        end
+        local currentTime = tick();
+        for index, banana in ipairs(AllBananas) do
+            if (banana and banana.Parent) then
+                local lastJumpTime = BananaAngryJumpCooldown[banana] or 0;
+                if ((currentTime - lastJumpTime) >= (1.5 + ((index % 4) * 0.25))) then
+                    local targetRoot = nearestPlayer.Character:FindFirstChild("HumanoidRootPart");
+                    if not targetRoot then
+                        return;
+                    end
+                    local playerPos = targetRoot.Position;
+                    local angle = ((index / bCount) * math.pi * 2) + (currentTime * 0.2);
+                    local radius = 3 + ((index % 4) * 0.8);
+                    local targetX = playerPos.X + (math.cos(angle) * radius);
+                    local targetZ = playerPos.Z + (math.sin(angle) * radius);
+                    local targetY = playerPos.Y + 0.5;
+                    local targetPos = Vector3.new(targetX, targetY, targetZ);
+                    local jumpDirection = (targetPos - banana.Position).Unit;
+                    local jumpDistance = (targetPos - banana.Position).Magnitude;
+                    local horizontalPower = math.clamp(jumpDistance * 1.5, 10, 25);
+                    banana.AssemblyLinearVelocity = (jumpDirection * horizontalPower) + Vector3.new(0, 35, 0);
+                    banana.AssemblyAngularVelocity = Vector3.new(math.random(3, 8), math.random(10, 20), math.random(2, 5));
+                    BananaAngryJumpCooldown[banana] = currentTime;
+                else
+                    local timeSinceJump = currentTime - lastJumpTime;
+                    if (timeSinceJump > 1) then
+                        local targetRoot = nearestPlayer.Character:FindFirstChild("HumanoidRootPart");
+                        if targetRoot then
+                            local distanceToTarget = (banana.Position - targetRoot.Position).Magnitude;
+                            if (distanceToTarget > 15) then
+                                local correctionDirection = (targetRoot.Position - banana.Position).Unit;
+                                banana.AssemblyLinearVelocity = banana.AssemblyLinearVelocity + (correctionDirection * 2);
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end);
+end
+
+local function createCar()
+    local playerFolder = workspace:FindFirstChild(LocalPlayer.Name .. "SpawnedInToys");
+    if not playerFolder then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ПАПКИ ИГРОКА",Text=("Не найдена папка " .. LocalPlayer.Name .. "SpawnedInToys"),Duration=3});
+        return false;
+    end
+    local roller = playerFolder:FindFirstChild("RollerGrayPurple");
+    if not roller then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ROLLER",Text="Не найден RollerGrayPurple в папке игрушек!",Duration=3});
+        return false;
+    end
+    CarMainPart = roller:FindFirstChild("Main") or roller:FindFirstChild("Body") or roller:FindFirstChild("Base");
+    if not CarMainPart then
+        for _, part in pairs(roller:GetDescendants()) do
+            if (part:IsA("BasePart") and (part.Name ~= "SoundPart")) then
+                CarMainPart = part;
+                break;
+            end
+        end
+    end
+    CarSoundPart = roller:FindFirstChild("SoundPart");
+    if not CarMainPart then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ОСНОВНОЙ ЧАСТИ",Text="Не найдена основная часть в RollerGrayPurple!",Duration=3});
+        return false;
+    end
+    game.StarterGui:SetCore("SendNotification", {Title="🚗 МАШИНА СОЗДАНА!",Text="Нажми C для движения вперед (скорость x2.5)",Duration=3});
+    return true;
+end
+local function createTrailer()
+    if TrailerPart then
+        local effect = TrailerPart:FindFirstChild("TrailerEffect");
+        if effect then
+            effect:Destroy();
+        end
+        TrailerPart = nil;
+    end
+    local playerFolder = workspace:FindFirstChild(LocalPlayer.Name .. "SpawnedInToys");
+    if not playerFolder then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ПАПКИ ИГРОКА",Text=("Не найдена папка " .. LocalPlayer.Name .. "SpawnedInToys"),Duration=3});
+        return false;
+    end
+    local objectName, partName = CurrentTrailerObjectType:match("([^\\]+)\\?(.+)");
+    if not partName then
+        partName = "Main";
+        objectName = CurrentTrailerObjectType;
+    end
+    local trailerObject = nil;
+    for _, toy in pairs(playerFolder:GetChildren()) do
+        if (toy.Name == objectName) then
+            local mainPart = toy:FindFirstChild("Main");
+            if (mainPart and mainPart:IsA("BasePart")) then
+                trailerObject = mainPart;
+                break;
+            end
+        end
+    end
+    if not trailerObject then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ОБЪЕКТА",Text=("Не найден " .. objectName .. "\\Main"),Duration=3});
+        return false;
+    end
+    TrailerPart = trailerObject;
+    game.StarterGui:SetCore("SendNotification", {Title="🚛 ПРИЦЕП СОЗДАН!",Text=("Объект: " .. objectName .. "\\Main"),Duration=3});
+    return true;
+end
+local function startTrailerControl()
+    if TrailerConnection then
+        TrailerConnection:Disconnect();
+        TrailerConnection = nil;
+    end
+    TrailerConnection = RunService.Heartbeat:Connect(function()
+        if (not TrailerEnabled or not TrailerPart or not TrailerPart.Parent) then
+            return;
+        end
+        if (not CarMainPart or not CarMainPart.Parent) then
+            return;
+        end
+        local carPosition = CarMainPart.Position;
+        local carLookVector = CarMainPart.CFrame.LookVector;
+        local trailerDistance = 10;
+        local trailerHeight = 0;
+        local useRotation = false;
+        if (CurrentTrailerObjectType == "GlassBoxGray\\Main") then
+            trailerDistance = 15;
+            trailerHeight = 2;
+            useRotation = true;
+        elseif (CurrentTrailerObjectType == "PalletLightBrown\\Main") then
+            trailerDistance = 12;
+            trailerHeight = 1;
+            useRotation = false;
+        else
+            trailerDistance = 10;
+            trailerHeight = 0;
+            useRotation = false;
+        end
+        local trailerOffset = Vector3.new(0, trailerHeight, -trailerDistance);
+        local targetPosition = carPosition + (carLookVector * trailerOffset.Z) + Vector3.new(0, trailerOffset.Y, 0);
+        if UseCFrameMode then
+            local targetCFrame;
+            if useRotation then
+                targetCFrame = CFrame.new(targetPosition, targetPosition - carLookVector) * CFrame.Angles(0, math.rad(180), 0);
+            else
+                targetCFrame = CFrame.new(targetPosition, targetPosition + carLookVector);
+            end
+            TrailerPart.CFrame = targetCFrame;
+            TrailerPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+            TrailerPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+        elseif UseSmoothMode then
+            local currentPos = TrailerPart.Position;
+            local direction = targetPosition - currentPos;
+            local distance = direction.Magnitude;
+            local carSpeed = CarMainPart.AssemblyLinearVelocity.Magnitude;
+            local baseSpeed = math.max(carSpeed, 10);
+            if (distance > 0.1) then
+                local speedMultiplier = math.min(distance * 2, 3);
+                local speed = baseSpeed * speedMultiplier;
+                local maxTrailerSpeed = (carSpeed * 1.5) + 10;
+                speed = math.min(speed, maxTrailerSpeed);
+                local velocity = direction.Unit * speed;
+                TrailerPart.AssemblyLinearVelocity = velocity;
+                local targetCFrame;
+                if useRotation then
+                    targetCFrame = CFrame.new(currentPos, currentPos - carLookVector) * CFrame.Angles(0, math.rad(180), 0);
+                else
+                    targetCFrame = CFrame.new(currentPos, currentPos + carLookVector);
+                end
+                TrailerPart.CFrame = TrailerPart.CFrame:Lerp(targetCFrame, 0.2);
+                TrailerPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+            else
+                TrailerPart.AssemblyLinearVelocity = CarMainPart.AssemblyLinearVelocity * 0.8;
+            end
+        else
+            local currentPos = TrailerPart.Position;
+            local direction = (targetPosition - currentPos).Unit;
+            local carSpeed = CarMainPart.AssemblyLinearVelocity.Magnitude;
+            local speed = math.max(carSpeed * 1.2, 25);
+            local velocity = direction * speed;
+            TrailerPart.AssemblyLinearVelocity = velocity;
+            local targetCFrame;
+            if useRotation then
+                targetCFrame = CFrame.new(currentPos, currentPos - carLookVector) * CFrame.Angles(0, math.rad(180), 0);
+            else
+                targetCFrame = CFrame.new(currentPos, currentPos + carLookVector);
+            end
+            TrailerPart.CFrame = targetCFrame;
+            TrailerPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+        end
+        if not TrailerPart:FindFirstChild("TrailerEffect") then
+            local highlight = Instance.new("Highlight");
+            highlight.Name = "TrailerEffect";
+            highlight.FillColor = Color3.new(0, 0.5, 1);
+            highlight.OutlineColor = Color3.new(0, 0.3, 0.8);
+            highlight.FillTransparency = 0.7;
+            highlight.Parent = TrailerPart;
+        end
+    end);
+end
+local function stopTrailer()
+    if TrailerConnection then
+        TrailerConnection:Disconnect();
+        TrailerConnection = nil;
+    end
+    if TrailerPart then
+        local effect = TrailerPart:FindFirstChild("TrailerEffect");
+        if effect then
+            effect:Destroy();
+        end
+        TrailerPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+        TrailerPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+    end
+    TrailerEnabled = false;
+end
+local function pushCarForward()
+    if (not CarEnabled or not CarMainPart or not CarMainPart.Parent) then
+        return;
+    end
+    if (UserInputService:IsKeyDown(Enum.KeyCode.C) and not CarHandbrakeEnabled) then
+        CarIsMoving = true;
+        local camera = workspace.CurrentCamera;
+        local lookVector = camera.CFrame.LookVector;
+        lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit;
+        CarLastMoveDirection = lookVector;
+    else
+        CarIsMoving = false;
+        if not CarLastMoveDirection then
+            local camera = workspace.CurrentCamera;
+            local lookVector = camera.CFrame.LookVector;
+            CarLastMoveDirection = Vector3.new(lookVector.X, 0, lookVector.Z).Unit;
+        end
+    end
+    local targetSpeed = 0;
+    if (CarIsMoving and not CarHandbrakeEnabled) then
+        local minSpeed = 50;
+        local accelerationRate = (CarMaxSpeed - minSpeed) / CarAccelerationTime;
+        if (CarCurrentSpeed < minSpeed) then
+            CarCurrentSpeed = minSpeed;
+        else
+            CarCurrentSpeed = math.min(CarCurrentSpeed + (accelerationRate * 0.016), CarMaxSpeed);
+        end
+        targetSpeed = CarCurrentSpeed;
+    else
+        local decelerationRate = CarMaxSpeed / CarDecelerationTime;
+        if CarHandbrakeEnabled then
+            CarCurrentSpeed = math.max(CarCurrentSpeed - (decelerationRate * 3 * 0.016), 0);
+        else
+            CarCurrentSpeed = math.max(CarCurrentSpeed - (decelerationRate * 0.016), 0);
+        end
+        targetSpeed = CarCurrentSpeed;
+    end
+    local moveDirection;
+    if CarIsMoving then
+        local camera = workspace.CurrentCamera;
+        local lookVector = camera.CFrame.LookVector;
+        moveDirection = Vector3.new(lookVector.X, 0, lookVector.Z).Unit;
+        CarLastMoveDirection = moveDirection;
+    else
+        moveDirection = CarLastMoveDirection;
+    end
+    local targetVelocity = moveDirection * targetSpeed;
+    local currentVelocity = CarMainPart.AssemblyLinearVelocity;
+    local smoothFactor = 0.15;
+    local currentYVelocity = currentVelocity.Y;
+    local newHorizontalVelocity = Vector3.new(currentVelocity.X + ((targetVelocity.X - currentVelocity.X) * smoothFactor), 0, currentVelocity.Z + ((targetVelocity.Z - currentVelocity.Z) * smoothFactor));
+    local newVelocity = Vector3.new(newHorizontalVelocity.X, currentYVelocity, newHorizontalVelocity.Z);
+    CarMainPart.AssemblyLinearVelocity = newVelocity;
+    CarMainPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+    if CarIsMoving then
+        local targetCFrame = CFrame.new(CarMainPart.Position, CarMainPart.Position + moveDirection);
+        CarMainPart.CFrame = CarMainPart.CFrame:Lerp(targetCFrame, 0.1);
+    end
+    if (CarSoundPart and CarSoundPart.Parent) then
+        CarSoundPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+    end
+end
+local function startCarControl()
+    if CarConnection then
+        CarConnection:Disconnect();
+        CarConnection = nil;
+    end
+    CarCurrentSpeed = 0;
+    CarIsMoving = false;
+    CarLastMoveDirection = nil;
+    CarConnection = RunService.Heartbeat:Connect(function()
+        if (not CarEnabled or not CarMainPart or not CarMainPart.Parent) then
+            return;
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.V) then
+            if not CarHandbrakeEnabled then
+                CarHandbrakeEnabled = true;
+                game.StarterGui:SetCore("SendNotification", {Title="🅿️ РУЧНИК!",Text="Экстренное торможение",Duration=1});
+            end
+        elseif CarHandbrakeEnabled then
+            CarHandbrakeEnabled = false;
+        end
+        pushCarForward();
+        if (CarCurrentSpeed > 150) then
+            if not CarMainPart:FindFirstChild("HighSpeedEffect") then
+                local highlight = Instance.new("Highlight");
+                highlight.Name = "HighSpeedEffect";
+                highlight.FillColor = Color3.new(1, 0.2, 0.2);
+                highlight.OutlineColor = Color3.new(1, 0, 0);
+                highlight.FillTransparency = 0.8;
+                highlight.Parent = CarMainPart;
+            end
+        else
+            local effect = CarMainPart:FindFirstChild("HighSpeedEffect");
+            if effect then
+                effect:Destroy();
+            end
+        end
+    end);
+    local CKeyConnection;
+    CKeyConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then
+            return;
+        end
+        if ((input.KeyCode == Enum.KeyCode.C) and CarEnabled) then
+            game.StarterGui:SetCore("SendNotification", {Title="🎮 РАЗГОН",Text=("Скорость: " .. math.floor(CarCurrentSpeed) .. " → " .. CarMaxSpeed),Duration=1});
+        end
+    end);
+    local CKeyEndConnection;
+    CKeyEndConnection = UserInputService.InputEnded:Connect(function(input, gameProcessed)
+        if gameProcessed then
+            return;
+        end
+        if ((input.KeyCode == Enum.KeyCode.C) and CarEnabled) then
+            game.StarterGui:SetCore("SendNotification", {Title="🎮 ИНЕРЦИЯ",Text="Машина продолжает движение по прямой",Duration=1});
+        end
+    end);
+    local VKeyConnection;
+    VKeyConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then
+            return;
+        end
+        if ((input.KeyCode == Enum.KeyCode.V) and CarEnabled) then
+            CarHandbrakeEnabled = true;
+        end
+    end);
+    local VKeyEndConnection;
+    VKeyEndConnection = UserInputService.InputEnded:Connect(function(input, gameProcessed)
+        if gameProcessed then
+            return;
+        end
+        if ((input.KeyCode == Enum.KeyCode.V) and CarEnabled) then
+            CarHandbrakeEnabled = false;
+        end
+    end);
+    table.insert(connections, CKeyConnection);
+    table.insert(connections, CKeyEndConnection);
+    table.insert(connections, VKeyConnection);
+    table.insert(connections, VKeyEndConnection);
+end
+local function stopCar()
+    if CarConnection then
+        CarConnection:Disconnect();
+        CarConnection = nil;
+    end
+    stopTrailer();
+    CarCurrentSpeed = 0;
+    CarIsMoving = false;
+    if CarMainPart then
+        local currentVelocity = CarMainPart.AssemblyLinearVelocity;
+        CarMainPart.AssemblyLinearVelocity = Vector3.new(0, currentVelocity.Y, 0);
+        CarMainPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+        CarLastForwardDirection = nil;
+        CarHandbrakeEnabled = false;
+        local effect = CarMainPart:FindFirstChild("HighSpeedEffect");
+        if effect then
+            effect:Destroy();
+        end
+    end
+    if CarSoundPart then
+        CarSoundPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+        CarSoundPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+    end
+    CarMainPart = nil;
+    CarSoundPart = nil;
+end
+local function stopBananaAngry()
+    if BananaAngryConnection then
+        BananaAngryConnection:Disconnect();
+        BananaAngryConnection = nil;
+    end
+    BananaAngryEnabled = false;
+    BananaAngryJumpCooldown = {};
+end
+local function startBananaAngryFromList()
+    if BananaAngryConnection then
+        BananaAngryConnection:Disconnect();
+        BananaAngryConnection = nil;
+    end
+    for _, banana in ipairs(AllBananas) do
+        if (banana and banana.Parent) then
+            BananaAngryJumpCooldown[banana] = tick() - math.random(0, 2);
+        end
+    end
+    BananaAngryConnection = RunService.Heartbeat:Connect(function()
+        if not BananaAngryFromListEnabled then
+            return;
+        end
+        local bCount, fCount, sCount = refreshCache();
+        if (bCount == 0) then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ БАНАНОВ",Text="Включи режим бананов сначала!",Duration=3});
+            BananaAngryFromListEnabled = false;
+            return;
+        end
+        local targetPlayer = TargetPlayers[1];
+        if (not targetPlayer or not targetPlayer.Character) then
+            return;
+        end
+        local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart");
+        if not targetRoot then
+            return;
+        end
+        local currentTime = tick();
+        for index, banana in ipairs(AllBananas) do
+            if (banana and banana.Parent) then
+                local lastJumpTime = BananaAngryJumpCooldown[banana] or 0;
+                if ((currentTime - lastJumpTime) >= (1.5 + ((index % 4) * 0.25))) then
+                    local playerPos = targetRoot.Position;
+                    local angle = ((index / bCount) * math.pi * 2) + (currentTime * 0.2);
+                    local radius = 3 + ((index % 4) * 0.8);
+                    local targetX = playerPos.X + (math.cos(angle) * radius);
+                    local targetZ = playerPos.Z + (math.sin(angle) * radius);
+                    local targetY = playerPos.Y + 0.5;
+                    local targetPos = Vector3.new(targetX, targetY, targetZ);
+                    local jumpDirection = (targetPos - banana.Position).Unit;
+                    local jumpDistance = (targetPos - banana.Position).Magnitude;
+                    local horizontalPower = math.clamp(jumpDistance * 1.5, 10, 25);
+                    banana.AssemblyLinearVelocity = (jumpDirection * horizontalPower) + Vector3.new(0, 35, 0);
+                    banana.AssemblyAngularVelocity = Vector3.new(math.random(3, 8), math.random(10, 20), math.random(2, 5));
+                    BananaAngryJumpCooldown[banana] = currentTime;
+                else
+                    local timeSinceJump = currentTime - lastJumpTime;
+                    if (timeSinceJump > 1) then
+                        local distanceToTarget = (banana.Position - targetRoot.Position).Magnitude;
+                        if (distanceToTarget > 15) then
+                            local correctionDirection = (targetRoot.Position - banana.Position).Unit;
+                            banana.AssemblyLinearVelocity = banana.AssemblyLinearVelocity + (correctionDirection * 2);
+                        end
+                    end
+                end
+            end
+        end
+    end);
+end
+local function stopBananaAngryFromList()
+    if BananaAngryConnection then
+        BananaAngryConnection:Disconnect();
+        BananaAngryConnection = nil;
+    end
+    BananaAngryFromListEnabled = false;
+    BananaAngryJumpCooldown = {};
+end
+local function startBananaFunny()
+    if BananaFunnyConnection then
+        BananaFunnyConnection:Disconnect();
+        BananaFunnyConnection = nil;
+    end
+    BananaFunnyJumpTimers = {};
+    for index, banana in ipairs(AllBananas) do
+        if (banana and banana.Parent) then
+            BananaFunnyJumpTimers[banana] = {lastJumpTime=(tick() - math.random(0, 2)),jumpInterval=(0.8 + (math.random() * 0.8)),jumpPower=(25 + (math.random() * 15)),rotationSpeed=Vector3.new(math.random(3, 8), math.random(8, 20), math.random(2, 6))};
+        end
+    end
+    BananaFunnyConnection = RunService.Heartbeat:Connect(function()
+        if not BananaFunnyEnabled then
+            return;
+        end
+        local bCount, fCount, sCount = refreshCache();
+        if (bCount == 0) then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ БАНАНОВ",Text="Включи режим бананов сначала!",Duration=3});
+            BananaFunnyEnabled = false;
+            return;
+        end
+        local currentTime = tick();
+        for index, banana in ipairs(AllBananas) do
+            if (banana and banana.Parent and not BananaFunnyJumpTimers[banana]) then
+                BananaFunnyJumpTimers[banana] = {lastJumpTime=(currentTime - math.random(0, 2)),jumpInterval=(0.8 + (math.random() * 0.8)),jumpPower=(25 + (math.random() * 15)),rotationSpeed=Vector3.new(math.random(3, 8), math.random(8, 20), math.random(2, 6))};
+            end
+        end
+        for index, banana in ipairs(AllBananas) do
+            if (banana and banana.Parent) then
+                local timerData = BananaFunnyJumpTimers[banana];
+                if timerData then
+                    if ((currentTime - timerData.lastJumpTime) >= timerData.jumpInterval) then
+                        local sideMovement = Vector3.new(math.random(-12, 12), 0, math.random(-12, 12));
+                        banana.AssemblyLinearVelocity = Vector3.new(0, timerData.jumpPower, 0) + sideMovement;
+                        banana.AssemblyAngularVelocity = timerData.rotationSpeed;
+                        timerData.lastJumpTime = currentTime;
+                        if (math.random() < 0.3) then
+                            timerData.jumpInterval = 0.8 + (math.random() * 0.8);
+                            timerData.jumpPower = 25 + (math.random() * 15);
+                            timerData.rotationSpeed = Vector3.new(math.random(3, 8), math.random(8, 20), math.random(2, 6));
+                        end
+                    else
+                    end
+                end
+            end
+        end
+        local validBananas = {};
+        for _, banana in ipairs(AllBananas) do
+            if (banana and banana.Parent) then
+                validBananas[banana] = true;
+            end
+        end
+        for banana in pairs(BananaFunnyJumpTimers) do
+            if not validBananas[banana] then
+                BananaFunnyJumpTimers[banana] = nil;
+            end
+        end
+    end);
+end
+local function stopBananaFunny()
+    if BananaFunnyConnection then
+        BananaFunnyConnection:Disconnect();
+        BananaFunnyConnection = nil;
+    end
+    BananaFunnyEnabled = false;
+    BananaFunnyJumpTimers = {};
+end
+local BananaTeamsJumpCooldown = {};
+local function getNearestPlayer()
+    local nearestPlayer;
+    local nearestDistance = math.huge;
+    local playerCharacter = LocalPlayer.Character;
+    if (not playerCharacter or not playerCharacter:FindFirstChild("HumanoidRootPart")) then
+        return nil;
+    end
+    for _, player in pairs(Players:GetPlayers()) do
+        if ((player ~= LocalPlayer) and player.Character and player.Character:FindFirstChild("HumanoidRootPart")) then
+            local distance = (playerCharacter.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude;
+            if (distance < nearestDistance) then
+                nearestDistance = distance;
+                nearestPlayer = player;
+            end
+        end
+    end
+    return nearestPlayer;
+end
+local function collectAllFarts()
+    if FartCollectionConnection then
+        FartCollectionConnection:Disconnect();
+        FartCollectionConnection = nil;
+    end
+    local playerFolder = workspace:FindFirstChild(LocalPlayer.Name .. "SpawnedInToys");
+    AllFartObjects = {};
+    if not playerFolder then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ПАПКИ ИГРОКА",Text=("Не найдена папка " .. LocalPlayer.Name .. "SpawnedInToys"),Duration=3});
+        return;
+    end
+    for _, toy in pairs(playerFolder:GetChildren()) do
+        if (toy.Name == "PoopPile") then
+            local mainPart = toy:FindFirstChild("Main");
+            if (mainPart and mainPart:IsA("BasePart")) then
+                table.insert(AllFartObjects, mainPart);
+            end
+        end
+    end
+    if (#AllFartObjects == 0) then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ КАКАШЕК",Text="Не найдено PoopPile в папке игрушек!",Duration=3});
+        return;
+    end
+    game.StarterGui:SetCore("SendNotification", {Title="💩 КАКАШКИ НАЙДЕНЫ",Text=("Найдено " .. #AllFartObjects .. " какашек"),Duration=3});
+    local targetPosition = Vector3.new(-5857.7998046875, 5225.32275390625, 14855.5546875);
+    FartCollectionEnabled = true;
+    FartCollectionConnection = RunService.Heartbeat:Connect(function()
+        if not FartCollectionEnabled then
+            return;
+        end
+        for index, fartObject in ipairs(AllFartObjects) do
+            if (fartObject and fartObject.Parent) then
+                local offset = Vector3.new(math.sin(index * 0.5) * 2, (index - 1) * 1.5, math.cos(index * 0.5) * 2);
+                local finalPosition = targetPosition + offset;
+                fartObject.CFrame = CFrame.new(finalPosition);
+                fartObject.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                fartObject.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+                if not fartObject:FindFirstChild("FartCollectionEffect") then
+                    local highlight = Instance.new("Highlight");
+                    highlight.Name = "FartCollectionEffect";
+                    highlight.FillColor = Color3.new(0.4, 0.2, 0);
+                    highlight.OutlineColor = Color3.new(0.6, 0.3, 0);
+                    highlight.FillTransparency = 0.3;
+                    highlight.Parent = fartObject;
+                end
+            end
+        end
+    end);
+end
+local function stopFartCollection()
+    FartCollectionEnabled = false;
+    if FartCollectionConnection then
+        FartCollectionConnection:Disconnect();
+        FartCollectionConnection = nil;
+    end
+    for _, fartObject in ipairs(AllFartObjects) do
+        if (fartObject and fartObject.Parent) then
+            local effect = fartObject:FindFirstChild("FartCollectionEffect");
+            if effect then
+                effect:Destroy();
+            end
+        end
+    end
+    game.StarterGui:SetCore("SendNotification", {Title="💩 COLLECT STOPPED",Text="Сбор какашек остановлен",Duration=2});
+end
+local function applyFartEffect(mode)
+    if (#AllFartObjects == 0) then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ КАКАШЕК",Text="Сначала собери какашки!",Duration=3});
+        return;
+    end
+    if (mode == "SelectedPlayer") then
+        if not SelectedFartPlayer then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ИГРОКА",Text="Сначала выбери игрока!",Duration=3});
+            return;
+        end
+        local targetCharacter = SelectedFartPlayer.Character;
+        if not targetCharacter then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ПЕРСОНАЖА",Text="У игрока нет персонажа!",Duration=3});
+            return;
+        end
+        local targetRoot = targetCharacter:FindFirstChild("HumanoidRootPart");
+        if not targetRoot then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ROOT PART",Text="У игрока нет HumanoidRootPart!",Duration=3});
+            return;
+        end
+        for index, fartObject in ipairs(AllFartObjects) do
+            if (fartObject and fartObject.Parent) then
+                local angle = (index / #AllFartObjects) * math.pi * 2;
+                local radius = 3 + ((index % 4) * 0.8);
+                local targetX = targetRoot.Position.X + (math.cos(angle) * radius);
+                local targetZ = targetRoot.Position.Z + (math.sin(angle) * radius);
+                local targetY = targetRoot.Position.Y + 0.5;
+                local targetPos = Vector3.new(targetX, targetY, targetZ);
+                fartObject.CFrame = CFrame.new(targetPos);
+                local randomForce = Vector3.new(math.random(-20, 20), math.random(10, 25), math.random(-20, 20));
+                fartObject.AssemblyLinearVelocity = randomForce;
+                fartObject.AssemblyAngularVelocity = Vector3.new(math.random(-10, 10), math.random(-15, 15), math.random(-8, 8));
+            end
+        end
+        game.StarterGui:SetCore("SendNotification", {Title="💩 FART ON PLAYER!",Text=(SelectedFartPlayer.DisplayName .. " получил какашки!"),Duration=3});
+    elseif (mode == "Spawn") then
+        local mainSpawnCFrame = CFrame.new(-7.55107355, -10.2871094, -14.3084059, 0.712264657, 0, 0.701911032, 0, 1, 0, -0.701911032, 0, 0.712264657);
+        if (AllFartObjects[1] and AllFartObjects[1].Parent) then
+            AllFartObjects[1].CFrame = mainSpawnCFrame;
+            AllFartObjects[1].AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+            AllFartObjects[1].AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+        end
+        for i = 2, #AllFartObjects do
+            local fartObject = AllFartObjects[i];
+            if (fartObject and fartObject.Parent) then
+                local offset = Vector3.new(math.sin(i * 0.8) * 2.5, (i - 2) * 0.8, math.cos(i * 0.8) * 2.5);
+                local targetPos = mainSpawnCFrame.Position + offset;
+                fartObject.CFrame = CFrame.new(targetPos);
+                fartObject.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                fartObject.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+            end
+        end
+        game.StarterGui:SetCore("SendNotification", {Title="💩 FART TO SPAWN!",Text="Какашки телепортированы на спавн",Duration=3});
+    elseif (mode == "Spawn Explode") then
+        local spawnPosition = Vector3.new(-7.55107355, -10.2871094, -14.3084059);
+        for index, fartObject in ipairs(AllFartObjects) do
+            if (fartObject and fartObject.Parent) then
+                fartObject.CFrame = CFrame.new(spawnPosition);
+                local theta = math.random() * math.pi * 2;
+                local phi = math.acos((2 * math.random()) - 1);
+                local explosionPower = 80 + (math.random() * 120);
+                local dirX = math.sin(phi) * math.cos(theta);
+                local dirY = math.sin(phi) * math.sin(theta);
+                local dirZ = math.cos(phi);
+                local explosionForce = Vector3.new(dirX * explosionPower, (math.abs(dirY) * explosionPower * 1.5) + 30, dirZ * explosionPower);
+                fartObject.AssemblyLinearVelocity = explosionForce;
+                fartObject.AssemblyAngularVelocity = Vector3.new(math.random(-50, 50), math.random(-50, 50), math.random(-50, 50));
+                if not fartObject:FindFirstChild("ExplosionEffect") then
+                    local highlight = Instance.new("Highlight");
+                    highlight.Name = "ExplosionEffect";
+                    highlight.FillColor = Color3.new(0.8, 0.4, 0);
+                    highlight.OutlineColor = Color3.new(1, 0.6, 0);
+                    highlight.FillTransparency = 0.2;
+                    highlight.OutlineTransparency = 0;
+                    highlight.Parent = fartObject;
+                    delay(3, function()
+                        if (highlight and highlight.Parent) then
+                            highlight:Destroy();
+                        end
+                    end);
+                end
+            end
+        end
+        delay(0.5, function()
+            for index, fartObject in ipairs(AllFartObjects) do
+                if (fartObject and fartObject.Parent and (math.random() < 0.7)) then
+                    local additionalForce = Vector3.new(math.random(-40, 40), math.random(20, 60), math.random(-40, 40));
+                    fartObject.AssemblyLinearVelocity = fartObject.AssemblyLinearVelocity + additionalForce;
+                end
+            end
+        end);
+        game.StarterGui:SetCore("SendNotification", {Title="💥 EPIC SPAWN EXPLODE!",Text="КАКАШЕЧНЫЙ АПОКАЛИПСИС!",Duration=5});
+    end
+    stopFartCollection();
+end
+local function updateFartPlayerList()
+    local list = {};
+    for _, p in pairs(Players:GetPlayers()) do
+        if (p ~= LocalPlayer) then
+            table.insert(list, p.DisplayName);
+        end
+    end
+    return list;
+end
+local function cleanupConnections(connectionTable)
+    for _, connection in ipairs(connectionTable) do
+        if connection then
+            connection:Disconnect();
+        end
+    end
+    connectionTable = {};
+end
+local function startDecoyFollow()
+    cleanupConnections(connections);
+    connections = {};
+    decoys = {};
+    for _, obj in workspace:GetDescendants() do
+        if (obj:IsA("Model") and (obj.Name == "YouDecoy")) then
+            table.insert(decoys, obj);
+        end
+    end
+    local numDecoys = #decoys;
+    if (numDecoys == 0) then
+        game.StarterGui:SetCore("SendNotification", {Title="НЕТ КЛОНОВ",Text="Не найдено клонов YouDecoy!",Duration=3});
+        return;
+    end
+    local midPoint = math.ceil(numDecoys / 2);
+    local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait();
+    local rootPart = character:WaitForChild("HumanoidRootPart");
+    local decoyData = {};
+    for _, decoy in ipairs(decoys) do
+        local torso = decoy:FindFirstChild("Torso");
+        if torso then
+            for _, obj in {torso:FindFirstChild("BodyPosition"),torso:FindFirstChild("BodyGyro"),torso:FindFirstChild("BodyVelocity")} do
+                if obj then
+                    obj:Destroy();
+                end
+            end
+            local bp = Instance.new("BodyPosition");
+            local bg = Instance.new("BodyGyro");
+            local bv = Instance.new("BodyVelocity");
+            bp.MaxForce = Vector3.new(40000, 0, 40000);
+            bp.P = 10000;
+            bp.D = 1000;
+            bg.MaxTorque = Vector3.new(40000, 40000, 40000);
+            bg.P = 20000;
+            bg.D = 1000;
+            bv.MaxForce = Vector3.new(0, 40000, 0);
+            bv.P = 1250;
+            bp.Parent = torso;
+            bg.Parent = torso;
+            bv.Parent = torso;
+            table.insert(decoyData, {decoy=decoy,torso=torso,bp=bp,bg=bg,bv=bv});
+        end
+    end
+    local heartbeatConn = game:GetService("RunService").Heartbeat:Connect(function()
+        if not (character and character.Parent and rootPart and rootPart.Parent) then
+            return;
+        end
+        local myPos = rootPart.Position;
+        for index, data in ipairs(decoyData) do
+            local torso = data.torso;
+            if not (torso and torso.Parent) then
+                continue;
+            end
+            local targetPos;
+            if followMode then
+                local offset = (index - midPoint) * decoyOffset;
+                local forward = rootPart.CFrame.LookVector;
+                local right = rootPart.CFrame.RightVector;
+                targetPos = (myPos - (forward * decoyOffset)) + (right * offset);
+                data.bg.CFrame = CFrame.new(torso.Position, torso.Position + rootPart.CFrame.LookVector);
+            else
+                local nearest = getNearestPlayer();
+                if (nearest and nearest.Character and nearest.Character:FindFirstChild("HumanoidRootPart")) then
+                    local hrp = nearest.Character.HumanoidRootPart;
+                    local angle = math.rad(((index - 1) * 360) / numDecoys);
+                    local offset = Vector3.new(math.cos(angle), 0, math.sin(angle)) * circleRadius;
+                    targetPos = hrp.Position + offset;
+                    data.bg.CFrame = CFrame.new(torso.Position, hrp.Position);
+                else
+                    targetPos = torso.Position;
+                end
+            end
+            if not targetPos then
+                targetPos = torso.Position;
+            end
+            local rayOrigin = Vector3.new(targetPos.X, targetPos.Y + 10, targetPos.Z);
+            local ray = workspace:Raycast(rayOrigin, Vector3.new(0, -20, 0), RaycastParams.new({FilterType=Enum.RaycastFilterType.Blacklist,FilterDescendantsInstances={character,data.decoy}}));
+            if ray then
+                targetPos = Vector3.new(targetPos.X, ray.Position.Y + 3, targetPos.Z);
+            else
+                targetPos = Vector3.new(targetPos.X, torso.Position.Y, targetPos.Z);
+            end
+            local distance = (targetPos - torso.Position).Magnitude;
+            if (distance > stopDistance) then
+                data.bp.Position = targetPos;
+            else
+                data.bp.Position = torso.Position;
+                data.bg.CFrame = torso.CFrame;
+            end
+            local downRay = workspace:Raycast(torso.Position, Vector3.new(0, -5, 0), RaycastParams.new({FilterType=Enum.RaycastFilterType.Blacklist,FilterDescendantsInstances={character,data.decoy}}));
+            if not downRay then
+                data.bv.Velocity = Vector3.new(0, -50, 0);
+            else
+                data.bv.Velocity = Vector3.new(0, 0, 0);
+            end
+        end
+    end);
+    table.insert(connections, heartbeatConn);
+    game.StarterGui:SetCore("SendNotification", {Title="КЛОНЫ АКТИВИРОВАНЫ",Text=("Найдено %d клонов. Режим: %s"):format(numDecoys, (followMode and "Следование") or "Окружение"),Duration=5});
+end
+local function startBananaTeams()
+    if BananaTeamsConnection then
+        BananaTeamsConnection:Disconnect();
+        BananaTeamsConnection = nil;
+    end
+    for _, banana in ipairs(AllBananas) do
+        if (banana and banana.Parent) then
+            BananaTeamsJumpCooldown[banana] = tick() - math.random(0, 2);
+        end
+    end
+    BananaTeamsConnection = RunService.Heartbeat:Connect(function()
+        if not BananaTeamsEnabled then
+            return;
+        end
+        local bCount, fCount, sCount = refreshCache();
+        if (bCount == 0) then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ БАНАНОВ",Text="Включи режим бананов сначала!",Duration=3});
+            BananaTeamsEnabled = false;
+            return;
+        end
+        local character = LocalPlayer.Character;
+        if not character then
+            return;
+        end
+        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart");
+        if not humanoidRootPart then
+            return;
+        end
+        local playerPos = humanoidRootPart.Position;
+        local currentTime = tick();
+        for index, banana in ipairs(AllBananas) do
+            if (banana and banana.Parent) then
+                local lastJumpTime = BananaTeamsJumpCooldown[banana] or 0;
+                if ((currentTime - lastJumpTime) >= (1.5 + ((index % 4) * 0.25))) then
+                    local angle = ((index / bCount) * math.pi * 2) + (currentTime * 0.2);
+                    local radius = 5 + ((index % 5) * 1.2);
+                    local targetX = playerPos.X + (math.cos(angle) * radius);
+                    local targetZ = playerPos.Z + (math.sin(angle) * radius);
+                    local targetY = playerPos.Y + 0.5;
+                    local targetPos = Vector3.new(targetX, targetY, targetZ);
+                    local jumpDirection = (targetPos - banana.Position).Unit;
+                    local jumpDistance = (targetPos - banana.Position).Magnitude;
+                    local horizontalPower = math.clamp(jumpDistance * 1.5, 10, 25);
+                    banana.AssemblyLinearVelocity = (jumpDirection * horizontalPower) + Vector3.new(0, 35, 0);
+                    banana.AssemblyAngularVelocity = Vector3.new(math.random(3, 8), math.random(10, 20), math.random(2, 5));
+                    BananaTeamsJumpCooldown[banana] = currentTime;
+                else
+                    local timeSinceJump = currentTime - lastJumpTime;
+                    if (timeSinceJump > 1) then
+                        local distanceToTarget = (banana.Position - playerPos).Magnitude;
+                        if (distanceToTarget > 15) then
+                            local correctionDirection = (playerPos - banana.Position).Unit;
+                            banana.AssemblyLinearVelocity = banana.AssemblyLinearVelocity + (correctionDirection * 2);
+                        end
+                    end
+                end
+            end
+        end
+    end);
+end
+local function stopBananaTeams()
+    if BananaTeamsConnection then
+        BananaTeamsConnection:Disconnect();
+        BananaTeamsConnection = nil;
+    end
+    BananaTeamsEnabled = false;
+    BananaTeamsJumpCooldown = {};
+end
+local function createSafePlatform(position)
+    if SafePlatform then
+        SafePlatform:Destroy();
+        SafePlatform = nil;
+    end
+    SafePlatform = Instance.new("Part");
+    SafePlatform.Name = "PVPSafePlatform";
+    SafePlatform.Size = Vector3.new(10, 1, 10);
+    SafePlatform.Position = position - Vector3.new(0, 3, 0);
+    SafePlatform.Anchored = true;
+    SafePlatform.CanCollide = true;
+    SafePlatform.Material = Enum.Material.Neon;
+    SafePlatform.BrickColor = BrickColor.new("Bright green");
+    SafePlatform.Transparency = 0.3;
+    local highlight = Instance.new("Highlight");
+    highlight.FillColor = Color3.new(0, 1, 0);
+    highlight.OutlineColor = Color3.new(0, 0.5, 0);
+    highlight.FillTransparency = 0.7;
+    highlight.Parent = SafePlatform;
+    SafePlatform.Parent = workspace;
+    return SafePlatform;
+end
+local function activatePvpSafe()
+    if not PvpSafeEnabled then
+        return;
+    end
+    local character = LocalPlayer.Character;
+    if not character then
+        return;
+    end
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart");
+    local humanoid = character:FindFirstChildOfClass("Humanoid");
+    if (not humanoidRootPart or not humanoid) then
+        return;
+    end
+    humanoidRootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+    humanoidRootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+    local platform = createSafePlatform(humanoidRootPart.Position);
+    humanoidRootPart.CFrame = CFrame.new(platform.Position + Vector3.new(0, 3, 0));
+    game.StarterGui:SetCore("SendNotification", {Title="🛡️ PVP SAFE АКТИВИРОВАН!",Text="Скорость обнулена. Платформа исчезнет через 60 сек",Duration=5});
+    delay(60, function()
+        if (platform and platform.Parent) then
+            platform:Destroy();
+            SafePlatform = nil;
+            game.StarterGui:SetCore("SendNotification", {Title="🛡️ PVP SAFE ЗАВЕРШЕН",Text="Защитная платформа удалена",Duration=3});
+        end
+    end);
+end
+local function startPvpSafe()
+    SafePlatformConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then
+            return;
+        end
+        if ((input.KeyCode == Enum.KeyCode.X) and PvpSafeEnabled) then
+            activatePvpSafe();
+        end
+    end);
+end
+local function stopPvpSafe()
+    if SafePlatformConnection then
+        SafePlatformConnection:Disconnect();
+        SafePlatformConnection = nil;
+    end
+    if SafePlatform then
+        SafePlatform:Destroy();
+        SafePlatform = nil;
+    end
+end
+local function startBananaDance()
+    if BananaDanceConnection then
+        BananaDanceConnection:Disconnect();
+        BananaDanceConnection = nil;
+    end
+    BananaDanceConnection = RunService.Heartbeat:Connect(function()
+        if not BananaDanceEnabled then
+            return;
+        end
+        local bCount, fCount, sCount = refreshCache();
+        if (bCount == 0) then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ БАНАНОВ",Text="Включи режим бананов сначала!",Duration=3});
+            BananaDanceEnabled = false;
+            return;
+        end
+        local time = tick();
+        local danceMode = DanceModes[CurrentDanceMode];
+        if not danceMode then
+            danceMode = DanceModes.Tornado;
+        end
+        for index, banana in ipairs(AllBananas) do
+            if (banana and banana.Parent) then
+                danceMode(banana, index, time);
+            end
+        end
+    end);
+end
+local function stopBananaDance()
+    if BananaDanceConnection then
+        BananaDanceConnection:Disconnect();
+        BananaDanceConnection = nil;
+    end
+    BananaDanceEnabled = false;
+    for _, banana in ipairs(AllBananas) do
+        if (banana and banana.Parent) then
+            pcall(function()
+                banana.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                banana.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+            end);
+        end
+    end
+end
+local function moveObjectToPosition(obj, targetPos, speed)
+    if not (obj and obj.Parent) then
+        return;
+    end
+    if UseCFrameMode then
+        obj.CFrame = CFrame.new(targetPos) * CFrame.Angles(math.rad(90), tick() * 3, math.sin(tick()) * 0.5);
+        obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+        obj.AssemblyAngularVelocity = Vector3.new(0, 10, 0);
+    elseif UseSmoothMode then
+        local currentPos = obj.Position;
+        local direction = targetPos - currentPos;
+        local distance = direction.Magnitude;
+        if (distance < 0.8) then
+            obj.AssemblyLinearVelocity = obj.AssemblyLinearVelocity * 0.8;
+            obj.AssemblyAngularVelocity = Vector3.new(1, 4, -1);
+            return;
+        end
+        local targetSpeed = math.clamp(speed, 50, 300);
+        local velocity = direction.Unit * targetSpeed;
+        local smoothFactor = 0.15;
+        local currentVel = obj.AssemblyLinearVelocity;
+        local newVel = currentVel + ((velocity - currentVel) * smoothFactor);
+        obj.AssemblyLinearVelocity = newVel;
+        obj.AssemblyAngularVelocity = Vector3.new(2, 6, -2);
+    else
+        local currentPos = obj.Position;
+        local direction = (targetPos - currentPos).Unit;
+        local velocity = direction * math.clamp(speed, 50, 300);
+        obj.AssemblyLinearVelocity = velocity;
+        obj.AssemblyAngularVelocity = Vector3.new(1, 6, -1);
+    end
+end
+local function getValidPlayers()
+    local allPlayers = Players:GetPlayers();
+    local validPlayers = {};
+    for _, player in ipairs(allPlayers) do
+        if ((player ~= LocalPlayer) and player.Character) then
+            local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart");
+            local humanoid = player.Character:FindFirstChildOfClass("Humanoid");
+            if (humanoidRootPart and humanoidRootPart:IsA("BasePart") and humanoid) then
+                table.insert(validPlayers, {player=player,rootPart=humanoidRootPart,humanoid=humanoid});
+            end
+        end
+    end
+    return validPlayers;
+end
+local function startRagdollAll()
+    if RagdollAllConnection then
+        RagdollAllConnection:Disconnect();
+        RagdollAllConnection = nil;
+    end
+    local bCount, fCount, sCount = refreshCache();
+    if (bCount < 3) then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ МАЛО БАНАНОВ",Text=("Нужно минимум 3 банана! Сейчас: " .. bCount),Duration=3});
+        RagdollAllEnabled = false;
+        return;
+    end
+    RagdollAllCurrentPlayerIndex = 1;
+    RagdollAllLastTeleportTime = 0;
+    RagdollAllTeleportInterval = 0.05;
+    RagdollAllForceApplyCooldown = {};
+    RagdollAllPassThroughStage = {};
+    RagdollAllPlayerAssignments = {};
+    RagdollAllConnection = RunService.Heartbeat:Connect(function()
+        if not RagdollAllEnabled then
+            return;
+        end
+        local currentTime = tick();
+        if ((currentTime - RagdollAllLastTeleportTime) < RagdollAllTeleportInterval) then
+            return;
+        end
+        RagdollAllLastTeleportTime = currentTime;
+        local bCount, fCount, sCount = refreshCache();
+        if (bCount < 3) then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ БАНАНОВ СТАЛО МЕНЬШЕ",Text=("Нужно минимум 3 банана! Сейчас: " .. bCount),Duration=2});
+            stopRagdollAll();
+            return;
+        end
+        local validPlayers = getValidPlayers();
+        if (#validPlayers == 0) then
+            if ((RagdollAllCurrentPlayerIndex % 30) == 0) then
+                game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ИГРОКОВ",Text="На сервере нет других игроков!",Duration=2});
+            end
+            return;
+        end
+        local allBananas = {};
+        for _, banana in ipairs(AllBananas) do
+            if (banana and banana.Parent) then
+                table.insert(allBananas, banana);
+                if not RagdollAllPassThroughStage[banana] then
+                    RagdollAllPassThroughStage[banana] = {stage=1,playerIndex=math.random(1, #validPlayers),lastStageChange=currentTime,lastPlayerChange=currentTime};
+                end
+            end
+        end
+        if (#allBananas == 0) then
+            return;
+        end
+        local successfulRagdolls = 0;
+        for bananaIndex, banana in ipairs(allBananas) do
+            if (banana and banana.Parent) then
+                local stageData = RagdollAllPassThroughStage[banana];
+                if ((currentTime - stageData.lastPlayerChange) > 0.05) then
+                    stageData.playerIndex = math.random(1, #validPlayers);
+                    stageData.lastPlayerChange = currentTime;
+                    stageData.stage = 1;
+                end
+                local currentPlayerData = validPlayers[stageData.playerIndex];
+                if (currentPlayerData and currentPlayerData.rootPart and currentPlayerData.rootPart.Parent) then
+                    local playerPos = currentPlayerData.rootPart.Position;
+                    local playerName = currentPlayerData.player.DisplayName;
+                    local targetPosition = playerPos;
+                    local forceDirection = Vector3.new(0, 0, 0);
+                    local forcePower = 80;
+                    if (stageData.stage == 1) then
+                        targetPosition = playerPos + Vector3.new(-6, 0.2, 0);
+                        forceDirection = (playerPos - targetPosition).Unit;
+                        stageData.description = "СЛЕВА → ЦЕНТР";
+                    elseif (stageData.stage == 2) then
+                        targetPosition = playerPos + Vector3.new(5, 0.2, 0);
+                        forceDirection = (playerPos - targetPosition).Unit;
+                        stageData.description = "СПРАВА → ЦЕНТР";
+                    elseif (stageData.stage == 3) then
+                        targetPosition = playerPos + Vector3.new(0, 0.2, -5);
+                        forceDirection = (playerPos - targetPosition).Unit;
+                        stageData.description = "СПЕРЕДИ → ЦЕНТР";
+                    elseif (stageData.stage == 4) then
+                        targetPosition = playerPos + Vector3.new(0, 0.2, 5);
+                        forceDirection = (playerPos - targetPosition).Unit;
+                        stageData.description = "СЗАДИ → ЦЕНТР";
+                    elseif (stageData.stage == 5) then
+                        targetPosition = playerPos + Vector3.new(0, 0.1, 0);
+                        forceDirection = Vector3.new(0, 0, 0);
+                        forcePower = 0;
+                        stageData.description = "ЦЕНТР!";
+                        local playerKey = tostring(currentPlayerData.player.UserId);
+                        local lastApplyTime = RagdollAllForceApplyCooldown[playerKey] or 0;
+                        if ((currentTime - lastApplyTime) > 1) then
+                            if applyGuaranteedRagdoll(currentPlayerData.player) then
+                                successfulRagdolls = successfulRagdolls + 1;
+                                RagdollAllForceApplyCooldown[playerKey] = currentTime;
+                                stageData.lastPlayerChange = currentTime - 0.3;
+                            end
+                        end
+                    end
+                    banana.CFrame = CFrame.new(targetPosition);
+                    if (forcePower > 0) then
+                        banana.AssemblyLinearVelocity = forceDirection * forcePower;
+                    else
+                        banana.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                    end
+                    banana.AssemblyAngularVelocity = Vector3.new(math.random(-12, 12), math.random(20, 35), math.random(-8, 8));
+                    if banana:FindFirstChild("RagdollAllEffect") then
+                        banana.RagdollAllEffect:Destroy();
+                    end
+                    local highlight = Instance.new("Highlight");
+                    highlight.Name = "RagdollAllEffect";
+                    highlight.OutlineColor = Color3.new(1, 0, 0);
+                    if (stageData.stage == 5) then
+                        highlight.FillColor = Color3.new(1, 0, 0);
+                        highlight.FillTransparency = 0.1;
+                    else
+                        highlight.FillColor = Color3.new(1, 0.7, 0.2);
+                        highlight.FillTransparency = 0.4;
+                    end
+                    highlight.Parent = banana;
+                    if ((currentTime - stageData.lastStageChange) > 0.1) then
+                        stageData.stage = stageData.stage + 1;
+                        if (stageData.stage > 5) then
+                            stageData.stage = 1;
+                        end
+                        stageData.lastStageChange = currentTime;
+                    end
+                end
+            end
+        end
+        if ((RagdollAllCurrentPlayerIndex % 15) == 0) then
+            game.StarterGui:SetCore("SendNotification", {Title="🍌 RAGDOLL ALL",Text=string.format("%d бананов → %d игроков", #allBananas, #validPlayers),Duration=1});
+        end
+        RagdollAllCurrentPlayerIndex = RagdollAllCurrentPlayerIndex + 1;
+        if (RagdollAllCurrentPlayerIndex > 1000) then
+            RagdollAllCurrentPlayerIndex = 1;
+        end
+    end);
+end
+local function setupGeneralPartKeybinds()
+    local FKeyConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then
+            return;
+        end
+        if ((input.KeyCode == Enum.KeyCode.F) and SelectGeneralPartEnabled) then
+            selectGeneralPart();
+        end
+    end);
+    local RKeyConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then
+            return;
+        end
+        if ((input.KeyCode == Enum.KeyCode.R) and ResetGeneralPartEnabled) then
+            resetGeneralPart();
+        end
+    end);
+    table.insert(connections, FKeyConnection);
+    table.insert(connections, RKeyConnection);
+end
+setupGeneralPartKeybinds();
+local function stopRagdollAll()
+    if RagdollAllConnection then
+        RagdollAllConnection:Disconnect();
+        RagdollAllConnection = nil;
+    end
+    RagdollAllEnabled = false;
+    for _, banana in ipairs(AllBananas) do
+        if (banana and banana.Parent) then
+            local effect = banana:FindFirstChild("RagdollAllEffect");
+            if effect then
+                effect:Destroy();
+            end
+        end
+    end
+    RagdollAllPassThroughStage = {};
+    RagdollAllPlayerAssignments = {};
+    game.StarterGui:SetCore("SendNotification", {Title="🍌 RAGDOLL ALL ВЫКЛ",Text="Телепортация остановлена",Duration=2});
+end
+local function startFireAll()
+    if FireAllConnection then
+        FireAllConnection:Disconnect();
+        FireAllConnection = nil;
+    end
+    local currentPlayerIndex = 1;
+    local lastTeleportTime = 0.03;
+    local teleportInterval = 0.03;
+    FireAllConnection = RunService.Heartbeat:Connect(function()
+        if not FireAllEnabled then
+            return;
+        end
+        local currentTime = tick();
+        if ((currentTime - lastTeleportTime) < teleportInterval) then
+            return;
+        end
+        lastTeleportTime = currentTime;
+        local bCount, fCount, sCount = refreshCache();
+        if (fCount == 0) then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ОГНЯ",Text="Включи режим огня сначала!",Duration=3});
+            FireAllEnabled = false;
+            return;
+        end
+        local allPlayers = Players:GetPlayers();
+        local validPlayers = {};
+        for _, player in ipairs(allPlayers) do
+            if ((player ~= LocalPlayer) and player.Character) then
+                local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart");
+                if humanoidRootPart then
+                    table.insert(validPlayers, {player=player,rootPart=humanoidRootPart});
+                end
+            end
+        end
+        if (#validPlayers == 0) then
+            if ((currentPlayerIndex % 30) == 0) then
+                game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ИГРОКОВ",Text="На сервере нет других игроков!",Duration=2});
+            end
+            return;
+        end
+        currentPlayerIndex = currentPlayerIndex + 1;
+        if (currentPlayerIndex > #validPlayers) then
+            currentPlayerIndex = 1;
+        end
+        local currentPlayerData = validPlayers[currentPlayerIndex];
+        if not currentPlayerData then
+            return;
+        end
+        local targetRoot = currentPlayerData.rootPart;
+        if not targetRoot then
+            return;
+        end
+        for _, fire in ipairs(AllCampFires) do
+            if (fire and fire.Parent) then
+                local targetPosition = targetRoot.Position;
+                fire.CFrame = CFrame.new(targetPosition);
+                fire.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                fire.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+                if not fire:FindFirstChild("FireAllEffect") then
+                    local highlight = Instance.new("Highlight");
+                    highlight.Name = "FireAllEffect";
+                    highlight.FillColor = Color3.new(1, 0.3, 0);
+                    highlight.OutlineColor = Color3.new(1, 0.8, 0);
+                    highlight.FillTransparency = 0.7;
+                    highlight.Parent = fire;
+                end
+            end
+        end
+        if ((currentPlayerIndex % 10) == 0) then
+            game.StarterGui:SetCore("SendNotification", {Title="🔥 FIRE ALL",Text=string.format("%d огней → %s", fCount, currentPlayerData.player.DisplayName),Duration=1});
+        end
+    end);
+end
+local function stopFireAll()
+    if FireAllConnection then
+        FireAllConnection:Disconnect();
+        FireAllConnection = nil;
+    end
+    FireAllEnabled = false;
+    for _, fire in ipairs(AllCampFires) do
+        if (fire and fire.Parent) then
+            local effect = fire:FindFirstChild("FireAllEffect");
+            if effect then
+                effect:Destroy();
+            end
+        end
+    end
+    game.StarterGui:SetCore("SendNotification", {Title="🔥 FIRE ALL ВЫКЛ",Text="Телепортация огней остановлена",Duration=2});
+end
+local function getAttackPosition(center, objIndex, totalObjects, time)
+    local modeFunc = AttackModes[CurrentAttackMode];
+    if modeFunc then
+        return modeFunc(center, objIndex, totalObjects, time, AttackAnimationSpeed);
+    end
+    return AttackModes.TightCircle(center, objIndex, totalObjects, time, AttackAnimationSpeed);
+end
+local function getTargetRootPart(player)
+    if (not player or not player.Character) then
+        return nil;
+    end
+    return player.Character:FindFirstChild("HumanoidRootPart");
+end
+local function moveObject(obj, targetPos, speed)
+    if ((type(targetPos) == "table") and targetPos.jump) then
+        obj.AssemblyLinearVelocity = targetPos.velocity;
+        obj.AssemblyAngularVelocity = targetPos.angularVelocity;
+    else
+        moveObjectToPosition(obj, targetPos, speed);
+    end
+end
+local function stopAllObjects()
+    for _, obj in pairs(AllBananas) do
+        if (obj and obj.Parent) then
+            pcall(function()
+                obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+            end);
+        end
+    end
+    for _, obj in pairs(AllCampFires) do
+        if (obj and obj.Parent) then
+            pcall(function()
+                obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+            end);
+        end
+    end
+    for _, obj in pairs(AllSmokes) do
+        if (obj and obj.Parent) then
+            pcall(function()
+                obj.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                obj.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+            end);
+        end
+    end
+end
+local function infLineExtendF()
+    local char = LocalPlayer.Character;
+    if not char then
+        return;
+    end
+    local hrp = char:WaitForChild("HumanoidRootPart");
+    local hum = char:WaitForChild("Humanoid");
+    UserInputService.InputChanged:Connect(function(input)
+        if not ExtentedLineEnabled then
+            return;
+        end
+        if (input.UserInputType == Enum.UserInputType.MouseWheel) then
+            if (lineDistanceV < 11) then
+                lineDistanceV = 11;
+            end
+            if (input.Position.Z > 0) then
+                lineDistanceV = lineDistanceV + increaseLineExtendV;
+            elseif (input.Position.Z < 0) then
+                lineDistanceV = lineDistanceV - increaseLineExtendV;
+            end
+        end
+    end);
+    workspace.ChildAdded:Connect(function(child)
+        if not ExtentedLineEnabled then
+            return;
+        end
+        if ((child.Name == "GrabParts") and child:IsA("Model")) then
+            local grabPartsModel = child;
+            local success1, grabPart = pcall(function()
+                return grabPartsModel:WaitForChild("GrabPart", 2);
+            end);
+            local success2, dragPart = pcall(function()
+                return grabPartsModel:WaitForChild("DragPart", 2);
+            end);
+            if not (success1 and success2) then
+                return;
+            end
+            if ultraGrabEnabled then
+                dragPart.Color = Color3.fromRGB(255, 0, 0);
+                dragPart.Transparency = 0;
+                dragPart.Material = Enum.Material.Neon;
+            end
+            local clonedDragPart = dragPart:Clone();
+            clonedDragPart.Name = "DragPart1";
+            clonedDragPart.AlignPosition.Attachment1 = clonedDragPart.DragAttach;
+            clonedDragPart.Parent = grabPartsModel;
+            lineDistanceV = (clonedDragPart.Position - workspace.CurrentCamera.CFrame.Position).Magnitude;
+            clonedDragPart.AlignOrientation.Enabled = false;
+            dragPart.AlignPosition.Enabled = false;
+            if dragPart:FindFirstChild("AlignOrientation") then
+                dragPart.AlignOrientation.Enabled = false;
+            end
+            task.spawn(function()
+                while grabPartsModel.Parent and ExtentedLineEnabled do
+                    clonedDragPart.Position = workspace.CurrentCamera.CFrame.Position + (workspace.CurrentCamera.CFrame.LookVector * lineDistanceV);
+                    task.wait();
+                end
+                if (grabPartsModel.Parent and ultraGrabEnabled) then
+                    if dragPart:FindFirstChild("AlignOrientation") then
+                        dragPart.AlignOrientation.Enabled = true;
+                        dragPart.AlignOrientation.Responsiveness = 200;
+                        dragPart.AlignOrientation.MaxTorque = 999999999;
+                    end
+                    if dragPart:FindFirstChild("AlignPosition") then
+                        dragPart.AlignPosition.Enabled = true;
+                        dragPart.AlignPosition.MaxForce = 999999999;
+                        dragPart.AlignPosition.Responsiveness = 200;
+                    end
+                end
+                if (clonedDragPart and clonedDragPart.Parent) then
+                    clonedDragPart:Destroy();
+                end
+                lineDistanceV = 0;
+            end);
+        end
+    end);
+end
+local function createGUI()
+    local success, KavoLibrary = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/aslan90101/gracity-speed-jump/refs/heads/main/ui.lua"))();
+    end);
+    if not success then
+        warn("Kavo UI не загрузился!");
+        return;
+    end
+    local Window = KavoLibrary.CreateLib("script by Endoris | roblox account: 5fkX0ofvIGfU  Follow me for updates!", "Sentinel");
+local MainTab = Window:NewTab("Main");
+local MainSection = MainTab:NewSection("🍌🔥💨 УПРАВЛЕНИЕ");
+local StatusLabel = MainSection:NewLabel("🍌🔥💨 Objects: 0 | Status: Ready");
+
+-- 🍌 Create Penis (перенесено из Target)
+MainSection:NewButton("🍆 Create Penis (have bugs)", "2 паллета 2 лестницы надо", function()
+    local player = game.Players.LocalPlayer;
+    local char = player.Character or player.CharacterAdded:Wait();
+    local hrp = char:FindFirstChild("HumanoidRootPart");
+    if not hrp then
+        return;
+    end
+    local spawnPos = hrp.Position + (hrp.CFrame.LookVector * 4) + Vector3.new(0, 8, 0);
+    local toysFolder = workspace:FindFirstChild(player.Name .. "SpawnedInToys");
+    if not toysFolder then
+        game.StarterGui:SetCore("SendNotification", {Title="Ошибка",Text="Нет SpawnedInToys!",Duration=3});
+        return;
+    end
+    local pallets, ladders = {}, {};
+    for _, toy in toysFolder:GetChildren() do
+        if ((toy.Name == "PalletLightBrown") and toy:FindFirstChild("Main")) then
+            local m = toy.Main;
+            if (m and m:IsA("BasePart") and not m.Anchored) then
+                table.insert(pallets, m);
+            end
+        elseif ((toy.Name == "LadderLightBrown") and toy:FindFirstChild("Main")) then
+            local m = toy.Main;
+            if (m and m:IsA("BasePart") and not m.Anchored) then
+                table.insert(ladders, m);
+            end
+        end
+    end
+    if ((#pallets < 2) or (#ladders < 2)) then
+        game.StarterGui:SetCore("SendNotification", {Title="🍆 Не хватает",Text="Нужно 2 паллеты + 2 лестницы!",Duration=4});
+        return;
+    end
+    local p1 = table.remove(pallets, 1);
+    local p2 = table.remove(pallets, 1);
+    local l1 = table.remove(ladders, 1);
+    local l2 = table.remove(ladders, 1);
+    local parts = {p1,p2,l1,l2};
+    local targetCFrames = {};
+    for _, part in parts do
+        part.CanCollide = false;
+        part.Anchored = false;
+    end
+    local baseCF = CFrame.fromMatrix(spawnPos, hrp.CFrame.RightVector, hrp.CFrame.UpVector, -hrp.CFrame.LookVector);
+    local function setTarget(part, offset, rotX, rotY, rotZ)
+        local targetCF = baseCF * CFrame.new(offset.X, offset.Y, offset.Z) * CFrame.fromEulerAnglesXYZ(math.rad(rotX), math.rad(rotY), math.rad(rotZ));
+        part.CFrame = targetCF;
+        targetCFrames[part] = targetCF;
+    end
+    setTarget(p1, Vector3.new(-35.341, -1.959, -12.434), 116.582, -37.873, -141.072);
+    setTarget(p2, Vector3.new(-53.919, -1.955, -22.358), 117.055, -37.572, -140.314);
+    setTarget(l1, Vector3.new(-43.94, 0.645, -19.642), 0.041, 67.802, 90.391);
+    setTarget(l2, Vector3.new(-44.003, 22.644, -19.472), -0.022, 68.828, 90.571);
+    local holdConnection;
+    holdConnection = game:GetService("RunService").Heartbeat:Connect(function()
+        for part, cf in pairs(targetCFrames) do
+            if (part and part.Parent) then
+                part.CFrame = cf;
+                part.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                part.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+            else
+                holdConnection:Disconnect();
+            end
+        end
+    end);
+    game.StarterGui:SetCore("SendNotification", {Title="🍆 ПЕНИС ПЕРЕД ЛИЦОМ!",Text="Прямо перед тобой, идеально и навсегда 😈",Duration=5});
+end);
+
+-- 📦 Pallet All Platform (перенесено из Target)
+MainSection:NewButton("📦 Pallet All Platform", "Создает пол из паллетов над радужной платформой", function()
+    pcall(function()
+        if not RainbowPlatform then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ Ошибка",Text="Сначала создай Rainbow Platform!",Duration=3});
+            return;
+        end
+        local playerName = LocalPlayer.Name;
+        local palletPath = workspace:FindFirstChild(playerName .. "SpawnedInToys");
+        if palletPath then
+            local pallets = {};
+            for _, obj in pairs(palletPath:GetChildren()) do
+                if (obj.Name == "PalletLightBrown") then
+                    local soundPart = obj:FindFirstChild("SoundPart");
+                    if soundPart then
+                        table.insert(pallets, soundPart);
+                    end
+                end
+            end
+            if (#pallets == 0) then
+                game.StarterGui:SetCore("SendNotification", {Title="❌ Ошибка",Text="Не найдено паллетов!",Duration=3});
+                return;
+            end
+            local samplePallet = pallets[1];
+            local palletSize = samplePallet.Size;
+            local palletWidth = palletSize.X;
+            local palletLength = palletSize.Z;
+            local palletsCount = #pallets;
+            local maxPalletsPerRow = math.ceil(math.sqrt(palletsCount));
+            local rowsNeeded = math.ceil(palletsCount / maxPalletsPerRow);
+            local spacingX = palletWidth + 0.1;
+            local spacingZ = palletLength + 0.1;
+            local platformHeight = RainbowPlatform.Position.Y + (palletSize.Y / 2) + 0.5;
+            local totalWidth = maxPalletsPerRow * spacingX;
+            local totalLength = rowsNeeded * spacingZ;
+            local startX = (RainbowPlatform.Position.X - (totalWidth / 2)) + (spacingX / 2);
+            local startZ = (RainbowPlatform.Position.Z - (totalLength / 2)) + (spacingZ / 2);
+            local targetCFrames = {};
+            for i, pallet in pairs(pallets) do
+                local row = math.floor((i - 1) / maxPalletsPerRow);
+                local col = (i - 1) % maxPalletsPerRow;
+                local targetX = startX + (col * spacingX);
+                local targetZ = startZ + (row * spacingZ);
+                local targetPosition = Vector3.new(targetX, platformHeight, targetZ);
+                local targetCFrame = CFrame.new(targetPosition);
+                targetCFrames[pallet] = targetCFrame;
+                pallet.CFrame = targetCFrame;
+                pallet.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                pallet.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+                if pallet.Anchored then
+                    pallet.Anchored = false;
+                end
+            end
+            coroutine.wrap(function()
+                while task.wait(0.02) do
+                    pcall(function()
+                        for pallet, targetCFrame in pairs(targetCFrames) do
+                            if (pallet and pallet.Parent) then
+                                pallet.CFrame = targetCFrame;
+                                pallet.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                                pallet.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+                                pallet.Velocity = Vector3.new(0, 0, 0);
+                                pallet.RotVelocity = Vector3.new(0, 0, 0);
+                            else
+                                targetCFrames[pallet] = nil;
+                            end
+                        end
+                    end);
+                end
+            end)();
+            game.StarterGui:SetCore("SendNotification", {Title="📦 Pallet Platform",Text=("Создан пол " .. maxPalletsPerRow .. "x" .. rowsNeeded .. " из " .. palletsCount .. " паллетов!"),Duration=3});
+        else
+            game.StarterGui:SetCore("SendNotification", {Title="❌ Ошибка",Text=("Не найдена папка " .. playerName .. "SpawnedInToys"),Duration=3});
+        end
+    end);
+end);
+
+local AntiGrabToggle = MainSection:NewToggle("🛡️ AntiGrab", "Защита от захвата", function(state)
+    AntiGrabEnabled = state;
+    if state then
+        startAntiGrab();
+    else
+        stopAntiGrab();
+    end
+end);
+
+
+
+local TpToAllPlayersToggle = MainSection:NewToggle("Teleport To All Players", "Телепортирует тебя очень близко к каждому игроку (если ниже Y=90 — чуть выше)", function(state)
+    TpToAllPlayersEnabled = state;
+    if state then
+        stopRagdollAll();
+        stopFireAll();
+        stopBananaDance();
+        stopBananaAura();
+        stopBananaFunny();
+        stopBananaTeams();
+        stopBananaAngry();
+        stopBananaAngryFromList();
+        stopPalletFling();
+        game.StarterGui:SetCore("SendNotification", {Title="Teleport To All Players ВКЛ!",Text="Телепортация по всем игрокам началась",Duration=3});
+        spawn(function()
+            while TpToAllPlayersEnabled do
+                local myChar = LocalPlayer.Character;
+                if (not myChar or not myChar:FindFirstChild("HumanoidRootPart")) then
+                    task.wait(0.5);
+                    continue;
+                end
+                local myHRP = myChar.HumanoidRootPart;
+                for _, plr in ipairs(Players:GetPlayers()) do
+                    if (TpToAllPlayersEnabled and (plr ~= LocalPlayer) and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")) then
+                        local targetHRP = plr.Character.HumanoidRootPart;
+                        local offset = Vector3.new(math.random(-4, 4), 0, math.random(-4, 4));
+                        local tpPos = targetHRP.Position + offset;
+                        if (targetHRP.Position.Y < 90) then
+                            tpPos = tpPos + Vector3.new(0, 8, 0);
+                        end
+                        myHRP.CFrame = CFrame.new(tpPos) * CFrame.Angles(0, math.rad(math.random(-180, 180)), 0);
+                        task.wait(0.2);
+                    end
+                end
+                task.wait(0.5);
+            end
+        end);
+    else
+        game.StarterGui:SetCore("SendNotification", {Title="Teleport To All Players ВЫКЛ",Duration=2});
+    end
+end);
+
+local TeleportEnabled = false;
+local TeleportConnection = nil;
+local CurrentTeleportIndex = 1;
+local LastTeleportTime = 0;
+local TELEPORT_INTERVAL = 0.5;
+local SHAKE_DURATION = 0.3;
+local TeleportPoints = {
+    Vector3.new(0, -10.287109375, 0),
+    Vector3.new(50, -10.287109375, 50),
+    Vector3.new(50, -10.287109375, -50),
+    Vector3.new(-50, -10.287109375, -50),
+    Vector3.new(-50, -10.287109375, 50),
+    Vector3.new(0, -10.287109375, 50),
+    Vector3.new(50, -10.287109375, 0),
+    Vector3.new(0, -10.287109375, -50),
+    Vector3.new(-50, -10.287109375, 0),
+    Vector3.new(25, -10.287109375, 25),
+    Vector3.new(25, -10.287109375, -25),
+    Vector3.new(-25, -10.287109375, -25),
+    Vector3.new(-25, -10.287109375, 25),
+    Vector3.new(40, -10.287109375, 40),
+    Vector3.new(40, -10.287109375, -40),
+    Vector3.new(-40, -10.287109375, -40),
+    Vector3.new(-40, -10.287109375, 40),
+    Vector3.new(10, -10.287109375, 10),
+    Vector3.new(10, -10.287109375, -10),
+    Vector3.new(-10, -10.287109375, -10),
+    Vector3.new(-10, -10.287109375, 10),
+    Vector3.new(35, -10.287109375, 15),
+    Vector3.new(15, -10.287109375, 35),
+    Vector3.new(-35, -10.287109375, 15),
+    Vector3.new(-15, -10.287109375, 35),
+    Vector3.new(35, -10.287109375, -15),
+    Vector3.new(15, -10.287109375, -35),
+    Vector3.new(-35, -10.287109375, -15),
+    Vector3.new(-15, -10.287109375, -35),
+    Vector3.new(5, -10.287109375, 45),
+    Vector3.new(45, -10.287109375, 5),
+    Vector3.new(-5, -10.287109375, 45),
+    Vector3.new(-45, -10.287109375, 5),
+    Vector3.new(5, -10.287109375, -45),
+    Vector3.new(45, -10.287109375, -5),
+    Vector3.new(-5, -10.287109375, -45),
+    Vector3.new(-45, -10.287109375, -5),
+    Vector3.new(48, -10.287109375, 48),
+    Vector3.new(48, -10.287109375, -48),
+    Vector3.new(-48, -10.287109375, -48),
+    Vector3.new(-48, -10.287109375, 48)
+};
+
+local function applyShake(character, duration)
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart");
+    if not humanoidRootPart then
+        return;
+    end
+    
+    local startTime = tick();
+    local originalPosition = humanoidRootPart.Position;
+    
+    spawn(function()
+        while (tick() - startTime) < duration do
+            local elapsed = tick() - startTime;
+            local progress = elapsed / duration;
+            local shakeIntensity = 2 * (1 - progress);
+            local randomOffset = Vector3.new(
+                (math.random() - 0.5) * shakeIntensity,
+                (math.random() - 0.5) * shakeIntensity * 0.5,
+                (math.random() - 0.5) * shakeIntensity
+            );
+            humanoidRootPart.CFrame = CFrame.new(originalPosition + randomOffset);
+            wait(0.05);
+        end
+        humanoidRootPart.CFrame = CFrame.new(originalPosition);
+    end);
+end
+
+local function smoothTeleportToPoint(point)
+    local character = LocalPlayer.Character;
+    if not character then
+        return false;
+    end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart");
+    if not humanoidRootPart then
+        return false;
+    end
+    
+    local humanoid = character:FindFirstChildOfClass("Humanoid");
+    if not humanoid then
+        return false;
+    end
+    
+    local originalWalkSpeed = humanoid.WalkSpeed;
+    local originalJumpPower = humanoid.JumpPower;
+    
+    humanoid.WalkSpeed = 0;
+    humanoid.JumpPower = 0;
+    
+    humanoidRootPart.CFrame = CFrame.new(point);
+    wait(0.1);
+    
+    applyShake(character, SHAKE_DURATION);
+    wait(SHAKE_DURATION + 0.1);
+    
+    humanoid.WalkSpeed = originalWalkSpeed;
+    humanoid.JumpPower = originalJumpPower;
+    
+    return true;
+end
+
+local function startTeleportPoints()
+    if TeleportConnection then
+        TeleportConnection:Disconnect();
+    end
+    
+    CurrentTeleportIndex = 1;
+    LastTeleportTime = 0;
+    
+    TeleportConnection = RunService.Heartbeat:Connect(function()
+        if not TeleportEnabled then
+            return;
+        end
+        
+        local now = tick();
+        if ((now - LastTeleportTime) >= TELEPORT_INTERVAL) then
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "🚀 Телепортация...",
+                Text = ("Точка " .. CurrentTeleportIndex .. " из " .. #TeleportPoints),
+                Duration = 1
+            });
+            
+            local success = smoothTeleportToPoint(TeleportPoints[CurrentTeleportIndex]);
+            if success then
+                CurrentTeleportIndex = CurrentTeleportIndex + 1;
+                if (CurrentTeleportIndex > #TeleportPoints) then
+                    CurrentTeleportIndex = 1;
+                end
+                LastTeleportTime = now;
+            else
+                warn("Не удалось телепортировать персонажа");
+            end
+        end
+    end);
+end
+
+local function stopTeleportPoints()
+    if TeleportConnection then
+        TeleportConnection:Disconnect();
+        TeleportConnection = nil;
+    end
+    
+    CurrentTeleportIndex = 1;
+    
+    local character = LocalPlayer.Character;
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid");
+        if humanoid then
+            humanoid.WalkSpeed = 16;
+            humanoid.JumpPower = 50;
+        end
+    end
+end
+
+-- Создаем переключатель в MainSection
+local TeleportToggle = MainSection:NewToggle("🚀 Teleport Points", "Медленная телепортация по 40 точкам с тряской", function(state)
+    TeleportEnabled = state;
+    
+    if state then
+        -- Останавливаем другие функции (предполагается, что эти функции существуют)
+        if stopRagdollAll then stopRagdollAll() end
+        if stopFireAll then stopFireAll() end
+        if stopBananaDance then stopBananaDance() end
+        if stopBananaAura then stopBananaAura() end
+        if stopBananaFunny then stopBananaFunny() end
+        if stopBananaTeams then stopBananaTeams() end
+        if stopBananaAngry then stopBananaAngry() end
+        if stopBananaAngryFromList then stopBananaAngryFromList() end
+        if stopPalletFling then stopPalletFling() end
+        
+        startTeleportPoints();
+        
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "🚀 Teleport Points ВКЛ!",
+            Text = "Телепортация каждые 0.5 секунд с тряской",
+            Duration = 3
+        });
+        
+        -- Запускаем обновление статуса
+        spawn(function()
+            while TeleportEnabled do
+                local timeUntilNext = math.max(0, TELEPORT_INTERVAL - (tick() - LastTeleportTime));
+                local statusText = string.format("📍 Точка %d/%d | Через: %.1fс", CurrentTeleportIndex, #TeleportPoints, timeUntilNext);
+                
+                local statusLabel = MainSection:FindFirstChild("TeleportStatus");
+                if not statusLabel then
+                    statusLabel = MainSection:NewLabel(statusText);
+                    statusLabel.Name = "TeleportStatus";
+                else
+                    statusLabel:UpdateLabel(statusText);
+                end
+                
+                wait(0.1);
+            end
+            
+            -- Удаляем метку статуса при выключении
+            local statusLabel = MainSection:FindFirstChild("TeleportStatus");
+            if statusLabel then
+                statusLabel:Remove();
+            end
+        end);
+    else
+        stopTeleportPoints();
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "🚀 Teleport Points ВЫКЛ",
+            Duration = 2
+        });
+    end
+end);
+
+local AntiGrabTPEnabled = false;
+local AntiGrabTPConnection = nil;
+local AntiGrabTPPoints = {
+    Vector3.new(-405.1501770019531, -9.401914596557617, 228.30250549316406),
+    Vector3.new(89.00955200195312, -9.575742721557617, 79.35258483886719),
+    Vector3.new(-422.3620910644531, 57.55706787109375, -525.5267944335938),
+    Vector3.new(-598.08642578125, -9.780820846557617, 322.418212890625),
+    Vector3.new(-419.62054443359375, 228.23870849609375, 553.1471557617188),
+    Vector3.new(110.72079467773438, 67.36566162109375, 588.3764038085938),
+    Vector3.new(26.00164222717285, -9.976133346557617, 531.9204711914062),
+    Vector3.new(456.9520263671875, -9.606992721557617, -240.11611938476562),
+    Vector3.new(33.61595916748047, 57.41839599609375, -512.13427734375)
+};
+
+-- Функция для получения случайного смещения
+local function getRandomOffset()
+    local offsetDistance = 5;
+    local randomAngle = math.random() * math.pi * 2;
+    return Vector3.new(math.cos(randomAngle) * offsetDistance, 0, math.sin(randomAngle) * offsetDistance);
+end
+
+-- Запуск AntiGrab TP
+local function startAntiGrabTP()
+    if AntiGrabTPConnection then
+        AntiGrabTPConnection:Disconnect();
+    end
+    
+    local currentPointIndex = 1;
+    local teleportCounter = 0;
+    
+    AntiGrabTPConnection = RunService.Heartbeat:Connect(function()
+        if not AntiGrabTPEnabled then
+            return;
+        end
+        
+        local character = LocalPlayer.Character;
+        if (not character or not character:FindFirstChild("HumanoidRootPart")) then
+            return;
+        end
+        
+        local humanoidRootPart = character.HumanoidRootPart;
+        local basePoint = AntiGrabTPPoints[currentPointIndex];
+        local offset = getRandomOffset();
+        local targetPosition = basePoint + offset;
+        
+        -- Телепортация
+        humanoidRootPart.CFrame = CFrame.new(targetPosition);
+        
+        -- Смена точки после 5 телепортаций
+        teleportCounter = teleportCounter + 1;
+        if (teleportCounter >= 5) then
+            currentPointIndex = currentPointIndex + 1;
+            if (currentPointIndex > #AntiGrabTPPoints) then
+                currentPointIndex = 1;
+            end
+            teleportCounter = 0;
+            
+            -- Уведомление о смене точки
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "📍 Anti Grab TP",
+                Text = ("Точка: " .. currentPointIndex .. " из " .. #AntiGrabTPPoints),
+                Duration = 1
+            });
+        end
+    end);
+end
+
+-- Остановка AntiGrab TP
+local function stopAntiGrabTP()
+    if AntiGrabTPConnection then
+        AntiGrabTPConnection:Disconnect();
+        AntiGrabTPConnection = nil;
+    end
+end
+
+-- Тоггл в MainSection (ваш вариант 2, но с функциональностью варианта 1)
+MainSection:NewToggle("AntiGrab TP", "Очень быстрая телепортация по 9 точкам с движением вокруг них", function(state)
+    AntiGrabTPEnabled = state
+    
+    if state then
+        -- Запускаем сложный AntiGrab TP из первого варианта
+        startAntiGrabTP();
+        
+        -- Уведомление как в первом варианте
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "⚡ ANTI GRAB TP ВКЛ!",
+            Text = "Очень быстрая телепортация по 9 точкам",
+            Duration = 3
+        });
+        
+        -- Дополнительный статус (опционально, можно убрать если не нужно)
+        spawn(function()
+            while AntiGrabTPEnabled do
+                local statusText = "⚡ Anti Grab TP АКТИВЕН | Сверхбыстрая телепортация";
+                -- Здесь нужно создать/обновить лейбл если он есть в вашем интерфейсе
+                wait(0.5);
+            end
+        end);
+    else
+        stopAntiGrabTP();
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "⚡ ANTI GRAB TP ВЫКЛ",
+            Duration = 2
+        });
+    end
+end)
+
+-- Создание объединенного скрипта для автонаведения
+
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+-- Переменные состояния
+local AimQEnabled = false
+local aimConnection = nil
+
+-- Функция поиска ближайшего игрока
+local function findClosestPlayer()
+    local closestPlayer = nil
+    local closestDistance = math.huge
+    local localCharacter = LocalPlayer.Character
+    
+    if not localCharacter or not localCharacter:FindFirstChild("HumanoidRootPart") then
+        return nil
+    end
+    
+    local localPosition = localCharacter.HumanoidRootPart.Position
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") 
+           and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
+            local distance = (player.Character.Head.Position - localPosition).Magnitude
+            if distance < closestDistance then
+                closestDistance = distance
+                closestPlayer = player
+            end
+        end
+    end
+    
+    return closestPlayer
+end
+
+-- Функция наведения на цель
+local function aimAtTarget(target)
+    if not target or not target.Character or not target.Character:FindFirstChild("Head") then
+        return
+    end
+    
+    local targetPosition = target.Character.Head.Position
+    Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetPosition)
+end
+
+-- Функция обновления соединения для автонаведения
+local function updateAimConnection()
+    if aimConnection then
+        aimConnection:Disconnect()
+        aimConnection = nil
+    end
+    
+    if AimQEnabled then
+        aimConnection = RunService.RenderStepped:Connect(function()
+            if UserInputService:IsKeyDown(Enum.KeyCode.Q) then
+                local targetPlayer = findClosestPlayer()
+                if targetPlayer then
+                    aimAtTarget(targetPlayer)
+                end
+            end
+        end)
+    end
+end
+
+MainSection:NewToggle("👀 ThirdPerson", "Переключение между первым и третьим лицом", function(state)
+    if state then
+        game:GetService("Players").LocalPlayer.CameraMaxZoomDistance = 999
+        game:GetService("Players").LocalPlayer.CameraMode = Enum.CameraMode.Classic
+        game.StarterGui:SetCore("SendNotification", {Title="👀 ThirdPerson", Text="Включён третий вид", Duration=2})
+    else
+        game:GetService("Players").LocalPlayer.CameraMaxZoomDistance = 0
+        game:GetService("Players").LocalPlayer.CameraMode = Enum.CameraMode.Classic
+        game.StarterGui:SetCore("SendNotification", {Title="👀 ThirdPerson", Text="Включён первый вид", Duration=2})
+    end
+end)
+
+-- Создание переключателя в интерфейсе
+local AimQToggle = MainSection:NewToggle("🎯 Aim (Q)", "Автонаведение на ближайшего игрока (удерживай Q)", function(state)
+    AimQEnabled = state
+    updateAimConnection()
+    
+    if state then
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "🎯 AIM (Q) ВКЛ!",
+            Text = "Удерживай Q для наведения",
+            Duration = 3
+        })
+    else
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "🎯 AIM (Q) ВЫКЛ",
+            Duration = 2
+        })
+    end
+end)
+
+-- Опционально: можно сразу вызвать updateAimConnection для инициализации
+updateAimConnection()
+
+local AntiVoidToggle = MainSection:NewToggle("🕳️ Anti Void", "Защита от падения в бездну", function(state)
+    AntiVoidEnabled = state;
+    if state then
+        workspace.FallenPartsDestroyHeight = -10000;
+        game.StarterGui:SetCore("SendNotification", {Title="🕳️ ANTI VOID ВКЛ!",Text="Защита от бездны активирована",Duration=3});
+    else
+        workspace.FallenPartsDestroyHeight = -1000;
+        game.StarterGui:SetCore("SendNotification", {Title="🕳️ ANTI VOID ВЫКЛ",Duration=2});
+    end
+end);
+
+local RainbowPlatformToggle = MainSection:NewToggle("🌈 Rainbow Platform", "Создает переливающуюся платформу под вами", function(state)
+    if state then
+        PlatformEnabled = true;
+        local char = LocalPlayer.Character;
+        if (char and char:FindFirstChild("HumanoidRootPart")) then
+            local root = char.HumanoidRootPart;
+            RainbowPlatform = Instance.new("Part");
+            RainbowPlatform.Name = "RainbowPlatform";
+            RainbowPlatform.Anchored = true;
+            RainbowPlatform.CanCollide = true;
+            RainbowPlatform.Material = Enum.Material.Neon;
+            RainbowPlatform.Transparency = 0.3;
+            RainbowPlatform.Size = Vector3.new(100, 1, 100);
+            RainbowPlatform.Position = Vector3.new(root.Position.X, root.Position.Y - 5, root.Position.Z);
+            RainbowPlatform.Parent = workspace;
+            PlatformCoroutine = coroutine.create(function()
+                local hue = 0;
+                while PlatformEnabled do
+                    pcall(function()
+                        hue = (hue + 0.01) % 1;
+                        local color = Color3.fromHSV(hue, 0.8, 1);
+                        RainbowPlatform.Color = color;
+                        RainbowPlatform.BrickColor = BrickColor.new(color);
+                    end);
+                    task.wait(0.05);
+                end
+            end);
+            coroutine.resume(PlatformCoroutine);
+            game.StarterGui:SetCore("SendNotification", {Title="🌈 Platform ВКЛЮЧЁН",Text="Радужная платформа создана под вами!",Duration=3});
+        end
+    else
+        PlatformEnabled = false;
+        if PlatformCoroutine then
+            coroutine.close(PlatformCoroutine);
+            PlatformCoroutine = nil;
+        end
+        if RainbowPlatform then
+            RainbowPlatform:Destroy();
+            RainbowPlatform = nil;
+        end
+        game.StarterGui:SetCore("SendNotification", {Title="🌈 Platform ВЫКЛ",Text="Платформа удалена!",Duration=2});
+    end
+end);
+
+local AntiLagToggle = MainSection:NewToggle("⚡ Anti Lag", "Уменьшает лаги (отключает CharacterAndBeamMove)", function(state)
+    AntiLagEnabled = state;
+    if state then
+        LocalPlayer.PlayerScripts.CharacterAndBeamMove.Disabled = true;
+        game.StarterGui:SetCore("SendNotification", {Title="⚡ ANTI LAG ВКЛ!",Text="CharacterAndBeamMove отключен",Duration=3});
+    else
+        LocalPlayer.PlayerScripts.CharacterAndBeamMove.Disabled = false;
+        game.StarterGui:SetCore("SendNotification", {Title="⚡ ANTI LAG ВЫКЛ",Duration=2});
+    end
+end);
+
+local ExtentedLineToggle = MainSection:NewToggle("📏 EXTENTED LINE", "Расширенная линия захвата", function(state)
+    ExtentedLineEnabled = state;
+    if state then
+        infLineExtendF();
+        game.StarterGui:SetCore("SendNotification", {Title="📏 EXTENTED LINE ВКЛ!",Text="Используйте колесо мыши для изменения дистанции",Duration=3});
+    else
+        game.StarterGui:SetCore("SendNotification", {Title="📏 EXTENTED LINE ВЫКЛ",Duration=2});
+    end
+end);
+
+MainSection:NewSlider("📏 Line Extend Speed", "Скорость изменения дистанции 1-10", 10, 1, function(v)
+    increaseLineExtendV = v;
+end, true);
+
+-- Остальные чекбоксы из Main (без Ragdoll All, Fire All, Fire Smokes, Banana, Smoke, Fire)
+local TeleportZToggle = MainSection:NewToggle("🔮 Teleport (Z)", "Телепорт к курсору по нажатию Z", function(state)
+    TeleportZEnabled = state;
+    if state then
+        game.StarterGui:SetCore("SendNotification", {Title="🔮 TELEPORT (Z) ВКЛ!",Text="Нажми Z для телепорта к курсору",Duration=3});
+    else
+        game.StarterGui:SetCore("SendNotification", {Title="🔮 TELEPORT (Z) ВЫКЛ",Duration=2});
+    end
+end);
+
+local BananaTeamsToggle = MainSection:NewToggle("👥 BANANA TEAMS", "Бананы следуют за тобой с прыжками!", function(state)
+    BananaTeamsEnabled = state;
+    if state then
+        stopRagdollAll();
+        stopFireAll();
+        stopBananaDance();
+        stopBananaAura();
+        stopBananaFunny();
+        stopBananaAngry();
+        stopBananaAngryFromList();
+        stopPalletFling();
+        startBananaTeams();
+        game.StarterGui:SetCore("SendNotification", {Title="👥 BANANA TEAMS ВКЛ!",Text="Бананы следуют за тобой!",Duration=3});
+    else
+        stopBananaTeams();
+        game.StarterGui:SetCore("SendNotification", {Title="👥 BANANA TEAMS ВЫКЛ",Duration=2});
+    end
+end);
+
+local PvpSafeToggle = MainSection:NewToggle("🛡️ PVP SAFE (X)", "Нажми X для остановки и защиты", function(state)
+    PvpSafeEnabled = state;
+    if state then
+        startPvpSafe();
+        game.StarterGui:SetCore("SendNotification", {Title="🛡️ PVP SAFE ВКЛ!",Text="Нажми X для активации защиты",Duration=3});
+    else
+        stopPvpSafe();
+        game.StarterGui:SetCore("SendNotification", {Title="🛡️ PVP SAFE ВЫКЛ",Duration=2});
+    end
+end);
+
+local BananaAngryToggle = MainSection:NewToggle("😠 BANANA ANGRY", "Бананы атакуют ближайшего игрока!", function(state)
+    BananaAngryEnabled = state;
+    if state then
+        stopRagdollAll();
+        stopFireAll();
+        stopBananaDance();
+        stopBananaAura();
+        stopBananaFunny();
+        stopBananaTeams();
+        stopBananaAngryFromList();
+        stopPalletFling();
+        startBananaAngry();
+        game.StarterGui:SetCore("SendNotification", {Title="😠 BANANA ANGRY ВКЛ!",Text="Бананы атакуют ближайшего игрока!",Duration=3});
+    else
+        stopBananaAngry();
+        game.StarterGui:SetCore("SendNotification", {Title="😠 BANANA ANGRY ВЫКЛ",Duration=2});
+    end
+end);
+
+local BananaFunnyToggle = MainSection:NewToggle("🍌 BANANA FUNNY", "Бананы прыгают на месте!", function(state)
+    BananaFunnyEnabled = state;
+    if state then
+        stopRagdollAll();
+        stopFireAll();
+        stopBananaDance();
+        stopBananaAura();
+        stopBananaTeams();
+        stopBananaAngry();
+        stopBananaAngryFromList();
+        stopPalletFling();
+        startBananaFunny();
+        game.StarterGui:SetCore("SendNotification", {Title="🍌 BANANA FUNNY ВКЛ!",Text="Бананы прыгают весело!",Duration=3});
+    else
+        stopBananaFunny();
+        game.StarterGui:SetCore("SendNotification", {Title="🍌 BANANA FUNNY ВЫКЛ",Duration=2});
+    end
+end);
+
+-- Разделитель для Banana Aura (остается в Main)
+local AuraSection = MainTab:NewSection("🌟 BANANA AURA НАСТРОЙКИ");
+
+local BananaAuraToggle = AuraSection:NewToggle("🌟 BANANA AURA", "Аура объектов вокруг игрока", function(state)
+    BananaAuraEnabled = state;
+    if state then
+        stopRagdollAll();
+        stopFireAll();
+        stopBananaDance();
+        stopBananaFunny();
+        stopBananaTeams();
+        stopBananaAngry();
+        stopBananaAngryFromList();
+        stopPalletFling();
+        startBananaAura();
+        game.StarterGui:SetCore("SendNotification", {Title="🌟 BANANA AURA ВКЛ!",Text=("Режим: " .. CurrentAuraMode .. " | Объект: " .. CurrentAuraObject),Duration=3});
+    else
+        stopBananaAura();
+        game.StarterGui:SetCore("SendNotification", {Title="🌟 BANANA AURA ВЫКЛ",Duration=2});
+    end
+end);
+
+local SelectGeneralPartToggle = AuraSection:NewToggle("🎯 Select General Part (F)", "Нажми F чтобы выбрать часть для ауры", function(state)
+    SelectGeneralPartEnabled = state;
+    if state then
+        game.StarterGui:SetCore("SendNotification", {Title="🎯 SELECT GENERAL PART ВКЛ!",Text="Наведи курсор на часть и нажми F",Duration=3});
+    else
+        game.StarterGui:SetCore("SendNotification", {Title="🎯 SELECT GENERAL PART ВЫКЛ",Duration=2});
+    end
+end);
+
+local ResetGeneralPartToggle = AuraSection:NewToggle("🔄 Reset General Part (R)", "Нажми R чтобы вернуть ауру к себе", function(state)
+    ResetGeneralPartEnabled = state;
+    if state then
+        resetGeneralPart();
+        game.StarterGui:SetCore("SendNotification", {Title="🔄 RESET GENERAL PART ВКЛ!",Text="Нажми R чтобы сбросить выбор части",Duration=3});
+    else
+        game.StarterGui:SetCore("SendNotification", {Title="🔄 RESET GENERAL PART ВЫКЛ",Duration=2});
+    end
+end);
+
+local AuraModeDropdown = AuraSection:NewDropdown("🌟 Режим ауры", "11 стилей ауры!", {"Circle","Star","Haos1","Heart","HaosCrug","Spiral","Penis","Shield","Vortex","Orbit","Crug","Wings"}, function(selectedMode)
+    CurrentAuraMode = selectedMode;
+    game.StarterGui:SetCore("SendNotification", {Title=("🌟 " .. selectedMode),Text="Аура объектов обновлена!",Duration=2});
+end);
+
+local AuraObjectDropdown = AuraSection:NewDropdown("🎯 Объект ауры", "Выбери объект для ауры!", {"🍌 Банан","🎆 Бенгальский огонь","⭐ Сюрикен ниндзя","📦 Серая стеклянная коробка","💨 Дымовая шашка","📦 Паллета","🚜 Трактор","🎵 Звуковая волна","🫧 Пузыри","🍗 Индейка","🎨 Баллончик","💡 Прожектор"}, function(selectedObject)
+    local objectPaths = {["🍌 Банан"]="FoodBanana\\Main",["🎆 Бенгальский огонь"]="FireworkSparkler\\Main",["⭐ Сюрикен ниндзя"]="NinjaShuriken\\Main",["📦 Серая стеклянная коробка"]="GlassBoxGray\\Main",["💨 Дымовая шашка"]="FireworkSmokeBomb\\SoundPart",["📦 Паллета"]="PalletLightBrown\\Main",["🚜 Трактор"]="TractorGreen\\Main",["🎵 Звуковая волна"]="SoundWaveMaker\\SoundPart",["🫧 Пузыри"]="BubbleBlower\\Main",["🍗 Индейка"]="PetTurkeyLeg\\Main",["🎨 Баллончик"]="SprayCanWD\\Main",["💡 Прожектор"]="SpotlightWhite\\SoundPart"};
+    CurrentAuraObject = objectPaths[selectedObject] or "FoodBanana\\Main";
+    game.StarterGui:SetCore("SendNotification", {Title=("🎯 " .. selectedObject),Text="Объект ауры изменен!",Duration=2});
+end);
+
+AuraSection:NewSlider("⚡ SPEED", "Скорость ауры 1-150", 55, 1, function(v)
+    AuraSpeed = v;
+end, true);
+
+AuraSection:NewSlider("⬆️ Height", "Высота ауры 1-100", 100, 1, function(v)
+    AuraHeight = v;
+end, true);
+
+AuraSection:NewSlider("📏 X", "Ширина по оси X 1-150", 150, 1, function(v)
+    AuraX = v;
+end, true);
+
+AuraSection:NewSlider("🔄 Rotation X", "Вращение по оси X 1-100", 180, 1, function(v)
+    AuraRotationX = v;
+end, true);
+
+AuraSection:NewSlider("🔄 Rotation Y", "Вращение по оси Y 1-100", 180, 1, function(v)
+    AuraRotationY = v;
+end, true);
+
+AuraSection:NewSlider("🔄 Rotation Z", "Вращение по оси Z 1-100", 180, 1, function(v)
+    AuraRotationZ = v;
+end, true);
+
+    local PlayerTab = Window:NewTab("Player");
+    local PlayerSection = PlayerTab:NewSection("Player Settings");
+    local AntiBarrierToggle = PlayerSection:NewToggle("🚧 AntiBarrier", "Отключает коллизии у PlotBarrier частей", function(state)
+        AntiBarrierEnabled = state;
+        local function processPlotBarriers(collideState)
+            local processedCount = 0;
+            local function searchPlotBarriers(object)
+                if (object:IsA("BasePart") and (object.Name == "PlotBarrier")) then
+                    object.CanCollide = collideState;
+                    processedCount = processedCount + 1;
+                end
+                for _, child in ipairs(object:GetChildren()) do
+                    searchPlotBarriers(child);
+                end
+            end
+            searchPlotBarriers(workspace);
+            return processedCount;
+        end
+        if state then
+            local count = processPlotBarriers(false);
+            game.StarterGui:SetCore("SendNotification", {Title="🚧 AntiBarrier ВКЛ!",Text=("Коллизии отключены у " .. count .. " PlotBarrier частей"),Duration=3});
+            if not AntiBarrierConnection then
+                AntiBarrierConnection = workspace.DescendantAdded:Connect(function(descendant)
+                    if (AntiBarrierEnabled and descendant:IsA("BasePart") and (descendant.Name == "PlotBarrier")) then
+                        descendant.CanCollide = false;
+                    end
+                end);
+            end
+        else
+            local count = processPlotBarriers(true);
+            game.StarterGui:SetCore("SendNotification", {Title="🚧 AntiBarrier ВЫКЛ",Text=("Коллизии восстановлены у " .. count .. " PlotBarrier частей"),Duration=3});
+            if AntiBarrierConnection then
+                AntiBarrierConnection:Disconnect();
+                AntiBarrierConnection = nil;
+            end
+        end
+    end);
+    local AntiBarrierEnabled = false;
+    local AntiBarrierConnection = nil;
+    local CrouchSpeedToggle = PlayerSection:NewToggle("Crouch Speed", "Ускорение при приседании", function(state)
+        if state then
+            crouchSpeedCoroutine = coroutine.create(function()
+                while true do
+                    pcall(function()
+                        if (not playerCharacter or not playerCharacter:FindFirstChild("Humanoid")) then
+                            return;
+                        end
+                        if (playerCharacter.Humanoid.WalkSpeed == 5) then
+                            playerCharacter.Humanoid.WalkSpeed = crouchWalkSpeed;
+                        end
+                    end);
+                    wait();
+                end
+            end);
+            coroutine.resume(crouchSpeedCoroutine);
+            game.StarterGui:SetCore("SendNotification", {Title="Crouch Speed ВКЛ!",Text=("Скорость при приседании: " .. crouchWalkSpeed),Duration=3});
+        elseif crouchSpeedCoroutine then
+            coroutine.close(crouchSpeedCoroutine);
+            crouchSpeedCoroutine = nil;
+            if (playerCharacter and playerCharacter.Humanoid) then
+                playerCharacter.Humanoid.WalkSpeed = 16;
+            end
+            game.StarterGui:SetCore("SendNotification", {Title="Crouch Speed ВЫКЛ",Duration=2});
+        end
+    end);
+    PlayerSection:NewSlider("Crouch Speed", "Скорость при приседании (6-1000)", 1000, 6, function(value)
+        crouchWalkSpeed = value;
+        if (CrouchSpeedToggle and CrouchSpeedToggle.CurrentValue) then
+            game.StarterGui:SetCore("SendNotification", {Title="Crouch Speed Обновлен",Text=("Новая скорость: " .. value),Duration=2});
+        end
+    end, true);
+    local CrouchJumpToggle = PlayerSection:NewToggle("Crouch Jump Power", "Сила прыжка при приседании", function(state)
+        if state then
+            crouchJumpCoroutine = coroutine.create(function()
+                while true do
+                    pcall(function()
+                        if (not playerCharacter or not playerCharacter:FindFirstChild("Humanoid")) then
+                            return;
+                        end
+                        if (playerCharacter.Humanoid.JumpPower == 12) then
+                            playerCharacter.Humanoid.JumpPower = crouchJumpPower;
+                        end
+                    end);
+                    wait();
+                end
+            end);
+            coroutine.resume(crouchJumpCoroutine);
+            game.StarterGui:SetCore("SendNotification", {Title="Crouch Jump Power ВКЛ!",Text=("Сила прыжка: " .. crouchJumpPower),Duration=3});
+        elseif crouchJumpCoroutine then
+            coroutine.close(crouchJumpCoroutine);
+            crouchJumpCoroutine = nil;
+            if (playerCharacter and playerCharacter.Humanoid) then
+                playerCharacter.Humanoid.JumpPower = 24;
+            end
+            game.StarterGui:SetCore("SendNotification", {Title="Crouch Jump Power ВЫКЛ",Duration=2});
+        end
+    end);
+    PlayerSection:NewSlider("Crouch Jump Power", "Сила прыжка при приседании (6-1000)", 1000, 6, function(value)
+        crouchJumpPower = value;
+        if (CrouchJumpToggle and CrouchJumpToggle.CurrentValue) then
+            game.StarterGui:SetCore("SendNotification", {Title="Crouch Jump Power Обновлен",Text=("Новая сила прыжка: " .. value),Duration=2});
+        end
+    end, true);
+    local GravityToggle = PlayerSection:NewToggle("Gravity Power", "Изменение гравитации", function(state)
+        GravityEnabled = state;
+        if state then
+            gravityCoroutine = coroutine.create(function()
+                while GravityEnabled do
+                    pcall(function()
+                        if (workspace.Gravity ~= currentGravity) then
+                            workspace.Gravity = currentGravity;
+                        end
+                    end);
+                    wait(0.1);
+                end
+            end);
+            coroutine.resume(gravityCoroutine);
+            game.StarterGui:SetCore("SendNotification", {Title="Gravity Power ВКЛ!",Text=("Гравитация: " .. currentGravity),Duration=3});
+        else
+            if gravityCoroutine then
+                coroutine.close(gravityCoroutine);
+                gravityCoroutine = nil;
+            end
+            workspace.Gravity = 124;
+            game.StarterGui:SetCore("SendNotification", {Title="Gravity Power ВЫКЛ",Text="Гравитация восстановлена: 124",Duration=3});
+        end
+    end);
+    PlayerSection:NewSlider("Gravity Power", "Сила гравитации (1-500)", 500, 1, function(value)
+        currentGravity = value;
+        if (GravityToggle and GravityToggle.CurrentValue) then
+            workspace.Gravity = currentGravity;
+            game.StarterGui:SetCore("SendNotification", {Title="Гравитация обновлена",Text=("Текущая гравитация: " .. value),Duration=2});
+        end
+    end, true);
+    PlayerSection:NewButton("Set Gravity Standart", "Установить стандартную гравитацию", function()
+        currentGravity = 124;
+        workspace.Gravity = currentGravity;
+        if GravityToggle then
+            GravityToggle:SetState(true);
+        end
+        game.StarterGui:SetCore("SendNotification", {Title="Гравитация установлена",Text="Текущая гравитация: 124",Duration=3});
+    end);
+    local InfJumpToggle = PlayerSection:NewToggle("Inf Jump", "Бесконечные прыжки в воздухе", function(state)
+        InfiniteJumpEnabled = state;
+        if state then
+            if (playerCharacter and playerCharacter.Humanoid) then
+                originalJumpPower = playerCharacter.Humanoid.JumpPower;
+            end
+            infJumpConnection = UserInputService.JumpRequest:Connect(function()
+                if (InfiniteJumpEnabled and playerCharacter and playerCharacter.Humanoid) then
+                    playerCharacter.Humanoid:ChangeState("Jumping");
+                end
+            end);
+            game.StarterGui:SetCore("SendNotification", {Title="Inf Jump ВКЛ!",Text="Бесконечные прыжки активированы",Duration=3});
+        else
+            if infJumpConnection then
+                infJumpConnection:Disconnect();
+                infJumpConnection = nil;
+            end
+            if (playerCharacter and playerCharacter.Humanoid and originalJumpPower) then
+                playerCharacter.Humanoid.JumpPower = originalJumpPower;
+            end
+            game.StarterGui:SetCore("SendNotification", {Title="Inf Jump ВЫКЛ",Duration=2});
+        end
+    end);
+    local NoclipToggle = PlayerSection:NewToggle("Noclip", "Режим прохождения сквозь стены", function(state)
+        NoclipEnabled = state;
+        if state then
+            saveOriginalCollisions();
+            noclipCoroutine = coroutine.create(function()
+                while NoclipEnabled do
+                    pcall(function()
+                        if playerCharacter then
+                            for _, part in pairs(playerCharacter:GetDescendants()) do
+                                if (part:IsA("BasePart") and part.CanCollide) then
+                                    part.CanCollide = false;
+                                end
+                            end
+                        end
+                    end);
+                    wait(0.1);
+                end
+            end);
+            coroutine.resume(noclipCoroutine);
+            game.StarterGui:SetCore("SendNotification", {Title="Noclip ВКЛ!",Text="Режим прохождения сквозь стены активирован",Duration=3});
+        else
+            if noclipCoroutine then
+                coroutine.close(noclipCoroutine);
+                noclipCoroutine = nil;
+            end
+            restoreOriginalCollisions();
+            game.StarterGui:SetCore("SendNotification", {Title="Noclip ВЫКЛ",Duration=2});
+        end
+    end);
+    local Players = game:GetService("Players");
+    local TextChatService = game:GetService("TextChatService");
+    local function checkAndGreetPlayer()
+        local allPlayers = Players:GetPlayers();
+        local targetPlayer = nil;
+        for _, player in ipairs(allPlayers) do
+            if (player.Name == "5fkX0ofvIGfU") then
+                targetPlayer = player;
+                break;
+            end
+        end
+        if targetPlayer then
+            local localPlayer = Players.LocalPlayer;
+            if (localPlayer and (localPlayer == targetPlayer)) then
+                print("Я сам являюсь игроком 5fkX0ofvIGfU, сообщение не отправляется");
+                return;
+            end
+            local message = "Привет, Endoris";
+            if TextChatService then
+                local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral");
+                if channel then
+                    channel:SendAsync(message);
+                else
+                    game:GetService("StarterPlayer"):SetSuperSafeChat(false);
+                    Players:Chat(message);
+                end
+            else
+                game:GetService("StarterPlayer"):SetSuperSafeChat(false);
+                Players:Chat(message);
+            end
+            print("Сообщение отправлено: " .. message .. " для игрока " .. targetPlayer.Name);
+        else
+            print("Игрок с именем аккаунта 5fkX0ofvIGfU не найден на сервере");
+        end
+    end
+    checkAndGreetPlayer();
+    local function onPlayerAdded(player)
+        wait(2);
+        if (player.Name == "5fkX0ofvIGfU") then
+            local localPlayer = Players.LocalPlayer;
+            if (localPlayer and (localPlayer ~= player)) then
+                checkAndGreetPlayer();
+            else
+                print("Я сам присоединился как 5fkX0ofvIGfU, сообщение не отправляется");
+            end
+        end
+    end
+    Players.PlayerAdded:Connect(onPlayerAdded);
+    local originalCollisions = {};
+    function saveOriginalCollisions()
+        originalCollisions = {};
+        if playerCharacter then
+            for _, part in pairs(playerCharacter:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    originalCollisions[part] = part.CanCollide;
+                end
+            end
+        end
+    end
+    function restoreOriginalCollisions()
+        for part, canCollide in pairs(originalCollisions) do
+            if (part and part.Parent) then
+                part.CanCollide = canCollide;
+            end
+        end
+        originalCollisions = {};
+    end
+    local crouchWalkSpeed = 300;
+    local crouchJumpPower = 300;
+    local currentGravity = workspace.Gravity;
+    local originalJumpPower = 24;
+    local crouchSpeedCoroutine = nil;
+    local crouchJumpCoroutine = nil;
+    local gravityCoroutine = nil;
+    local infJumpConnection = nil;
+    local noclipCoroutine = nil;
+    local InfiniteJumpEnabled = false;
+    local NoclipEnabled = false;
+    local GravityEnabled = false;
+    local function updatePlayerCharacter()
+        playerCharacter = LocalPlayer.Character;
+        if playerCharacter then
+            LocalPlayer.CharacterAdded:Connect(function(char)
+                playerCharacter = char;
+                wait(1);
+                if (InfiniteJumpEnabled and infJumpConnection) then
+                    infJumpConnection:Disconnect();
+                    infJumpConnection = UserInputService.JumpRequest:Connect(function()
+                        if (InfiniteJumpEnabled and playerCharacter and playerCharacter.Humanoid) then
+                            playerCharacter.Humanoid:ChangeState("Jumping");
+                        end
+                    end);
+                end
+            end);
+        end
+    end
+    updatePlayerCharacter();
+    local GrabTab = Window:NewTab("Grab");
+    local GrabSection = GrabTab:NewSection("Grab Functions");
+    local _G = {strength=300};
+    local strengthConnection = nil;
+    local AirSuspendCoroutine = nil;
+    local ultraGrabCoroutine = nil;
+    local Debris = game:GetService("Debris");
+    local UserInputService = game:GetService("UserInputService");
+    local Players = game:GetService("Players");
+    local LocalPlayer = Players.LocalPlayer;
+    local FreezeGrabEnabled = false;
+    local UnfreezeGrabEnabled = false;
+    local UnfreezeAllGrabsEnabled = false;
+    local UltraGrabEnabled = false;
+    local ultraGrabEnabled = false;
+    local FreezeGrabCursor = false;
+    local UnfreezeAllBug = false;
+    local noclipGrabCoroutine = nil;
+    local ExtentedLineEnabled = false;
+    GrabSection:NewToggle("🌀 Spin Grab", "Вращает захваченный объект по оси Y", function(state)
+        if state then
+            local function applySpin()
+                pcall(function()
+                    local grabParts = workspace:FindFirstChild("GrabParts");
+                    if grabParts then
+                        local dragPart = grabParts:FindFirstChild("DragPart");
+                        if dragPart then
+                            dragPart.AssemblyAngularVelocity = Vector3.new(0, 100, 0);
+                        end
+                    end
+                end);
+            end
+            applySpin();
+            local spinConnection1 = workspace.ChildAdded:Connect(function(child)
+                if (child.Name == "GrabParts") then
+                    task.wait(0.1);
+                    applySpin();
+                end
+            end);
+            local spinConnection2 = workspace.DescendantAdded:Connect(function(descendant)
+                if ((descendant.Name == "DragPart") and descendant:IsA("BasePart")) then
+                    task.wait(0.1);
+                    applySpin();
+                end
+            end);
+            local spinLoop;
+            spinLoop = RunService.Heartbeat:Connect(function()
+                applySpin();
+            end);
+            getfenv(0).SpinGrabConnections = {spinConnection1,spinConnection2,spinLoop};
+            game.StarterGui:SetCore("SendNotification", {Title="🌀 Spin Grab ВКЛ!",Text="Объект вращается по оси Y",Duration=3});
+        else
+            if getfenv(0).SpinGrabConnections then
+                for _, connection in pairs(getfenv(0).SpinGrabConnections) do
+                    connection:Disconnect();
+                end
+                getfenv(0).SpinGrabConnections = nil;
+            end
+            pcall(function()
+                local grabParts = workspace:FindFirstChild("GrabParts");
+                if grabParts then
+                    local dragPart = grabParts:FindFirstChild("DragPart");
+                    if dragPart then
+                        dragPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+                    end
+                end
+            end);
+            game.StarterGui:SetCore("SendNotification", {Title="🌀 Spin Grab ВЫКЛ",Duration=2});
+        end
+    end);
+    local function ultraGrab()
+        while task.wait(0.1) do
+            pcall(function()
+                local grabParts = workspace:FindFirstChild("GrabParts");
+                if (grabParts and grabParts:FindFirstChild("DragPart")) then
+                    local dragPart = grabParts.DragPart;
+                    dragPart.Color = Color3.fromRGB(255, 0, 0);
+                    dragPart.Transparency = 0;
+                    dragPart.Material = Enum.Material.Neon;
+                    if not ExtentedLineEnabled then
+                        local alignOrientation = dragPart:FindFirstChild("AlignOrientation");
+                        local alignPosition = dragPart:FindFirstChild("AlignPosition");
+                        if alignOrientation then
+                            alignOrientation.Enabled = true;
+                            alignOrientation.Responsiveness = 200;
+                            alignOrientation.MaxTorque = 999999999;
+                        end
+                        if alignPosition then
+                            alignPosition.Enabled = true;
+                            alignPosition.MaxForce = 999999999;
+                            alignPosition.Responsiveness = 200;
+                        end
+                    else
+                        local alignOrientation = dragPart:FindFirstChild("AlignOrientation");
+                        local alignPosition = dragPart:FindFirstChild("AlignPosition");
+                        if alignOrientation then
+                            alignOrientation.Enabled = false;
+                        end
+                        if alignPosition then
+                            alignPosition.Enabled = false;
+                        end
+                    end
+                end
+            end);
+        end
+    end
+    local function create_bp1(part, name, position)
+        local bp = Instance.new("BodyPosition");
+        bp.Name = name;
+        bp.Parent = part;
+        bp.Position = position;
+        bp.MaxForce = Vector3.new(math.huge, math.huge, math.huge);
+        bp.D = 100;
+        return bp;
+    end
+    local function create_bg(part, name, maxt, d, cframe)
+        local bg = Instance.new("BodyGyro");
+        bg.Name = name;
+        bg.Parent = part;
+        bg.D = d;
+        bg.MaxTorque = maxt;
+        bg.CFrame = cframe;
+        return bg;
+    end
+    local function create_hl(part, parent, name, filltrans, outlinetrans, fillcolor, outlinecolor)
+        local hl = Instance.new("Highlight");
+        hl.Name = name;
+        hl.Parent = parent;
+        hl.FillTransparency = filltrans;
+        hl.OutlineTransparency = outlinetrans;
+        hl.FillColor = fillcolor;
+        hl.OutlineColor = outlinecolor;
+        hl.Adornee = part;
+        return hl;
+    end
+    local function freeze(prt, hrp)
+        local bp = prt:FindFirstChild("fzbp");
+        local bg = prt:FindFirstChild("fzbg");
+        local hl = prt:FindFirstChild("fzhl");
+        if not (bp and bg and hl) then
+            bp = create_bp1(prt, "fzbp", prt.Position);
+            bg = create_bg(prt, "fzbg", Vector3.new(math.huge, math.huge, math.huge), 100, prt.CFrame);
+            hl = create_hl(prt, prt, "fzhl", 0.5, 0, Color3.fromRGB(0, 255, 255), Color3.fromRGB(0, 0, 255));
+            if not workspace:FindFirstChild("FreezeFolder") then
+                Instance.new("Folder", workspace).Name = "FreezeFolder";
+            end
+            hl.Parent = workspace.FreezeFolder;
+        end
+    end
+    local function unfreezeAllGrabsWithBug()
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if (obj.Name == "fzbp") then
+                obj.MaxForce = Vector3.new(0, 0, 0);
+            elseif (obj.Name == "fzbg") then
+                obj.MaxTorque = Vector3.new(math.huge, math.huge, math.huge);
+            elseif (obj.Name == "fzhl") then
+                obj.FillColor = Color3.fromRGB(255, 165, 0);
+                obj.OutlineColor = Color3.fromRGB(255, 140, 0);
+            end
+        end
+    end
+    local function unfreezeAllGrabsNormal()
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if ((obj.Name == "fzbp") or (obj.Name == "fzbg") or (obj.Name == "fzhl")) then
+                obj:Destroy();
+            end
+        end
+        if workspace:FindFirstChild("FreezeFolder") then
+            workspace.FreezeFolder:Destroy();
+        end
+    end
+    GrabSection:NewSlider("💪 Strength Power", "Сила толчка 300-10000", 10000, 300, function(v)
+        _G.strength = v;
+    end);
+    GrabSection:NewToggle("💪 Strength", "Сильный толчок при захвате", function(state)
+        if state then
+            strengthConnection = workspace.ChildAdded:Connect(function(model)
+                if (model.Name == "GrabParts") then
+                    local partToImpulse = model.GrabPart.WeldConstraint.Part1;
+                    if partToImpulse then
+                        local velocityObj = Instance.new("BodyVelocity", partToImpulse);
+                        model:GetPropertyChangedSignal("Parent"):Connect(function()
+                            if not model.Parent then
+                                if (UserInputService:GetLastInputType() == Enum.UserInputType.MouseButton2) then
+                                    velocityObj.MaxForce = Vector3.new(math.huge, math.huge, math.huge);
+                                    velocityObj.Velocity = workspace.CurrentCamera.CFrame.LookVector * _G.strength;
+                                    Debris:AddItem(velocityObj, 1);
+                                else
+                                    velocityObj:Destroy();
+                                end
+                            end
+                        end);
+                    end
+                end
+            end);
+        elseif strengthConnection then
+            strengthConnection:Disconnect();
+            strengthConnection = nil;
+        end
+    end);
+    GrabSection:NewToggle("Sky Grab", "Подкидывает игроков вверх", function(state)
+        if state then
+            if AirSuspendCoroutine then
+                coroutine.close(AirSuspendCoroutine);
+            end
+            AirSuspendCoroutine = coroutine.create(function()
+                while task.wait(0.1) do
+                    pcall(function()
+                        local char = LocalPlayer.Character;
+                        if (not char or not char:FindFirstChild("HumanoidRootPart")) then
+                            return;
+                        end
+                        local root = char.HumanoidRootPart;
+                        for _, player in pairs(Players:GetPlayers()) do
+                            if ((player ~= LocalPlayer) and player.Character) then
+                                local targetChar = player.Character;
+                                local humanoid = targetChar:FindFirstChildOfClass("Humanoid");
+                                local torso = targetChar:FindFirstChild("Torso") or targetChar:FindFirstChild("UpperTorso") or targetChar:FindFirstChild("HumanoidRootPart");
+                                if (torso and humanoid and (humanoid.Health > 0) and ((torso.Position - root.Position).Magnitude <= 90)) then
+                                    local liftForce = 999999999;
+                                    local bv = torso:FindFirstChild("AirSuspendBV");
+                                    if not bv then
+                                        bv = Instance.new("BodyVelocity");
+                                        bv.Name = "AirSuspendBV";
+                                        bv.Parent = torso;
+                                    end
+                                    bv.Velocity = Vector3.new(0, liftForce, 0);
+                                    bv.MaxForce = Vector3.new(0, math.huge, 0);
+                                    local bg = torso:FindFirstChild("AirSuspendBG");
+                                    if not bg then
+                                        bg = Instance.new("BodyGyro");
+                                        bg.Name = "AirSuspendBG";
+                                        bg.P = 10000;
+                                        bg.D = 1000;
+                                        bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge);
+                                        bg.Parent = torso;
+                                    end
+                                    bg.CFrame = CFrame.new(torso.Position, torso.Position + Vector3.new(0, 0, 1));
+                                end
+                            end
+                        end
+                    end);
+                end
+            end);
+            coroutine.resume(AirSuspendCoroutine);
+        else
+            if AirSuspendCoroutine then
+                coroutine.close(AirSuspendCoroutine);
+                AirSuspendCoroutine = nil;
+            end
+            pcall(function()
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player.Character then
+                        local torso = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso") or player.Character:FindFirstChild("HumanoidRootPart");
+                        if torso then
+                            local bv = torso:FindFirstChild("AirSuspendBV");
+                            if bv then
+                                bv:Destroy();
+                            end
+                            local bg = torso:FindFirstChild("AirSuspendBG");
+                            if bg then
+                                bg:Destroy();
+                            end
+                        end
+                    end
+                end
+            end);
+        end
+    end);
+    GrabSection:NewToggle("🚫 Noclip Grab", "Отключает коллизии при захвате объектов", function(state)
+        if state then
+            noclipGrabCoroutine = coroutine.create(function()
+                while true do
+                    local success, err = pcall(function()
+                        local child = workspace:FindFirstChild("GrabParts");
+                        if (child and (child.Name == "GrabParts")) then
+                            local grabPart = child:FindFirstChild("GrabPart");
+                            if grabPart then
+                                local weldConstraint = grabPart:FindFirstChild("WeldConstraint");
+                                if (weldConstraint and weldConstraint.Part1) then
+                                    local grabbedPart = weldConstraint.Part1;
+                                    local character = grabbedPart.Parent;
+                                    if (character and character:FindFirstChild("HumanoidRootPart")) then
+                                        while workspace:FindFirstChild("GrabParts") do
+                                            for _, part in pairs(character:GetChildren()) do
+                                                if part:IsA("BasePart") then
+                                                    part.CanCollide = false;
+                                                end
+                                            end
+                                            task.wait();
+                                        end
+                                        for _, part in pairs(character:GetChildren()) do
+                                            if part:IsA("BasePart") then
+                                                part.CanCollide = true;
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end);
+                    task.wait();
+                end
+            end);
+            coroutine.resume(noclipGrabCoroutine);
+        elseif noclipGrabCoroutine then
+            coroutine.close(noclipGrabCoroutine);
+            noclipGrabCoroutine = nil;
+        end
+    end);
+    GrabSection:NewToggle("🚀 Ultra Grab", "Ультра-захват с улучшенными свойствами", function(state)
+        ultraGrabEnabled = state;
+        if state then
+            if ultraGrabCoroutine then
+                coroutine.close(ultraGrabCoroutine);
+            end
+            ultraGrabCoroutine = coroutine.create(ultraGrab);
+            coroutine.resume(ultraGrabCoroutine);
+            pcall(function()
+                local grabParts = workspace:FindFirstChild("GrabParts");
+                if (grabParts and grabParts:FindFirstChild("DragPart")) then
+                    local dragPart = grabParts.DragPart;
+                    if not ExtentedLineEnabled then
+                        local alignOrientation = dragPart:FindFirstChild("AlignOrientation");
+                        local alignPosition = dragPart:FindFirstChild("AlignPosition");
+                        if alignOrientation then
+                            alignOrientation.Enabled = true;
+                            alignOrientation.Responsiveness = 200;
+                            alignOrientation.MaxTorque = 999999999999999999;
+                        end
+                        if alignPosition then
+                            alignPosition.Enabled = true;
+                            alignPosition.MaxForce = 999999999999999999;
+                            alignPosition.Responsiveness = 200;
+                        end
+                    end
+                end
+            end);
+        else
+            if ultraGrabCoroutine then
+                coroutine.close(ultraGrabCoroutine);
+                ultraGrabCoroutine = nil;
+            end
+        end
+    end);
+    GrabSection:NewButton("📦 Freeze Blox", "ставит паллет в форму красивую и замораживает его", function()
+        local playerName = LocalPlayer.Name;
+        local backpack = workspace:FindFirstChild(playerName .. "SpawnedInToys");
+        local frozenCount = 0;
+        if backpack then
+            for _, toy in pairs(backpack:GetChildren()) do
+                if (toy.Name == "PalletLightBrown") then
+                    local soundPart = toy:FindFirstChild("SoundPart");
+                    if (soundPart and soundPart:IsA("BasePart")) then
+                        local isBeingHeld = false;
+                        local grabParts = workspace:FindFirstChild("GrabParts");
+                        if (grabParts and grabParts:FindFirstChild("GrabPart")) then
+                            local weldConstraint = grabParts.GrabPart:FindFirstChild("WeldConstraint");
+                            if (weldConstraint and (weldConstraint.Part1 == soundPart)) then
+                                isBeingHeld = true;
+                            end
+                        end
+                        if not isBeingHeld then
+                            local targetPosition = soundPart.Position;
+                            local targetCFrame = CFrame.new(targetPosition) * CFrame.Angles(math.rad(-116.6760025024414), math.rad(-37.63800048828125), math.rad(-39.69499969482422));
+                            local oldBg = soundPart:FindFirstChild("FreezeBloxGyro");
+                            if oldBg then
+                                oldBg:Destroy();
+                            end
+                            local oldBp = soundPart:FindFirstChild("FreezeBloxPosition");
+                            if oldBp then
+                                oldBp:Destroy();
+                            end
+                            local oldHl = soundPart:FindFirstChild("FreezeBloxHighlight");
+                            if oldHl then
+                                oldHl:Destroy();
+                            end
+                            soundPart.CanCollide = false;
+                            soundPart.Anchored = true;
+                            soundPart.CFrame = targetCFrame;
+                            wait(0.1);
+                            soundPart.Anchored = false;
+                            soundPart.CanCollide = true;
+                            local bp = Instance.new("BodyPosition");
+                            bp.Name = "FreezeBloxPosition";
+                            bp.Parent = soundPart;
+                            bp.Position = targetPosition;
+                            bp.MaxForce = Vector3.new(40000, 40000, 40000);
+                            bp.D = 125;
+                            bp.P = 10000;
+                            local bg = Instance.new("BodyGyro");
+                            bg.Name = "FreezeBloxGyro";
+                            bg.Parent = soundPart;
+                            bg.MaxTorque = Vector3.new(40000, 40000, 40000);
+                            bg.D = 125;
+                            bg.P = 10000;
+                            bg.CFrame = targetCFrame;
+                            local hl = Instance.new("Highlight");
+                            hl.Name = "FreezeBloxHighlight";
+                            hl.Parent = soundPart;
+                            hl.FillColor = Color3.fromRGB(0, 255, 0);
+                            hl.OutlineColor = Color3.fromRGB(0, 200, 0);
+                            hl.FillTransparency = 0.5;
+                            hl.OutlineTransparency = 0;
+                            frozenCount = frozenCount + 1;
+                        end
+                    end
+                end
+            end
+            if (frozenCount > 0) then
+                game.StarterGui:SetCore("SendNotification", {Title="📦 Freeze Blox",Text=("Rotation установлен на " .. frozenCount .. " паллеток"),Duration=3});
+            else
+                game.StarterGui:SetCore("SendNotification", {Title="📦 Freeze Blox",Text="Паллетки не найдены или удерживаются в Grab!",Duration=3});
+            end
+        else
+            game.StarterGui:SetCore("SendNotification", {Title="📦 Freeze Blox",Text="Инвентарь не найден!",Duration=3});
+        end
+    end);
+    GrabSection:NewButton("🔓 Unfreeze Blox", "Размораживает паллеты Freeze Blox", function()
+        local playerName = LocalPlayer.Name;
+        local backpack = workspace:FindFirstChild(playerName .. "SpawnedInToys");
+        local unfrozenCount = 0;
+        if backpack then
+            for _, toy in pairs(backpack:GetChildren()) do
+                if (toy.Name == "PalletLightBrown") then
+                    local soundPart = toy:FindFirstChild("SoundPart");
+                    if soundPart then
+                        local bg = soundPart:FindFirstChild("FreezeBloxGyro");
+                        if bg then
+                            bg:Destroy();
+                        end
+                        local bp = soundPart:FindFirstChild("FreezeBloxPosition");
+                        if bp then
+                            bp:Destroy();
+                        end
+                        local hl = soundPart:FindFirstChild("FreezeBloxHighlight");
+                        if hl then
+                            hl:Destroy();
+                        end
+                        unfrozenCount = unfrozenCount + 1;
+                    end
+                end
+            end
+            game.StarterGui:SetCore("SendNotification", {Title="🔓 Unfreeze Blox",Text=("Rotation убран с " .. unfrozenCount .. " паллеток"),Duration=3});
+        else
+            game.StarterGui:SetCore("SendNotification", {Title="🔓 Unfreeze Blox",Text="Инвентарь не найден!",Duration=3});
+        end
+    end);
+    local PhysicsGrabToggle = GrabSection:NewToggle("🔧 Physics Grab", "Настраивает AlignOrientation для GrabParts", function(state)
+        PhysicsGrabEnabled = state;
+        local function applyPhysicsGrab()
+            pcall(function()
+                local grabParts = workspace:FindFirstChild("GrabParts");
+                if (grabParts and grabParts:FindFirstChild("DragPart")) then
+                    local dragPart = grabParts.DragPart;
+                    local alignOrientation = dragPart:FindFirstChild("AlignOrientation");
+                    if alignOrientation then
+                        alignOrientation.AlignType = Enum.AlignType.Perpendicular;
+                        alignOrientation.PrimaryAxisOnly = true;
+                    end
+                end
+            end);
+        end
+        if state then
+            applyPhysicsGrab();
+            if PhysicsGrabLoop then
+                PhysicsGrabLoop:Disconnect();
+            end
+            PhysicsGrabLoop = RunService.Heartbeat:Connect(function()
+                if PhysicsGrabEnabled then
+                    applyPhysicsGrab();
+                else
+                    PhysicsGrabLoop:Disconnect();
+                end
+            end);
+            if not PhysicsGrabConnection then
+                PhysicsGrabConnection = workspace.ChildAdded:Connect(function(child)
+                    if ((child.Name == "GrabParts") and PhysicsGrabEnabled) then
+                        task.wait(0.05);
+                        applyPhysicsGrab();
+                    end
+                end);
+            end
+            game.StarterGui:SetCore("SendNotification", {Title="🔧 Physics Grab ВКЛ!",Text="AlignType = Perpendicular, PrimaryAxisOnly = true",Duration=3});
+        else
+            if PhysicsGrabLoop then
+                PhysicsGrabLoop:Disconnect();
+                PhysicsGrabLoop = nil;
+            end
+            if PhysicsGrabConnection then
+                PhysicsGrabConnection:Disconnect();
+                PhysicsGrabConnection = nil;
+            end
+            game.StarterGui:SetCore("SendNotification", {Title="🔧 Physics Grab ВЫКЛ",Duration=2});
+        end
+    end);
+    local PhysicsGrabEnabled = false;
+    local PhysicsGrabConnection = nil;
+    local PhysicsGrabLoop = nil;
+    GrabSection:NewToggle("🎯 Freeze Grab Cursor", "Заморозить объект под курсором (выкл - заморозить захваченный)", function(state)
+        FreezeGrabCursor = state;
+    end);
+    GrabSection:NewToggle("❄️ Freeze Grab (F)", "Заморозить объект по нажатию F", function(state)
+        FreezeGrabEnabled = state;
+    end);
+    GrabSection:NewToggle("🔓 Unfreeze Grab (V)", "Разморозить объект под курсором по нажатию V", function(state)
+        UnfreezeGrabEnabled = state;
+    end);
+    GrabSection:NewToggle("🐛 Unfreeze All Grabs Bug", "Включить баг (можно вращать, нельзя двигать)", function(state)
+        UnfreezeAllBug = state;
+    end);
+    GrabSection:NewToggle("🗑️ Unfreeze All Grabs (R)", "Разморозить все объекты по нажатию R", function(state)
+        UnfreezeAllGrabsEnabled = state;
+    end);
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then
+            return;
+        end
+        if ((input.KeyCode == Enum.KeyCode.F) and FreezeGrabEnabled) then
+            local targetPart = nil;
+            local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart");
+            if hrp then
+                if FreezeGrabCursor then
+                    targetPart = LocalPlayer:GetMouse().Target;
+                else
+                    local grabParts = workspace:FindFirstChild("GrabParts");
+                    if (grabParts and grabParts:FindFirstChild("GrabPart")) then
+                        local weldConstraint = grabParts.GrabPart:FindFirstChild("WeldConstraint");
+                        if (weldConstraint and weldConstraint.Part1) then
+                            targetPart = weldConstraint.Part1;
+                        end
+                    end
+                end
+                if (targetPart and targetPart:IsA("BasePart")) then
+                    freeze(targetPart, hrp);
+                    game.StarterGui:SetCore("SendNotification", {Title="❄️ Freeze Grab",Text=("Объект заморожен: " .. targetPart.Name),Duration=2});
+                else
+                    game.StarterGui:SetCore("SendNotification", {Title="❄️ Freeze Grab",Text="Не удалось найти объект для заморозки!",Duration=2});
+                end
+            end
+        end
+        if ((input.KeyCode == Enum.KeyCode.V) and UnfreezeGrabEnabled) then
+            local target = LocalPlayer:GetMouse().Target;
+            if target then
+                local unfrozenSomething = false;
+                for _, obj in pairs(target:GetDescendants()) do
+                    if ((obj.Name == "fzbp") or (obj.Name == "fzbg") or (obj.Name == "FreezeBloxPosition") or (obj.Name == "FreezeBloxGyro")) then
+                        obj:Destroy();
+                        unfrozenSomething = true;
+                    end
+                end
+                if target.Parent then
+                    for _, obj in pairs(target.Parent:GetDescendants()) do
+                        if ((obj.Name == "fzbp") or (obj.Name == "fzbg") or (obj.Name == "FreezeBloxPosition") or (obj.Name == "FreezeBloxGyro")) then
+                            obj:Destroy();
+                            unfrozenSomething = true;
+                        end
+                    end
+                end
+                if workspace:FindFirstChild("FreezeFolder") then
+                    for _, hl in pairs(workspace.FreezeFolder:GetChildren()) do
+                        if (hl.Adornee == target) then
+                            hl:Destroy();
+                            unfrozenSomething = true;
+                        end
+                    end
+                end
+                local freezeBloxHl = target:FindFirstChild("FreezeBloxHighlight");
+                if freezeBloxHl then
+                    freezeBloxHl:Destroy();
+                    unfrozenSomething = true;
+                end
+                if target.Parent then
+                    for _, obj in pairs(target.Parent:GetDescendants()) do
+                        if ((obj.Name == "FreezeBloxHighlight") and (obj.Adornee == target)) then
+                            obj:Destroy();
+                            unfrozenSomething = true;
+                        end
+                    end
+                end
+                target.CanCollide = true;
+                target.Anchored = false;
+                if unfrozenSomething then
+                    game.StarterGui:SetCore("SendNotification", {Title="🔓 Unfreeze Grab",Text=("Объект разморожен: " .. target.Name),Duration=2});
+                else
+                    game.StarterGui:SetCore("SendNotification", {Title="🔓 Unfreeze Grab",Text="Не найдено замороженных компонентов!",Duration=2});
+                end
+            else
+                game.StarterGui:SetCore("SendNotification", {Title="🔓 Unfreeze Grab",Text="Наведите курсор на объект!",Duration=2});
+            end
+        end
+        if ((input.KeyCode == Enum.KeyCode.R) and UnfreezeAllGrabsEnabled) then
+            if UnfreezeAllBug then
+                unfreezeAllGrabsWithBug();
+                game.StarterGui:SetCore("SendNotification", {Title="🗑️ Unfreeze All Grabs",Text="Частичная разморозка (баг активирован)",Duration=3});
+            else
+                unfreezeAllGrabsNormal();
+                game.StarterGui:SetCore("SendNotification", {Title="🗑️ Unfreeze All Grabs",Text="Все объекты разморожены",Duration=3});
+            end
+        end
+    end);
+local TargetTab = Window:NewTab("Target");
+local TargetSection = TargetTab:NewSection("🎯 ЦЕЛЬ");
+
+-- 🍌 Банан, 💨 Дым, 🔥 Огонь (перенесено из Main)
+local BananaToggle = TargetSection:NewToggle("🍌 Банан (FoodBanana\\Main)", "По умолчанию", function(state)
+    BananaModeEnabled = state;
+    local bCount, fCount, sCount = refreshCache();
+    StatusLabel:UpdateLabel("🍌 " .. bCount .. " | 🔥 " .. fCount .. " | 💨 " .. sCount);
+end);
+
+local FireToggle = TargetSection:NewToggle("🔥 Огонь (Campfire\\Main)", "Точный путь!", function(state)
+    FireModeEnabled = state;
+    local bCount, fCount, sCount = refreshCache();
+    StatusLabel:UpdateLabel("🍌 " .. bCount .. " | 🔥 " .. fCount .. " | 💨 " .. sCount);
+    game.StarterGui:SetCore("SendNotification", {Title=("🔥 " .. ((state and "ОГОНЬ ВКЛ") or "ВЫКЛ")),Text=(fCount .. " Campfire найдено!"),Duration=2});
+end);
+
+local SmokeToggle = TargetSection:NewToggle("💨 Дым (FireworkSmokeBomb\\SoundPart)", "Точный путь!", function(state)
+    SmokeModeEnabled = state;
+    local bCount, fCount, sCount = refreshCache();
+    StatusLabel:UpdateLabel("🍌 " .. bCount .. " | 🔥 " .. fCount .. " | 💨 " .. sCount);
+    game.StarterGui:SetCore("SendNotification", {Title=("💨 " .. ((state and "ДЫМ ВКЛ") or "ВЫКЛ")),Text=(sCount .. " Smoke найдено!"),Duration=2});
+end);
+
+-- Выбор цели (остается)
+local function updatePlayerList()
+    local list = {};
+    for _, p in pairs(Players:GetPlayers()) do
+        if (p ~= LocalPlayer) then
+            table.insert(list, p.DisplayName);
+        end
+    end
+    return list;
+end
+
+local playerDropdown = TargetSection:NewDropdown("🎯 Цель атаки", "Выбери жертву!", updatePlayerList(), function(name)
+    TargetPlayers = {};
+    local plr = nil;
+    for _, p in pairs(Players:GetPlayers()) do
+        if (p.DisplayName == name) then
+            plr = p;
+            break;
+        end
+    end
+    if plr then
+        table.insert(TargetPlayers, plr);
+        game.StarterGui:SetCore("SendNotification", {Title="🔒 ЗАБЛОКИРОВАНО!",Text=(getTotalObjects() .. " объектов → " .. name),Duration=3});
+    end
+end);
+
+TargetSection:NewButton("🔄 Обновить игроков", "", function()
+    playerDropdown:Refresh(updatePlayerList());
+end);
+
+TargetSection:NewButton("🗑️ Очистить", "", function()
+    TargetPlayers = {};
+    game.StarterGui:SetCore("SendNotification", {Title="⭕ СНЯТО",Duration=2});
+end);
+
+-- 🍌 Ragdoll All (перенесено из Main)
+local RagdollAllToggle = TargetSection:NewToggle("🍌 RAGDOLL ALL", "Телепорт бананов ко всем игрокам", function(state)
+    RagdollAllEnabled = state;
+    if state then
+        stopFireAll();
+        stopBananaDance();
+        stopBananaAura();
+        stopBananaFunny();
+        stopBananaTeams();
+        stopBananaAngry();
+        stopBananaAngryFromList();
+        stopPalletFling();
+        startRagdollAll();
+        game.StarterGui:SetCore("SendNotification", {Title="🍌 RAGDOLL ALL ВКЛ!",Text="Объекты телепортятся ко всем игрокам",Duration=3});
+    else
+        stopRagdollAll();
+        game.StarterGui:SetCore("SendNotification", {Title="🍌 RAGDOLL ALL ВЫКЛ",Duration=2});
+    end
+end);
+
+-- 🔥 Fire All (перенесено из Main)
+local FireAllToggle = TargetSection:NewToggle("🔥 FIRE ALL", "Телепорт костров под всех игроков", function(state)
+    FireAllEnabled = state;
+    if state then
+        stopRagdollAll();
+        stopBananaDance();
+        stopBananaAura();
+        stopBananaFunny();
+        stopBananaTeams();
+        stopBananaAngry();
+        stopBananaAngryFromList();
+        stopPalletFling();
+        startFireAll();
+        game.StarterGui:SetCore("SendNotification", {Title="🔥 FIRE ALL ВКЛ!",Text="Костры под всеми игроками",Duration=3});
+    else
+        stopFireAll();
+        game.StarterGui:SetCore("SendNotification", {Title="🔥 FIRE ALL ВЫКЛ",Duration=2});
+    end
+end);
+
+-- 🔥💨 Fire Smokes (перенесено из Main)
+TargetSection:NewButton("🔥💨 FIRE SMOKES", "Активировать дымы огнем на 0.5 сек", function()
+    startFireSmokes();
+end);
+
+-- ⚡ Speed (перенесено из Main)
+TargetSection:NewSlider("⚡ Speed", "50–300", 300, 50, function(v)
+    BananaSpeed = v;
+end, true);
+
+-- Smooth и CFrame (перенесено из Main)
+local SmoothToggle = TargetSection:NewToggle("🧈 Smooth (move objects)", "Плавное", function(state)
+    UseSmoothMode = state;
+    if state then
+        CFrameToggle:SetState(false);
+        UseCFrameMode = false;
+    end
+end);
+
+local CFrameToggle = TargetSection:NewToggle("✨ CFrame (tp objects)", "Телепорт", function(state)
+    UseCFrameMode = state;
+    if state then
+        SmoothToggle:SetState(false);
+        UseSmoothMode = false;
+    end
+end);
+
+-- 🚀 АТАКА! (перенесено из Main)
+local SwarmToggle = TargetSection:NewToggle("🚀 АТАКА!", "Запуск!", function(state)
+    RagdollEnabled = state;
+    if RagdollConnection then
+        RagdollConnection:Disconnect();
+        RagdollConnection = nil;
+    end
+    if RagdollEnabled then
+        local bCount, fCount, sCount = refreshCache();
+        local total = getTotalObjects();
+        if (total == 0) then
+            SwarmToggle:SetState(false);
+            RagdollEnabled = false;
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НИЧЕГО НЕТ",Text="Включи Банан/Огонь/Дым!",Duration=4});
+            return;
+        end
+        StatusLabel:UpdateLabel("🍌🔥💨 " .. total .. " | 🎯 " .. ((TargetPlayers[1] and TargetPlayers[1].DisplayName) or "NO") .. " | " .. CurrentAttackMode);
+        RagdollConnection = RunService.Heartbeat:Connect(function()
+            if not RagdollEnabled then
+                return;
+            end
+            local targetPlayer = TargetPlayers[1];
+            if not targetPlayer then
+                return;
+            end
+            local root = getTargetRootPart(targetPlayer);
+            if not root then
+                return;
+            end
+            local now = tick();
+            if ((now - LastBananaUpdate) > UPDATE_INTERVAL) then
+                refreshCache();
+                LastBananaUpdate = now;
+            end
+            local total = getTotalObjects();
+            if (total == 0) then
+                return;
+            end
+            local time = now;
+            local speed = BananaSpeed;
+            local objIndex = 0;
+            for _, banana in ipairs(AllBananas) do
+                if (banana and banana.Parent) then
+                    local targetPos = getAttackPosition(root.Position, objIndex, total, time);
+                    moveObject(banana, targetPos, speed);
+                    objIndex = objIndex + 1;
+                end
+            end
+            for _, fire in ipairs(AllCampFires) do
+                if (fire and fire.Parent) then
+                    local targetPos = getAttackPosition(root.Position, objIndex, total, time);
+                    moveObject(fire, targetPos, speed);
+                    objIndex = objIndex + 1;
+                end
+            end
+            for _, smoke in ipairs(AllSmokes) do
+                if (smoke and smoke.Parent) then
+                    local targetPos = getAttackPosition(root.Position, objIndex, total, time);
+                    moveObject(smoke, targetPos, speed);
+                    objIndex = objIndex + 1;
+                end
+            end
+        end);
+        spawn(function()
+            while RagdollEnabled do
+                task.wait(1);
+                local total = getTotalObjects();
+                local targetName = (TargetPlayers[1] and TargetPlayers[1].DisplayName) or "NONE";
+                local modeText = (UseCFrameMode and "CFrame") or (UseSmoothMode and "Smooth") or "Instant";
+                StatusLabel:UpdateLabel("🍌🔥💨 " .. total .. " | 🎯 " .. targetName .. " | " .. modeText .. " | X:" .. XSizeScale .. " Y:" .. YSizeScale .. " H:" .. YHeightScale);
+            end
+        end);
+    else
+        stopAllObjects();
+    end
+end);
+
+-- Разделитель для режимов нападения (ОДИН экземпляр)
+local AttackSection = TargetTab:NewSection("⚔️ РЕЖИМЫ НАПАДЕНИЯ");
+
+local AttackModeDropdown = AttackSection:NewDropdown("⚔️ Режим нападения", "11 стилей!", {"TightCircle","HelixSpiral","WaveFormation","SphereOrbit","VortexSwirl","ButterflyWave","PentagonStar","ChaosSwarm","Krest","Haos","BananaTeams"}, function(selectedMode)
+    CurrentAttackMode = selectedMode;
+    game.StarterGui:SetCore("SendNotification", {Title=("⚔️ " .. selectedMode),Text=("X:" .. XSizeScale .. " Y:" .. YSizeScale .. " H:" .. YHeightScale),Duration=2});
+end);
+
+AttackSection:NewSlider("🎬 Anim Speed", "0.1–5.0x", 500, 10, function(v)
+    AttackAnimationSpeed = v / 100;
+end, true);
+
+AttackSection:NewSlider("📏 X Size", "Размер по X (горизонталь) 1-100", 100, 1, function(v)
+    XSizeScale = v;
+end, true);
+
+AttackSection:NewSlider("📐 Y Size", "Размер по Y (общий) 1-100", 100, 1, function(v)
+    YSizeScale = v;
+end, true);
+
+AttackSection:NewSlider("⬆️ Y Height", "Высота вверх-вниз 1-100", 100, 1, function(v)
+    YHeightScale = v;
+end, true);
+
+-- Разделитель для PalletFling (остается)
+local PalletFlingSection = TargetTab:NewSection("🚀 PALLET FLING");
+
+local PalletFlingDropdown = PalletFlingSection:NewDropdown("🎯 Цели флинга", "Выбери игроков для флинга", updatePlayerList(), function(selectedName)
+    local selectedPlayer = nil;
+    for _, player in pairs(Players:GetPlayers()) do
+        if ((player.DisplayName == selectedName) and (player ~= LocalPlayer)) then
+            selectedPlayer = player;
+            break;
+        end
+    end
+    if selectedPlayer then
+        if addPalletFlingTarget(selectedPlayer) then
+            game.StarterGui:SetCore("SendNotification", {Title="🎯 ЦЕЛЬ ДОБАВЛЕНА",Text=(selectedPlayer.DisplayName .. " в списке флинга"),Duration=2});
+        else
+            game.StarterGui:SetCore("SendNotification", {Title="ℹ️ УЖЕ В СПИСКЕ",Text=(selectedPlayer.DisplayName .. " уже выбран"),Duration=2});
+        end
+    end
+end);
+
+local PalletFlingToggle = PalletFlingSection:NewToggle("🚀 PALLET FLING", "Мощный флинг паллетой", function(state)
+    PalletFlingEnabled = state;
+    if state then
+        if (#PalletFlingTargets == 0) then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ЦЕЛЕЙ",Text="Сначала выбери цели в списке!",Duration=3});
+            PalletFlingToggle:SetState(false);
+            return;
+        end
+        stopRagdollAll();
+        stopFireAll();
+        stopBananaDance();
+        stopBananaAura();
+        stopBananaFunny();
+        stopBananaTeams();
+        stopBananaAngry();
+        stopBananaAngryFromList();
+        startPalletFling();
+        game.StarterGui:SetCore("SendNotification", {Title="🚀 PALLET FLING ВКЛ!",Text=(#PalletFlingTargets .. " целей для флинга"),Duration=3});
+    else
+        stopPalletFling();
+        game.StarterGui:SetCore("SendNotification", {Title="🚀 PALLET FLING ВЫКЛ",Duration=2});
+    end
+end);
+
+PalletFlingSection:NewSlider("🚀 Fling Speed", "Скорость флинга 100-800", 800, 100, function(v)
+    PalletFlingSpeed = v;
+end, true);
+
+PalletFlingSection:NewButton("🔄 Обновить список флинга", "Обновить список игроков", function()
+    PalletFlingDropdown:Refresh(updatePlayerList());
+end);
+
+PalletFlingSection:NewButton("➖ Удалить выбранную цель", "Удалить выбранного игрока из списка флинга", function()
+    local selectedName = TargetPlayers[1] and TargetPlayers[1].DisplayName;
+    if not selectedName then
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕ ВЫБРАНА ЦЕЛЬ",Text="Сначала выбери цель в основном списке!",Duration=2});
+        return;
+    end
+    local targetPlayer = nil;
+    for _, player in ipairs(PalletFlingTargets) do
+        if (player.DisplayName == selectedName) then
+            targetPlayer = player;
+            break;
+        end
+    end
+    if (targetPlayer and removePalletFlingTarget(targetPlayer)) then
+        game.StarterGui:SetCore("SendNotification", {Title="🎯 ЦЕЛЬ УДАЛЕНА",Text=(targetPlayer.DisplayName .. " удален из списка флинга"),Duration=2});
+    else
+        game.StarterGui:SetCore("SendNotification", {Title="❌ НЕ НАЙДЕНА",Text=(selectedName .. " нет в списке флинга"),Duration=2});
+    end
+end);
+
+PalletFlingSection:NewButton("🗑️ Очистить цели флинга", "Очистить весь список флинга", function()
+    clearPalletFlingTargets();
+    game.StarterGui:SetCore("SendNotification", {Title="🗑️ СПИСОК ОЧИЩЕН",Text="Все цели флинга удалены",Duration=2});
+end);
+
+local FlingTargetsLabel = PalletFlingSection:NewLabel("🎯 Цели флинга: 0");
+
+local function updateFlingTargetsLabel()
+    local targetNames = {};
+    for _, player in ipairs(PalletFlingTargets) do
+        table.insert(targetNames, player.DisplayName);
+    end
+    local displayText = ((#PalletFlingTargets > 0) and table.concat(targetNames, ", ")) or "НЕТ";
+    FlingTargetsLabel:UpdateLabel("🎯 Цели флинга (" .. #PalletFlingTargets .. "): " .. displayText);
+end
+
+spawn(function()
+    while true do
+        task.wait(2);
+        updateFlingTargetsLabel();
+    end
+end);
+
+-- Разделитель для Banana Dance (без дублирования - оставляем один экземпляр)
+local DanceSection = TargetTab:NewSection("💃 РЕЖИМЫ ТАНЦА БАНАНОВ");
+
+local BananaDanceToggle = DanceSection:NewToggle("💃 BANANA DANCE", "Бананы танцуют и прыгают!", function(state)
+    BananaDanceEnabled = state;
+    if state then
+        stopRagdollAll();
+        stopFireAll();
+        stopBananaAura();
+        stopBananaFunny();
+        stopBananaTeams();
+        stopBananaAngry();
+        stopBananaAngryFromList();
+        stopPalletFling();
+        startBananaDance();
+        game.StarterGui:SetCore("SendNotification", {Title="💃 BANANA DANCE ВКЛ!",Text=("Режим: " .. CurrentDanceMode),Duration=3});
+    else
+        stopBananaDance();
+        game.StarterGui:SetCore("SendNotification", {Title="💃 BANANA DANCE ВЫКЛ",Duration=2});
+    end
+end);
+
+local DanceModeDropdown = DanceSection:NewDropdown("💃 Режим танца", "6 стилей танца!", {"Tornado","Jumps","Wave","Spin","Chaos","Bounce"}, function(selectedMode)
+    CurrentDanceMode = selectedMode;
+    game.StarterGui:SetCore("SendNotification", {Title=("💃 " .. selectedMode),Text="Бананы танцуют в новом стиле!",Duration=2});
+end);
+
+-- Кнопка 🔄 Refresh Objects убрана (теперь автоматическое обновление)
+    local ViewTab = Window:NewTab("View");
+    local ViewSection = ViewTab:NewSection("Просмотр и телепорт");
+    local SelectedViewPlayer = nil;
+    local ViewConnection = nil;
+    local IsViewing = false;
+    local Camera = workspace.CurrentCamera;
+    local function GetPlayerList()
+        local list = {};
+        for _, plr in Players:GetPlayers() do
+            if (plr ~= LocalPlayer) then
+                table.insert(list, plr.DisplayName .. " (@" .. plr.Name .. ")");
+            end
+        end
+        table.sort(list);
+        return list;
+    end
+    local ViewDropdown = ViewSection:NewDropdown("Выбери игрока", "", GetPlayerList(), function(choice)
+        local name = choice:match("^(.-) %(");
+        for _, plr in Players:GetPlayers() do
+            if (plr.DisplayName == name) then
+                SelectedViewPlayer = plr;
+                return;
+            end
+        end
+    end);
+    ViewSection:NewButton("Обновить список", "", function()
+        ViewDropdown:Refresh(GetPlayerList());
+    end);
+    ViewSection:NewButton("START VIEW", "Смотреть от 1-го лица", function()
+        if IsViewing then
+            return;
+        end
+        if (not SelectedViewPlayer or not SelectedViewPlayer.Character or not SelectedViewPlayer.Character:FindFirstChild("Humanoid")) then
+            game.StarterGui:SetCore("SendNotification", {Title="Ошибка",Text="Игрок не загружен!",Duration=3});
+            return;
+        end
+        IsViewing = true;
+        Camera.CameraSubject = SelectedViewPlayer.Character.Humanoid;
+        Camera.CameraType = Enum.CameraType.Custom;
+        if (LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")) then
+            LocalPlayer.Character.HumanoidRootPart.Anchored = true;
+        end
+        ViewConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if (not IsViewing or not SelectedViewPlayer.Character or not SelectedViewPlayer.Character:FindFirstChild("Humanoid")) then
+                IsViewing = false;
+                if ViewConnection then
+                    ViewConnection:Disconnect();
+                    ViewConnection = nil;
+                end
+                Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid");
+                Camera.CameraType = Enum.CameraType.Custom;
+                if (LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")) then
+                    LocalPlayer.Character.HumanoidRootPart.Anchored = false;
+                end
+            end
+        end);
+    end);
+    ViewSection:NewButton("STOP VIEW", "Вернуться к себе", function()
+        IsViewing = false;
+        if ViewConnection then
+            ViewConnection:Disconnect();
+            ViewConnection = nil;
+        end
+        Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid");
+        Camera.CameraType = Enum.CameraType.Custom;
+        if (LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")) then
+            LocalPlayer.Character.HumanoidRootPart.Anchored = false;
+        end
+    end);
+    ViewSection:NewButton("TP к игроку", "", function()
+        if (SelectedViewPlayer and SelectedViewPlayer.Character and SelectedViewPlayer.Character:FindFirstChild("HumanoidRootPart")) then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = SelectedViewPlayer.Character.HumanoidRootPart.CFrame;
+        end
+    end);
+    ViewSection:NewLabel("LOOP TP");
+    local LoopTPEnabled = false;
+    local LoopTPConnection = nil;
+    local LoopTPDirection = "Backward";
+    local LoopTPDistance = 5;
+    ViewSection:NewToggle("LOOP TP", "", function(state)
+        LoopTPEnabled = state;
+        if (state and not SelectedViewPlayer) then
+            return;
+        end
+        if state then
+            if LoopTPConnection then
+                LoopTPConnection:Disconnect();
+            end
+            LoopTPConnection = game:GetService("RunService").Heartbeat:Connect(function()
+                if (not LoopTPEnabled or not SelectedViewPlayer.Character) then
+                    return;
+                end
+                local t = SelectedViewPlayer.Character:FindFirstChild("HumanoidRootPart");
+                local m = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart");
+                if (not t or not m) then
+                    return;
+                end
+                local look = t.CFrame.LookVector;
+                local right = t.CFrame.RightVector;
+                local pos = t.Position;
+                local offset = Vector3.new(0, 0, 0);
+                if (LoopTPDirection == "Forward") then
+                    offset = look * LoopTPDistance;
+                elseif (LoopTPDirection == "Backward") then
+                    offset = -look * LoopTPDistance;
+                elseif (LoopTPDirection == "Right") then
+                    offset = right * LoopTPDistance;
+                elseif (LoopTPDirection == "Left") then
+                    offset = -right * LoopTPDistance;
+                end
+                m.CFrame = CFrame.new(pos + offset, pos + offset + look);
+            end);
+        elseif LoopTPConnection then
+            LoopTPConnection:Disconnect();
+            LoopTPConnection = nil;
+        end
+    end);
+    ViewSection:NewDropdown("Направление", "", {"Backward","Forward","Right","Left"}, function(v)
+        LoopTPDirection = v;
+    end);
+    ViewSection:NewSlider("Расстояние", "1–20", 20, 1, function(v)
+        LoopTPDistance = v;
+    end);
+    spawn(function()
+        while task.wait(8) do
+            pcall(function()
+                ViewDropdown:Refresh(GetPlayerList());
+            end);
+        end
+    end);
+    ViewDropdown:Refresh(GetPlayerList());
+    local SsTab = Window:NewTab("Dangerous");
+    local SsSection = SsTab:NewSection("Dangerous Auras");
+    local SsRadius = 15;
+    SsSection:NewSlider("🌐 Radius", "Радиус действия Ss-ауры", 23, 5, function(v)
+        SsRadius = v;
+        updateAuraVisualization();
+    end, true);
+    local ClickAuraEnabled = false;
+    local AirSuspendEnabled = false;
+    local SpinAuraEnabled = false;
+    local TraxAuraEnabled = false;
+    local AirSuspendCoroutine = nil;
+    local PoisonAuraCoroutine = nil;
+    local SpinAuraCoroutine = nil;
+    local TraxAuraCoroutine = nil;
+    local ClickAuraAffectedPlayers = {};
+    local AuraVisualization = nil;
+    local DrawAuraEnabled = false;
+    local TraxAuraTarget = nil;
+    local TraxDirection = 1;
+    local TraxDistance = 8;
+    local TraxSpeed = 0.1;
+    local function updateAuraVisualization()
+        if AuraVisualization then
+            AuraVisualization:Destroy();
+            AuraVisualization = nil;
+        end
+        if DrawAuraEnabled then
+            local char = LocalPlayer.Character;
+            if (char and char:FindFirstChild("HumanoidRootPart")) then
+                local root = char.HumanoidRootPart;
+                AuraVisualization = Instance.new("Part");
+                AuraVisualization.Name = "AuraZone";
+                AuraVisualization.Anchored = true;
+                AuraVisualization.CanCollide = false;
+                AuraVisualization.Material = Enum.Material.Neon;
+                AuraVisualization.BrickColor = BrickColor.new("Bright green");
+                AuraVisualization.Transparency = 0.7;
+                AuraVisualization.Shape = Enum.PartType.Cylinder;
+                AuraVisualization.Size = Vector3.new(0.2, SsRadius * 2, SsRadius * 2);
+                AuraVisualization.CFrame = CFrame.new(root.Position) * CFrame.new(0, -2.5, 0) * CFrame.Angles(0, 0, math.rad(90));
+                AuraVisualization.Parent = workspace;
+            end
+        end
+    end
+    local function isPointInCircle(playerPos, centerPos, radius)
+        local dx = playerPos.X - centerPos.X;
+        local dz = playerPos.Z - centerPos.Z;
+        return ((dx * dx) + (dz * dz)) <= (radius * radius);
+    end
+    local function disableAllAuras()
+        if AirSuspendEnabled then
+            AirSuspendEnabled = false;
+            if AirSuspendCoroutine then
+                coroutine.close(AirSuspendCoroutine);
+                AirSuspendCoroutine = nil;
+            end
+            pcall(function()
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player.Character then
+                        local torso = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso") or player.Character:FindFirstChild("HumanoidRootPart");
+                        if torso then
+                            local bv = torso:FindFirstChild("AirSuspendBV");
+                            if bv then
+                                bv:Destroy();
+                            end
+                            local bg = torso:FindFirstChild("AirSuspendBG");
+                            if bg then
+                                bg:Destroy();
+                            end
+                            local bvHorizontal = torso:FindFirstChild("AirSuspendBV_Horizontal");
+                            if bvHorizontal then
+                                bvHorizontal:Destroy();
+                            end
+                        end
+                    end
+                end
+            end);
+        end
+        if SpinAuraEnabled then
+            SpinAuraEnabled = false;
+            if SpinAuraCoroutine then
+                coroutine.close(SpinAuraCoroutine);
+                SpinAuraCoroutine = nil;
+            end
+            for player, isAffected in pairs(ClickAuraAffectedPlayers) do
+                if (isAffected and player.Character) then
+                    local humanoid = player.Character:FindFirstChild("Humanoid");
+                    local torso = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso");
+                    if humanoid then
+                        humanoid.PlatformStand = false;
+                    end
+                    if torso then
+                        local bv = torso:FindFirstChild("SpinAuraBV");
+                        local bg = torso:FindFirstChild("SpinAuraBG");
+                        if bv then
+                            bv:Destroy();
+                        end
+                        if bg then
+                            bg:Destroy();
+                        end
+                    end
+                end
+            end
+            for _, spinPart in pairs(AllSmokes or {}) do
+                if (spinPart and spinPart.Parent) then
+                    spinPart.Position = Vector3.new(0, -200, 0);
+                end
+            end
+        end
+        if TraxAuraEnabled then
+            TraxAuraEnabled = false;
+            if TraxAuraCoroutine then
+                coroutine.close(TraxAuraCoroutine);
+                TraxAuraCoroutine = nil;
+            end
+            TraxAuraTarget = nil;
+            for _, player in pairs(Players:GetPlayers()) do
+                if ((player ~= LocalPlayer) and player.Character) then
+                    local humanoid = player.Character:FindFirstChild("Humanoid");
+                    local torso = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso");
+                    if humanoid then
+                        humanoid.PlatformStand = false;
+                    end
+                    if torso then
+                        local bv = torso:FindFirstChild("TraxAuraBV");
+                        local bg = torso:FindFirstChild("TraxAuraBG");
+                        if bv then
+                            bv:Destroy();
+                        end
+                        if bg then
+                            bg:Destroy();
+                        end
+                    end
+                end
+            end
+            for _, traxPart in pairs(AllSmokes or {}) do
+                if (traxPart and traxPart.Parent) then
+                    traxPart.Position = Vector3.new(0, -200, 0);
+                end
+            end
+        end
+    end
+
+    local BugAuraEnabled = false
+    local BugAuraCoroutine = nil
+    local BugPallet = nil
+    local BUG_RADIUS = 24
+    local CLICK_RADIUS = 21
+    local PalletHomePos = Vector3.new(0, 0, 0)
+
+    -- Поиск первой паллеты
+    local function getBugPallet()
+        local toys = workspace:FindFirstChild(LocalPlayer.Name .. "SpawnedInToys")
+        if not toys then return nil end
+        for _, toy in pairs(toys:GetChildren()) do
+            if toy.Name == "PalletLightBrown" and toy:FindFirstChild("Main") then
+                return toy.Main
+            end
+        end
+        return nil
+    end
+
+    -- Обновление "домашней" позиции паллеты (5 раз выше игрока)
+    local function updatePalletHome()
+        local me = LocalPlayer.Character
+        if me and me:FindFirstChild("HumanoidRootPart") then
+            local hrp = me.HumanoidRootPart
+            PalletHomePos = hrp.Position + Vector3.new(0, hrp.Size.Y * 5 + 20, 0) -- 5 раз выше + отступ
+        end
+    end
+
+    -- Функция для создания эффекта дрожания/вибрации
+    local function shakePallet(pallet, intensity, duration)
+        if not pallet or not pallet.Parent then return end
+        
+        local startTime = tick()
+        local originalPos = pallet.Position
+        
+        while tick() - startTime < duration and pallet and pallet.Parent do
+            local elapsed = tick() - startTime
+            -- Уменьшаем интенсивность со временем
+            local currentIntensity = intensity * (1 - elapsed/duration)
+            
+            -- Случайное смещение для эффекта дрожания
+            local offset = Vector3.new(
+                math.random(-currentIntensity, currentIntensity),
+                math.random(-currentIntensity/2, currentIntensity/2),
+                math.random(-currentIntensity, currentIntensity)
+            )
+            
+            pallet.CFrame = CFrame.new(originalPos + offset)
+            task.wait(0.001) -- Минимальная задержка
+        end
+        
+        -- Возвращаем на оригинальную позицию
+        if pallet and pallet.Parent then
+            pallet.CFrame = CFrame.new(originalPos)
+        end
+    end
+
+    -- Основная Bug Aura
+    local function startBugAura()
+        if BugAuraCoroutine then coroutine.close(BugAuraCoroutine) end
+
+        BugPallet = getBugPallet()
+        if not BugPallet then
+            game.StarterGui:SetCore("SendNotification", {
+                Title="Нет PalletLightBrown!", 
+                Text="Нужна хотя бы 1 паллета для Bug Aura!", 
+                Duration=6
+            })
+            BugAuraEnabled = false
+            return
+        end
+
+        -- Начальная позиция над игроком
+        updatePalletHome()
+        BugPallet.CFrame = CFrame.new(PalletHomePos)
+        BugPallet.Anchored = false
+        BugPallet.CanCollide = true
+        BugPallet.Massless = true -- Делаем безынерционным для быстрого телепорта
+
+        BugAuraCoroutine = coroutine.create(function()
+            local lastAttackTime = 0
+            local attackCooldown = 1 -- 1 секунда между атаками
+            
+            while BugAuraEnabled do
+                task.wait()
+                
+                pcall(function()
+                    local myChar = LocalPlayer.Character
+                    if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then 
+                        return 
+                    end
+                    
+                    local myHRP = myChar.HumanoidRootPart
+                    
+                    -- Обновляем базовую позицию (5 раз выше)
+                    updatePalletHome()
+                    
+                    -- Собираем цели для клика и атаки
+                    local targetsInRange = {}
+                    local currentTime = tick()
+                    
+                    for _, player in pairs(Players:GetPlayers()) do
+                        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                            local targetChar = player.Character
+                            local targetHRP = targetChar.HumanoidRootPart
+                            local distance = (targetHRP.Position - myHRP.Position).Magnitude
+                            
+                            -- Клик аура для всех в радиусе 21
+                            if distance <= CLICK_RADIUS then
+                                -- Телепортируем игрока выше нашего HRP
+                                targetHRP.CFrame = CFrame.new(myHRP.Position + Vector3.new(0, 10, 0))
+                                targetHRP.Velocity = Vector3.new(0, 0, 0)
+                                targetHRP.RotVelocity = Vector3.new(0, 0, 0)
+                                
+                                -- Добавляем в список целей для атаки паллетой
+                                if distance <= BUG_RADIUS and targetHRP.Position.Y > -13 then
+                                    table.insert(targetsInRange, targetHRP)
+                                end
+                            end
+                        end
+                    end
+                    
+                    -- Управление паллетой
+                    if BugPallet and BugPallet.Parent then
+                        if #targetsInRange > 0 and currentTime - lastAttackTime >= attackCooldown then
+                            -- Атакуем одного из игроков
+                            lastAttackTime = currentTime
+                            
+                            -- Выбираем случайную цель из тех, кого закликали
+                            local targetHRP = targetsInRange[math.random(1, #targetsInRange)]
+                            
+                            if targetHRP and targetHRP.Parent then
+                                -- Сохраняем домашнюю позицию
+                                local savedHomePos = PalletHomePos
+                                
+                                -- Телепортируем паллету прямо в HRP цели
+                                local targetPos = targetHRP.Position
+                                BugPallet.CFrame = CFrame.new(targetPos)
+                                
+                                -- Создаем эффект дрожания для активации коллизий
+                                spawn(function()
+                                    shakePallet(BugPallet, 2, 0.002) -- 2 единицы интенсивности, 2 мс
+                                end)
+                                
+                                task.wait(0.001) -- 1 миллисекунда у цели
+                                
+                                -- Мгновенно обратно на домашнюю позицию
+                                if BugPallet and BugPallet.Parent then
+                                    BugPallet.CFrame = CFrame.new(savedHomePos)
+                                    
+                                    -- Еще немного дрожания на домашней позиции
+                                    shakePallet(BugPallet, 1, 0.001)
+                                end
+                            end
+                        else
+                            -- Нет целей или кд - паллета на домашней позиции
+                            BugPallet.CFrame = CFrame.new(PalletHomePos)
+                            
+                            -- Легкая вибрация даже в режиме ожидания для поддержания активности
+                            if math.random(1, 100) <= 10 then -- 10% шанс каждый цикл
+                                shakePallet(BugPallet, 0.5, 0.001)
+                            end
+                        end
+                    end
+                end)
+            end
+        end)
+
+        coroutine.resume(BugAuraCoroutine)
+        game.StarterGui:SetCore("SendNotification", {
+            Title="BUG AURA ВКЛЮЧЕНА", 
+            Text="Паллета в 5 раз выше, телепортируется в HRP врагов!", 
+            Duration=5
+        })
+    end
+
+    local function stopBugAura()
+        BugAuraEnabled = false
+        if BugAuraCoroutine then
+            coroutine.close(BugAuraCoroutine)
+            BugAuraCoroutine = nil
+        end
+        if BugPallet and BugPallet.Parent then
+            BugPallet.CFrame = CFrame.new(PalletHomePos)
+            BugPallet.Velocity = Vector3.new(0, 0, 0)
+            BugPallet.RotVelocity = Vector3.new(0, 0, 0)
+            BugPallet.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+        end
+        game.StarterGui:SetCore("SendNotification", {Title="Bug Aura ВЫКЛ", Duration=2})
+    end
+
+    -- Добавляем в существующую вкладку Auras
+    SsSection:NewToggle("BUG AURA", "работает только с 1 заспавненной палетой", function(state)
+        BugAuraEnabled = state
+        if state then
+            startBugAura()
+        else
+            stopBugAura()
+        end
+    end)
+
+    SsSection:NewToggle("📐 Draw Aura", "Показывает зону действия ауры", function(state)
+        DrawAuraEnabled = state;
+        updateAuraVisualization();
+        if state then
+            game.StarterGui:SetCore("SendNotification", {Title="📐 Draw Aura ВКЛЮЧЁН",Text="Зона ауры видна!",Duration=2});
+        else
+            if AuraVisualization then
+                AuraVisualization:Destroy();
+                AuraVisualization = nil;
+            end
+            game.StarterGui:SetCore("SendNotification", {Title="📐 Draw Aura ВЫКЛ",Text="Зона ауры скрыта!",Duration=2});
+        end
+    end);
+    coroutine.wrap(function()
+        while task.wait(0.1) do
+            if DrawAuraEnabled then
+                updateAuraVisualization();
+            end
+        end
+    end)();
+    SsSection:NewToggle("☝️ Click Aura", "Закликивает игроков в радиусе", function(state)
+        if state then
+            ClickAuraEnabled = true;
+            ClickAuraAffectedPlayers = {};
+            PoisonAuraCoroutine = coroutine.create(function()
+                while task.wait(0.05) and ClickAuraEnabled do
+                    pcall(function()
+                        local char = LocalPlayer.Character;
+                        if (not char or not char:FindFirstChild("HumanoidRootPart")) then
+                            return;
+                        end
+                        local root = char.HumanoidRootPart;
+                        for _, player in pairs(Players:GetPlayers()) do
+                            if ((player ~= LocalPlayer) and player.Character) then
+                                local targetChar = player.Character;
+                                local torso = targetChar:FindFirstChild("Torso") or targetChar:FindFirstChild("UpperTorso") or targetChar:FindFirstChild("HumanoidRootPart");
+                                local head = targetChar:FindFirstChild("Head");
+                                if (torso and head and isPointInCircle(torso.Position, root.Position, SsRadius)) then
+                                    local success = pcall(function()
+                                        if game:GetService("ReplicatedStorage"):FindFirstChild("GrabEvents") then
+                                            local SetNetworkOwner = game:GetService("ReplicatedStorage").GrabEvents:FindFirstChild("SetNetworkOwner");
+                                            if SetNetworkOwner then
+                                                SetNetworkOwner:FireServer(torso, targetChar.HumanoidRootPart.CFrame);
+                                            end
+                                        end
+                                        if not torso:FindFirstChild("ClickAuraBV") then
+                                            local bv = Instance.new("BodyVelocity");
+                                            bv.Name = "ClickAuraBV";
+                                            bv.Velocity = Vector3.new(0, 0, 0);
+                                            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge);
+                                            bv.Parent = torso;
+                                            local bg = Instance.new("BodyGyro");
+                                            bg.Name = "ClickAuraBG";
+                                            bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge);
+                                            bg.P = 10000;
+                                            bg.D = 500;
+                                            bg.CFrame = CFrame.new(torso.Position, torso.Position + Vector3.new(0, 0, 1));
+                                            bg.Parent = torso;
+                                        end
+                                    end);
+                                    if (success and not ClickAuraAffectedPlayers[player]) then
+                                        ClickAuraAffectedPlayers[player] = true;
+                                    end
+                                    for _, poisonPart in pairs(AllSmokes or {}) do
+                                        if (poisonPart and poisonPart.Parent) then
+                                            poisonPart.Size = Vector3.new(1, 3, 1);
+                                            poisonPart.Transparency = 0.7;
+                                            poisonPart.Color = Color3.fromRGB(0, 255, 0);
+                                            poisonPart.Position = head.Position + Vector3.new(0, 2, 0);
+                                            poisonPart.CanCollide = false;
+                                            poisonPart.Anchored = true;
+                                        end
+                                    end
+                                elseif ClickAuraAffectedPlayers[player] then
+                                    if (player.Character and player.Character:FindFirstChild("Humanoid")) then
+                                        local torso = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso");
+                                        if torso then
+                                            local bv = torso:FindFirstChild("ClickAuraBV");
+                                            local bg = torso:FindFirstChild("ClickAuraBG");
+                                            if bv then
+                                                bv:Destroy();
+                                            end
+                                            if bg then
+                                                bg:Destroy();
+                                            end
+                                        end
+                                    end
+                                    ClickAuraAffectedPlayers[player] = nil;
+                                end
+                            end
+                        end
+                    end);
+                end
+            end);
+            coroutine.resume(PoisonAuraCoroutine);
+            game.StarterGui:SetCore("SendNotification", {Title="☝️ Click Aura ВКЛЮЧЁН",Text=("Все в радиусе " .. SsRadius .. " закликаны! Теперь можно включать другие ауры."),Duration=3});
+        else
+            disableAllAuras();
+            ClickAuraEnabled = false;
+            if PoisonAuraCoroutine then
+                coroutine.close(PoisonAuraCoroutine);
+                PoisonAuraCoroutine = nil;
+            end
+            ClickAuraAffectedPlayers = {};
+            for _, poisonPart in pairs(AllSmokes or {}) do
+                if (poisonPart and poisonPart.Parent) then
+                    poisonPart.Position = Vector3.new(0, -200, 0);
+                end
+            end
+            for _, player in pairs(Players:GetPlayers()) do
+                if ((player ~= LocalPlayer) and player.Character) then
+                    local torso = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso");
+                    if torso then
+                        local bv = torso:FindFirstChild("ClickAuraBV");
+                        local bg = torso:FindFirstChild("ClickAuraBG");
+                        if bv then
+                            bv:Destroy();
+                        end
+                        if bg then
+                            bg:Destroy();
+                        end
+                    end
+                end
+            end
+            game.StarterGui:SetCore("SendNotification", {Title="☝️ Click Aura ВЫКЛ",Text="Все ауры отключены!",Duration=2});
+        end
+    end);
+    SsSection:NewToggle("☁️ Air Suspend", "Подвешивает всех в радиусе (работает с Click Aura или без)", function(state)
+        if state then
+            AirSuspendEnabled = true;
+            AirSuspendCoroutine = coroutine.create(function()
+                while task.wait(0.05) and AirSuspendEnabled do
+                    pcall(function()
+                        local char = LocalPlayer.Character;
+                        if (not char or not char:FindFirstChild("HumanoidRootPart")) then
+                            return;
+                        end
+                        local root = char.HumanoidRootPart;
+                        for _, player in pairs(Players:GetPlayers()) do
+                            if ((player ~= LocalPlayer) and player.Character) then
+                                local targetChar = player.Character;
+                                local humanoid = targetChar:FindFirstChildOfClass("Humanoid");
+                                local torso = targetChar:FindFirstChild("Torso") or targetChar:FindFirstChild("UpperTorso") or targetChar:FindFirstChild("HumanoidRootPart");
+                                if (torso and humanoid and (humanoid.Health > 0)) then
+                                    local distance = (Vector3.new(torso.Position.X, 0, torso.Position.Z) - Vector3.new(root.Position.X, 0, root.Position.Z)).Magnitude;
+                                    if (distance <= SsRadius) then
+                                        local liftForce = 999;
+                                        local bv = torso:FindFirstChild("AirSuspendBV");
+                                        if not bv then
+                                            bv = Instance.new("BodyVelocity");
+                                            bv.Name = "AirSuspendBV";
+                                            bv.Parent = torso;
+                                        end
+                                        bv.Velocity = Vector3.new(0, liftForce, 0);
+                                        bv.MaxForce = Vector3.new(0, math.huge, 0);
+                                        local bg = torso:FindFirstChild("AirSuspendBG");
+                                        if not bg then
+                                            bg = Instance.new("BodyGyro");
+                                            bg.Name = "AirSuspendBG";
+                                            bg.P = 10000;
+                                            bg.D = 1000;
+                                            bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge);
+                                            bg.Parent = torso;
+                                        end
+                                        bg.CFrame = CFrame.new(torso.Position, torso.Position + Vector3.new(0, 0, 1));
+                                        local bvHorizontal = torso:FindFirstChild("AirSuspendBV_Horizontal");
+                                        if not bvHorizontal then
+                                            bvHorizontal = Instance.new("BodyVelocity");
+                                            bvHorizontal.Name = "AirSuspendBV_Horizontal";
+                                            bvHorizontal.Parent = torso;
+                                        end
+                                        bvHorizontal.Velocity = Vector3.new(0, 0, 0);
+                                        bvHorizontal.MaxForce = Vector3.new(math.huge, 0, math.huge);
+                                        if not ClickAuraEnabled then
+                                            if not torso:FindFirstChild("AirSuspendGrabBV") then
+                                                local grabBV = Instance.new("BodyVelocity");
+                                                grabBV.Name = "AirSuspendGrabBV";
+                                                grabBV.Velocity = Vector3.new(0, 0, 0);
+                                                grabBV.MaxForce = Vector3.new(math.huge, math.huge, math.huge);
+                                                grabBV.Parent = torso;
+                                            end
+                                        end
+                                    else
+                                        local bv = torso:FindFirstChild("AirSuspendBV");
+                                        if bv then
+                                            bv:Destroy();
+                                        end
+                                        local bg = torso:FindFirstChild("AirSuspendBG");
+                                        if bg then
+                                            bg:Destroy();
+                                        end
+                                        local bvHorizontal = torso:FindFirstChild("AirSuspendBV_Horizontal");
+                                        if bvHorizontal then
+                                            bvHorizontal:Destroy();
+                                        end
+                                        local grabBV = torso:FindFirstChild("AirSuspendGrabBV");
+                                        if grabBV then
+                                            grabBV:Destroy();
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end);
+                end
+            end);
+            coroutine.resume(AirSuspendCoroutine);
+            game.StarterGui:SetCore("SendNotification", {Title="☁️ Air Suspend ВКЛЮЧЁН",Text=("Все в радиусе " .. SsRadius .. " быстро поднимаются вверх!"),Duration=3});
+        else
+            AirSuspendEnabled = false;
+            if AirSuspendCoroutine then
+                coroutine.close(AirSuspendCoroutine);
+                AirSuspendCoroutine = nil;
+            end
+            pcall(function()
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player.Character then
+                        local torso = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso") or player.Character:FindFirstChild("HumanoidRootPart");
+                        if torso then
+                            local bv = torso:FindFirstChild("AirSuspendBV");
+                            if bv then
+                                bv:Destroy();
+                            end
+                            local bg = torso:FindFirstChild("AirSuspendBG");
+                            if bg then
+                                bg:Destroy();
+                            end
+                            local bvHorizontal = torso:FindFirstChild("AirSuspendBV_Horizontal");
+                            if bvHorizontal then
+                                bvHorizontal:Destroy();
+                            end
+                            local grabBV = torso:FindFirstChild("AirSuspendGrabBV");
+                            if grabBV then
+                                grabBV:Destroy();
+                            end
+                        end
+                    end
+                end
+            end);
+            game.StarterGui:SetCore("SendNotification", {Title="☁️ Air Suspend ВЫКЛ",Text="Подвеска отключена",Duration=2});
+        end
+    end);
+    SsSection:NewToggle("🌀 Spin Aura", "Крутит игроков вокруг вас", function(state)
+        if state then
+            SpinAuraEnabled = true;
+            SpinAuraCoroutine = coroutine.create(function()
+                local spinAngle = 0;
+                while task.wait(0.02) and SpinAuraEnabled do
+                    pcall(function()
+                        local char = LocalPlayer.Character;
+                        if (not char or not char:FindFirstChild("HumanoidRootPart")) then
+                            return;
+                        end
+                        local root = char.HumanoidRootPart;
+                        local spinRadius = SsRadius * 0.8;
+                        spinAngle = spinAngle + 0.2;
+                        if (spinAngle >= 360) then
+                            spinAngle = 0;
+                        end
+                        for _, player in pairs(Players:GetPlayers()) do
+                            if ((player ~= LocalPlayer) and player.Character) then
+                                local targetChar = player.Character;
+                                local humanoid = targetChar:FindFirstChild("Humanoid");
+                                local torso = targetChar:FindFirstChild("Torso") or targetChar:FindFirstChild("UpperTorso") or targetChar:FindFirstChild("HumanoidRootPart");
+                                if (torso and humanoid and (humanoid.Health > 0)) then
+                                    local distance = (Vector3.new(torso.Position.X, 0, torso.Position.Z) - Vector3.new(root.Position.X, 0, root.Position.Z)).Magnitude;
+                                    if (distance <= spinRadius) then
+                                        local circleRadius = 10;
+                                        local offsetX = math.cos(spinAngle) * circleRadius;
+                                        local offsetZ = math.sin(spinAngle) * circleRadius;
+                                        local targetPosition = root.Position + Vector3.new(offsetX, 5, offsetZ);
+                                        local success = pcall(function()
+                                            if game:GetService("ReplicatedStorage"):FindFirstChild("GrabEvents") then
+                                                local SetNetworkOwner = game:GetService("ReplicatedStorage").GrabEvents:FindFirstChild("SetNetworkOwner");
+                                                if SetNetworkOwner then
+                                                    SetNetworkOwner:FireServer(torso, CFrame.new(targetPosition));
+                                                end
+                                            end
+                                        end);
+                                        local bv = torso:FindFirstChild("SpinAuraBV") or Instance.new("BodyVelocity");
+                                        local bg = torso:FindFirstChild("SpinAuraBG") or Instance.new("BodyGyro");
+                                        bv.Name = "SpinAuraBV";
+                                        bv.Velocity = Vector3.new(0, 0, 0);
+                                        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge);
+                                        bv.Parent = torso;
+                                        bg.Name = "SpinAuraBG";
+                                        bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge);
+                                        bg.P = 10000;
+                                        bg.D = 500;
+                                        bg.Parent = torso;
+                                        torso.Velocity = Vector3.new(0, 0, 0);
+                                        torso.RotVelocity = Vector3.new(0, 0, 0);
+                                        torso.CFrame = CFrame.new(targetPosition);
+                                        humanoid.PlatformStand = true;
+                                        local head = targetChar:FindFirstChild("Head");
+                                        if head then
+                                            for _, spinPart in pairs(AllSmokes or {}) do
+                                                if (spinPart and spinPart.Parent) then
+                                                    spinPart.Size = Vector3.new(1.5, 1.5, 1.5);
+                                                    spinPart.Transparency = 0.4;
+                                                    spinPart.Color = Color3.fromRGB(0, 150, 255);
+                                                    spinPart.Position = head.Position;
+                                                    spinPart.CanCollide = false;
+                                                    spinPart.Anchored = true;
+                                                end
+                                            end
+                                        end
+                                    elseif player.Character then
+                                        local torso = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso");
+                                        if torso then
+                                            local bv = torso:FindFirstChild("SpinAuraBV");
+                                            local bg = torso:FindFirstChild("SpinAuraBG");
+                                            if bv then
+                                                bv:Destroy();
+                                            end
+                                            if bg then
+                                                bg:Destroy();
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end);
+                end
+            end);
+            coroutine.resume(SpinAuraCoroutine);
+            game.StarterGui:SetCore("SendNotification", {Title="🌀 Spin Aura ВКЛЮЧЁН",Text=("Игроки крутятся вокруг вас! (Радиус: " .. math.floor(SsRadius * 0.8) .. ")"),Duration=3});
+        else
+            SpinAuraEnabled = false;
+            if SpinAuraCoroutine then
+                coroutine.close(SpinAuraCoroutine);
+                SpinAuraCoroutine = nil;
+            end
+            for _, player in pairs(Players:GetPlayers()) do
+                if ((player ~= LocalPlayer) and player.Character) then
+                    local humanoid = player.Character:FindFirstChild("Humanoid");
+                    local torso = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso");
+                    if humanoid then
+                        humanoid.PlatformStand = false;
+                    end
+                    if torso then
+                        local bv = torso:FindFirstChild("SpinAuraBV");
+                        local bg = torso:FindFirstChild("SpinAuraBG");
+                        if bv then
+                            bv:Destroy();
+                        end
+                        if bg then
+                            bg:Destroy();
+                        end
+                    end
+                end
+            end
+            for _, spinPart in pairs(AllSmokes or {}) do
+                if (spinPart and spinPart.Parent) then
+                    spinPart.Position = Vector3.new(0, -200, 0);
+                end
+            end
+            game.StarterGui:SetCore("SendNotification", {Title="🌀 Spin Aura ВЫКЛ",Duration=2});
+        end
+    end);
+    SsSection:NewToggle("🚂 Trax Aura", "Плавно двигает одного игрока вперед-назад попкой к вам", function(state)
+        if state then
+            TraxAuraEnabled = true;
+            TraxAuraCoroutine = coroutine.create(function()
+                local oscillation = 0;
+                while task.wait(0.03) and TraxAuraEnabled do
+                    pcall(function()
+                        local char = LocalPlayer.Character;
+                        if (not char or not char:FindFirstChild("HumanoidRootPart")) then
+                            return;
+                        end
+                        local root = char.HumanoidRootPart;
+                        if (TraxAuraTarget and TraxAuraTarget.Character) then
+                            local torso = TraxAuraTarget.Character:FindFirstChild("Torso") or TraxAuraTarget.Character:FindFirstChild("UpperTorso") or TraxAuraTarget.Character:FindFirstChild("HumanoidRootPart");
+                            local humanoid = TraxAuraTarget.Character:FindFirstChild("Humanoid");
+                            if (torso and humanoid and isPointInCircle(torso.Position, root.Position, SsRadius)) then
+                                local lowerFrontPosition = root.Position;
+                                local lowerYOffset = -2;
+                                local frontOffset = 3;
+                                local lookVector = root.CFrame.LookVector;
+                                local lowerFrontPos = root.Position + (lookVector * frontOffset) + Vector3.new(0, lowerYOffset, 0);
+                                oscillation = oscillation + 0.3;
+                                local moveOffset = math.sin(oscillation) * 2;
+                                local baseDistance = 2;
+                                local currentDistance = baseDistance + moveOffset;
+                                local targetPosition = lowerFrontPos + (lookVector * currentDistance);
+                                local success = pcall(function()
+                                    if game:GetService("ReplicatedStorage"):FindFirstChild("GrabEvents") then
+                                        local SetNetworkOwner = game:GetService("ReplicatedStorage").GrabEvents:FindFirstChild("SetNetworkOwner");
+                                        if SetNetworkOwner then
+                                            SetNetworkOwner:FireServer(torso, CFrame.new(targetPosition));
+                                        end
+                                    end
+                                end);
+                                local bv = torso:FindFirstChild("TraxAuraBV") or Instance.new("BodyVelocity");
+                                local bg = torso:FindFirstChild("TraxAuraBG") or Instance.new("BodyGyro");
+                                bv.Name = "TraxAuraBV";
+                                bv.Velocity = Vector3.new(0, 0, 0);
+                                bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge);
+                                bv.Parent = torso;
+                                bg.Name = "TraxAuraBG";
+                                bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge);
+                                bg.P = 10000;
+                                bg.D = 500;
+                                bg.Parent = torso;
+                                local forwardRotation = CFrame.Angles(math.rad(90), 0, 0);
+                                local lookAtLower = CFrame.new(targetPosition, lowerFrontPos);
+                                local finalCFrame = lookAtLower * forwardRotation;
+                                torso.Velocity = Vector3.new(0, 0, 0);
+                                torso.RotVelocity = Vector3.new(0, 0, 0);
+                                torso.CFrame = finalCFrame;
+                                humanoid.PlatformStand = true;
+                                local hips = TraxAuraTarget.Character:FindFirstChild("LowerTorso") or TraxAuraTarget.Character:FindFirstChild("HumanoidRootPart");
+                                if hips then
+                                    for _, traxPart in pairs(AllSmokes or {}) do
+                                        if (traxPart and traxPart.Parent) then
+                                            traxPart.Size = Vector3.new(1.8, 1.8, 1.8);
+                                            traxPart.Transparency = 0.3;
+                                            traxPart.Color = Color3.fromRGB(255, 100, 0);
+                                            traxPart.Position = hips.Position + Vector3.new(0, -1, 0);
+                                            traxPart.CanCollide = false;
+                                            traxPart.Anchored = true;
+                                        end
+                                    end
+                                end
+                            else
+                                if (TraxAuraTarget and TraxAuraTarget.Character) then
+                                    local torso = TraxAuraTarget.Character:FindFirstChild("Torso") or TraxAuraTarget.Character:FindFirstChild("UpperTorso");
+                                    if torso then
+                                        local bv = torso:FindFirstChild("TraxAuraBV");
+                                        local bg = torso:FindFirstChild("TraxAuraBG");
+                                        if bv then
+                                            bv:Destroy();
+                                        end
+                                        if bg then
+                                            bg:Destroy();
+                                        end
+                                    end
+                                end
+                                TraxAuraTarget = nil;
+                            end
+                        elseif not TraxAuraTarget then
+                            for _, player in pairs(Players:GetPlayers()) do
+                                if ((player ~= LocalPlayer) and player.Character) then
+                                    local torso = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso");
+                                    if (torso and isPointInCircle(torso.Position, char.HumanoidRootPart.Position, SsRadius)) then
+                                        TraxAuraTarget = player;
+                                        oscillation = 0;
+                                        break;
+                                    end
+                                end
+                            end
+                        end
+                    end);
+                end
+            end);
+            coroutine.resume(TraxAuraCoroutine);
+            game.StarterGui:SetCore("SendNotification", {Title="🚂 Trax Aura ВКЛЮЧЁН",Text="Игрок двигается вперед-назад ПЕРЕД НИЖНЕЙ ЧАСТЬЮ вашего тела!",Duration=3});
+        else
+            TraxAuraEnabled = false;
+            if TraxAuraCoroutine then
+                coroutine.close(TraxAuraCoroutine);
+                TraxAuraCoroutine = nil;
+            end
+            TraxAuraTarget = nil;
+            for _, player in pairs(Players:GetPlayers()) do
+                if ((player ~= LocalPlayer) and player.Character) then
+                    local humanoid = player.Character:FindFirstChild("Humanoid");
+                    local torso = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso");
+                    if humanoid then
+                        humanoid.PlatformStand = false;
+                    end
+                    if torso then
+                        local bv = torso:FindFirstChild("TraxAuraBV");
+                        local bg = torso:FindFirstChild("TraxAuraBG");
+                        if bv then
+                            bv:Destroy();
+                        end
+                        if bg then
+                            bg:Destroy();
+                        end
+                    end
+                end
+            end
+            for _, traxPart in pairs(AllSmokes or {}) do
+                if (traxPart and traxPart.Parent) then
+                    traxPart.Position = Vector3.new(0, -200, 0);
+                end
+            end
+            game.StarterGui:SetCore("SendNotification", {Title="🚂 Trax Aura ВЫКЛ",Duration=2});
+        end
+    end);
+
+    local CakeTab = Window:NewTab("Cake");
+    local CakeSection = CakeTab:NewSection("🎂 Cake Functions");
+    local AllCakePieces = {};
+    local CollectedCakePieces = {};
+    local CakeCollectionEnabled = false;
+    local CakeCreationEnabled = false;
+    local CakeCollectionConnection = nil;
+    local CakeCreationConnection = nil;
+    local function refreshCakeCache()
+        AllCakePieces = {};
+        local playerFolder = workspace:FindFirstChild(LocalPlayer.Name .. "SpawnedInToys");
+        if playerFolder then
+            for _, toy in pairs(playerFolder:GetChildren()) do
+                if (toy.Name == "FoodCakePink") then
+                    local soundPart = toy:FindFirstChild("SoundPart");
+                    if (soundPart and soundPart:IsA("BasePart")) then
+                        table.insert(AllCakePieces, soundPart);
+                    end
+                end
+            end
+        end
+        return #AllCakePieces;
+    end
+    local function getGroundPositionInFront(distance)
+        local character = LocalPlayer.Character;
+        if not character then
+            return nil;
+        end
+        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart");
+        if not humanoidRootPart then
+            return nil;
+        end
+        local playerPosition = humanoidRootPart.Position;
+        local lookVector = humanoidRootPart.CFrame.LookVector;
+        local frontPosition = playerPosition + (lookVector * distance);
+        local rayOrigin = Vector3.new(frontPosition.X, 100, frontPosition.Z);
+        local rayDirection = Vector3.new(0, -200, 0);
+        local raycastParams = RaycastParams.new();
+        raycastParams.FilterType = Enum.RaycastFilterType.Blacklist;
+        raycastParams.FilterDescendantsInstances = {character};
+        local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams);
+        if raycastResult then
+            return raycastResult.Position + Vector3.new(0, 0.5, 0);
+        else
+            return Vector3.new(frontPosition.X, 5, frontPosition.Z);
+        end
+    end
+    local function moveCakeToTarget(cakePiece, targetPosition, speed)
+        if (not cakePiece or not cakePiece.Parent) then
+            return;
+        end
+        local direction = (targetPosition - cakePiece.Position).Unit;
+        local distance = (targetPosition - cakePiece.Position).Magnitude;
+        cakePiece.AssemblyLinearVelocity = direction * math.min(speed, distance * 15);
+        cakePiece.AssemblyAngularVelocity = Vector3.new(math.random(-1, 1), math.random(3, 6), math.random(-1, 1));
+    end
+    local function collectTorts()
+        local character = LocalPlayer.Character;
+        if not character then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ПЕРСОНАЖА",Text="Персонаж не найден!",Duration=3});
+            return;
+        end
+        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart");
+        if not humanoidRootPart then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ROOT PART",Text="HumanoidRootPart не найден!",Duration=3});
+            return;
+        end
+        local cakeCount = refreshCakeCache();
+        if (cakeCount == 0) then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ТОРТОВ",Text="SoundPart тортов не найдены!",Duration=3});
+            return;
+        end
+        CakeCollectionEnabled = true;
+        CollectedCakePieces = {};
+        local playerPosition = humanoidRootPart.Position;
+        local collectPosition = playerPosition + Vector3.new(0, 10, 0);
+        for _, cakePiece in ipairs(AllCakePieces) do
+            if (cakePiece and cakePiece.Parent) then
+                table.insert(CollectedCakePieces, cakePiece);
+                cakePiece.Anchored = false;
+            end
+        end
+        if CakeCollectionConnection then
+            CakeCollectionConnection:Disconnect();
+        end
+        CakeCollectionConnection = RunService.Heartbeat:Connect(function()
+            if (not CakeCollectionEnabled or (#CollectedCakePieces == 0)) then
+                if CakeCollectionConnection then
+                    CakeCollectionConnection:Disconnect();
+                    CakeCollectionConnection = nil;
+                end
+                return;
+            end
+            for _, cakePiece in ipairs(CollectedCakePieces) do
+                if (cakePiece and cakePiece.Parent) then
+                    moveCakeToTarget(cakePiece, collectPosition, 35);
+                end
+            end
+        end);
+        game.StarterGui:SetCore("SendNotification", {Title="🎯 СОБИРАЕМ ТОРТЫ!",Text=(cakeCount .. " кусочков летят к вам"),Duration=3});
+        delay(3, function()
+            CakeCollectionEnabled = false;
+            if CakeCollectionConnection then
+                CakeCollectionConnection:Disconnect();
+                CakeCollectionConnection = nil;
+            end
+        end);
+    end
+    local function createTort()
+        local character = LocalPlayer.Character;
+        if not character then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ПЕРСОНАЖА",Text="Персонаж не найден!",Duration=3});
+            return;
+        end
+        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart");
+        if not humanoidRootPart then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ROOT PART",Text="HumanoidRootPart не найден!",Duration=3});
+            return;
+        end
+        if (#CollectedCakePieces == 0) then
+            refreshCakeCache();
+            CollectedCakePieces = AllCakePieces;
+        end
+        if (#CollectedCakePieces == 0) then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕТ ТОРТОВ",Text="Сначала соберите кусочки торта!",Duration=3});
+            return;
+        end
+        local groundPosition = getGroundPositionInFront(8);
+        if not groundPosition then
+            game.StarterGui:SetCore("SendNotification", {Title="❌ НЕ НАЙДЕНА ЗЕМЛЯ",Text="Не могу найти землю перед персонажем!",Duration=3});
+            return;
+        end
+        CakeCreationEnabled = true;
+        local totalPieces = #CollectedCakePieces;
+        local cakePositions = {};
+        local pieceIndex = 1;
+        local layers;
+        if (totalPieces >= 20) then
+            layers = 4;
+        elseif (totalPieces >= 12) then
+            layers = 3;
+        elseif (totalPieces >= 6) then
+            layers = 2;
+        else
+            layers = 1;
+        end
+        local piecesPerLayer = math.ceil(totalPieces / layers);
+        local baseRadius = 3.2;
+        local layerHeight = 1.4;
+        local pieceSpacing = 2;
+        for layer = 1, layers do
+            local layerRadius = baseRadius * (1 - ((layer - 1) * 0.3));
+            local layerPieces = math.min(piecesPerLayer, (totalPieces - pieceIndex) + 1);
+            if (layer == 1) then
+                layerPieces = math.min(layerPieces + 2, (totalPieces - pieceIndex) + 1);
+            end
+            for i = 1, layerPieces do
+                if (pieceIndex > totalPieces) then
+                    break;
+                end
+                local angle = (i / layerPieces) * math.pi * 2;
+                local x = math.cos(angle) * layerRadius;
+                local z = math.sin(angle) * layerRadius;
+                local height = (layer - 1) * layerHeight;
+                local targetPosition = groundPosition + Vector3.new(x, height, z);
+                cakePositions[pieceIndex] = targetPosition;
+                pieceIndex = pieceIndex + 1;
+            end
+        end
+        if (pieceIndex <= totalPieces) then
+            local topLayerHeight = layers * layerHeight;
+            local remainingPieces = (totalPieces - pieceIndex) + 1;
+            local topRadius = baseRadius * 0.32;
+            for i = 1, remainingPieces do
+                if (pieceIndex > totalPieces) then
+                    break;
+                end
+                local angle = (i / remainingPieces) * math.pi * 2;
+                local x = math.cos(angle) * topRadius;
+                local z = math.sin(angle) * topRadius;
+                local targetPosition = groundPosition + Vector3.new(x, topLayerHeight, z);
+                cakePositions[pieceIndex] = targetPosition;
+                pieceIndex = pieceIndex + 1;
+            end
+        end
+        if CakeCreationConnection then
+            CakeCreationConnection:Disconnect();
+        end
+        CakeCreationConnection = RunService.Heartbeat:Connect(function()
+            if not CakeCreationEnabled then
+                if CakeCreationConnection then
+                    CakeCreationConnection:Disconnect();
+                    CakeCreationConnection = nil;
+                end
+                return;
+            end
+            local allInPlace = true;
+            for i, cakePiece in ipairs(CollectedCakePieces) do
+                if (cakePiece and cakePiece.Parent) then
+                    local targetPosition = cakePositions[i];
+                    if targetPosition then
+                        local distance = (cakePiece.Position - targetPosition).Magnitude;
+                        if (distance > 0.3) then
+                            moveCakeToTarget(cakePiece, targetPosition, 25);
+                            allInPlace = false;
+                        else
+                            cakePiece.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                            cakePiece.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+                            cakePiece.Anchored = true;
+                        end
+                    end
+                end
+            end
+            if allInPlace then
+                CakeCreationEnabled = false;
+                if CakeCreationConnection then
+                    CakeCreationConnection:Disconnect();
+                    CakeCreationConnection = nil;
+                end
+                game.StarterGui:SetCore("SendNotification", {Title="🎂 ТОРТ ГОТОВ!",Text=("Красивый " .. layers .. "-слойный торт построен!"),Duration=4});
+            end
+        end);
+        game.StarterGui:SetCore("SendNotification", {Title="🏗️ СТРОИМ ТОРТ!",Text=("Создаем " .. layers .. "-слойный торт из " .. totalPieces .. " кусочков"),Duration=3});
+    end
+    local function stopCakeCollection()
+        CakeCollectionEnabled = false;
+        if CakeCollectionConnection then
+            CakeCollectionConnection:Disconnect();
+            CakeCollectionConnection = nil;
+        end
+    end
+    local function stopCakeCreation()
+        CakeCreationEnabled = false;
+        if CakeCreationConnection then
+            CakeCreationConnection:Disconnect();
+            CakeCreationConnection = nil;
+        end
+    end
+    local function unlockTorts()
+        stopCakeCollection();
+        stopCakeCreation();
+        for _, cakePiece in ipairs(CollectedCakePieces) do
+            if (cakePiece and cakePiece.Parent) then
+                cakePiece.AssemblyLinearVelocity = Vector3.new(0, 0, 0);
+                cakePiece.AssemblyAngularVelocity = Vector3.new(0, 0, 0);
+                cakePiece.Anchored = false;
+            end
+        end
+        game.StarterGui:SetCore("SendNotification", {Title="🔓 ТОРТЫ РАЗБЛОКИРОВАНЫ",Text="Все кусочки торта теперь физические",Duration=2});
+    end
+    local CakeStatusLabel = CakeSection:NewLabel("🎂 Cake Pieces: 0 | Collected: 0");
+    CakeSection:NewButton("🔄 Refresh Cake Pieces", "Обновить список кусочков торта", function()
+        local cakeCount = refreshCakeCache();
+        CakeStatusLabel:UpdateLabel("🎂 Cake Pieces: " .. cakeCount .. " | Collected: " .. #CollectedCakePieces);
+        game.StarterGui:SetCore("SendNotification", {Title="🎂 ОБНОВЛЕНО!",Text=("Найдено " .. cakeCount .. " кусочков торта"),Duration=2});
+    end);
+    CakeSection:NewButton("🎯 COLLECT TORTS", "Плавно перемещает кусочки тортов над персонажем", function()
+        stopCakeCreation();
+        collectTorts();
+        CakeStatusLabel:UpdateLabel("🎂 Cake Pieces: " .. #AllCakePieces .. " | Collected: " .. #CollectedCakePieces);
+    end);
+    CakeSection:NewButton("🏗️ CREATE TORT", "Собирает красивый многослойный торт на земле", function()
+        stopCakeCollection();
+        createTort();
+        CakeStatusLabel:UpdateLabel("🎂 Cake Pieces: " .. #AllCakePieces .. " | Collected: " .. #CollectedCakePieces);
+    end);
+    CakeSection:NewButton("🔓 UNLOCK TORTS", "Разблокирует физику кусочков торта", function()
+        unlockTorts();
+    end);
+    CakeSection:NewButton("⏹️ STOP ALL", "Останавливает все процессы с тортами", function()
+        stopCakeCollection();
+        stopCakeCreation();
+        game.StarterGui:SetCore("SendNotification", {Title="⏹️ ОСТАНОВЛЕНО",Text="Все процессы с тортами остановлены",Duration=2});
+    end);
+    CakeSection:NewButton("🗑️ CLEAR COLLECTED", "Очищает список собранных кусочков", function()
+        stopCakeCollection();
+        stopCakeCreation();
+        CollectedCakePieces = {};
+        CakeStatusLabel:UpdateLabel("🎂 Cake Pieces: " .. #AllCakePieces .. " | Collected: 0");
+        game.StarterGui:SetCore("SendNotification", {Title="🗑️ ОЧИЩЕНО!",Text="Список собранных кусочков очищен",Duration=2});
+    end);
+    spawn(function()
+        while true do
+            task.wait(3);
+            local cakeCount = refreshCakeCache();
+            local status = "🎂 Cake Pieces: " .. cakeCount .. " | Collected: " .. #CollectedCakePieces;
+            if CakeCollectionEnabled then
+                status = status .. " | 📥 Собираем...";
+            elseif CakeCreationEnabled then
+                status = status .. " | 🏗️ Строим...";
+            end
+            CakeStatusLabel:UpdateLabel(status);
+        end
+    end);
+    refreshCakeCache();
+    CakeStatusLabel:UpdateLabel("🎂 Cake Pieces: " .. #AllCakePieces .. " | Collected: " .. #CollectedCakePieces);
+    local MicrowareAllToggle = MainSection:NewToggle("🔥 MICROWARE ALL", "Телепорт ВСЕХ частей микроволновок ко всем игрокам", function(state)
+        MicrowareAllEnabled = state;
+        if state then
+            stopRagdollAll();
+            stopFireAll();
+            stopBananaDance();
+            stopBananaAura();
+            stopBananaFunny();
+            stopBananaTeams();
+            stopBananaAngry();
+            stopBananaAngryFromList();
+            stopPalletFling();
+            startMicrowareAll();
+            game.StarterGui:SetCore("SendNotification", {Title="🔥 MICROWARE ALL ВКЛ!",Text="ВСЕ части микроволновок телепортятся ко всем игрокам",Duration=3});
+        else
+            stopMicrowareAll();
+            game.StarterGui:SetCore("SendNotification", {Title="🔥 MICROWARE ALL ВЫКЛ",Duration=2});
+        end
+    end);
+    local FartTab = Window:NewTab("Fart");
+    local FartSection = FartTab:NewSection("💩 FART FUNCTIONS");
+    FartSection:NewButton("💩 Collect Farts", "Собрать все какашки в одном месте", function()
+        collectAllFarts();
+    end);
+    FartSection:NewButton("⏹️ Stop Collection", "Остановить сбор какашек", function()
+        stopFartCollection();
+    end);
+    local FartPlayerDropdown = FartSection:NewDropdown("🎯 Fart Target", "Выбери игрока для Fart", updateFartPlayerList(), function(selectedName)
+        for _, player in pairs(Players:GetPlayers()) do
+            if (player.DisplayName == selectedName) then
+                SelectedFartPlayer = player;
+                game.StarterGui:SetCore("SendNotification", {Title="🎯 ЦЕЛЬ ВЫБРАНА",Text=(selectedName .. " выбран для Fart"),Duration=2});
+                break;
+            end
+        end
+    end);
+    local FartModeDropdown = FartSection:NewDropdown("🎯 Fart Mode", "Выбери куда отправить какашки", {"SelectedPlayer","Spawn","Spawn Explode"}, function(selectedMode)
+        FartSection.CurrentFartMode = selectedMode;
+        game.StarterGui:SetCore("SendNotification", {Title="💩 РЕЖИМ ВЫБРАН",Text=("Режим: " .. selectedMode),Duration=2});
+    end);
+    FartSection:NewButton("💨 FART!", "Применить выбранный Fart эффект", function()
+        local selectedMode = FartSection.CurrentFartMode or "SelectedPlayer";
+        applyFartEffect(selectedMode);
+    end);
+    local FartStatusLabel = FartSection:NewLabel("💩 Статус: Готов к работе");
+    FartSection:NewButton("🔄 Обновить игроков", "Обновить список игроков", function()
+        FartPlayerDropdown:Refresh(updateFartPlayerList());
+    end);
+    spawn(function()
+        while true do
+            task.wait(10);
+            pcall(function()
+                FartPlayerDropdown:Refresh(updateFartPlayerList());
+                local statusText = "💩 Какашек: " .. #AllFartObjects;
+                if SelectedFartPlayer then
+                    statusText = statusText .. " | Цель: " .. SelectedFartPlayer.DisplayName;
+                end
+                if FartSection.CurrentFartMode then
+                    statusText = statusText .. " | Режим: " .. FartSection.CurrentFartMode;
+                end
+                FartStatusLabel:UpdateLabel(statusText);
+            end);
+        end
+    end);
+    local CarTab = Window:NewTab("Car");
+    local CarSection = CarTab:NewSection("🚗 УПРАВЛЕНИЕ МАШИНОЙ");
+    CarSection:NewButton("📍 TP To Car", "Телепортирует вас к машине", function()
+        if (CarEnabled and CarMainPart) then
+            local player = game.Players.LocalPlayer;
+            local character = player.Character;
+            if character then
+                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart");
+                if humanoidRootPart then
+                    local carCFrame = CarMainPart.CFrame;
+                    local behindOffset = carCFrame.LookVector * -5;
+                    local targetPosition = carCFrame.Position + behindOffset + Vector3.new(0, 2, 0);
+                    humanoidRootPart.CFrame = CFrame.new(targetPosition, carCFrame.Position);
+                    game.StarterGui:SetCore("SendNotification", {Title="📍 ТЕЛЕПОРТ К МАШИНЕ",Text="Вы телепортировались к машине",Duration=2});
+                else
+                    game.StarterGui:SetCore("SendNotification", {Title="❌ ОШИБКА",Text="Не найден HumanoidRootPart",Duration=2});
+                end
+            else
+                game.StarterGui:SetCore("SendNotification", {Title="❌ ОШИБКА",Text="Персонаж не найден",Duration=2});
+            end
+        else
+            game.StarterGui:SetCore("SendNotification", {Title="❌ ВКЛЮЧИ МАШИНУ",Text="Сначала включите машину!",Duration=2});
+        end
+    end);
+    local CarToggle = CarSection:NewToggle("🚗 CAR (C)", "Нажми C для движения машины", function(state)
+        CarEnabled = state;
+        if state then
+            stopRagdollAll();
+            stopFireAll();
+            stopBananaDance();
+            stopBananaAura();
+            stopBananaFunny();
+            stopBananaTeams();
+            stopBananaAngry();
+            stopBananaAngryFromList();
+            stopPalletFling();
+            if createCar() then
+                startCarControl();
+                game.StarterGui:SetCore("SendNotification", {Title="🚗 CAR ВКЛ!",Text="C - разгон | V - ручник | Камера - направление",Duration=3});
+            else
+                CarToggle:SetState(false);
+                CarEnabled = false;
+            end
+        else
+            stopCar();
+            game.StarterGui:SetCore("SendNotification", {Title="🚗 CAR ВЫКЛ",Duration=2});
+        end
+    end);
+    local HandbrakeToggle = CarSection:NewToggle("🅿️ Ruchnik (V)", "Ручник - экстренное торможение", function(state)
+        CarHandbrakeEnabled = state;
+        if state then
+            game.StarterGui:SetCore("SendNotification", {Title="🅿️ РУЧНИК ВКЛ!",Text="Экстренное торможение активировано",Duration=2});
+        else
+            game.StarterGui:SetCore("SendNotification", {Title="🅿️ РУЧНИК ВЫКЛ",Duration=1});
+        end
+    end);
+    CarSection:NewSlider("⚡ Max Speed", "Максимальная скорость 50-300", 300, 10, function(v)
+        CarMaxSpeed = v;
+    end, true);
+    CarSection:NewSlider("🚀 Acceleration Time", "Время разгона 1-5 сек", 5, 1, function(v)
+        CarAccelerationTime = v;
+    end, true);
+    CarSection:NewSlider("📉 Deceleration Time", "Время замедления 2-8 сек", 8, 2, function(v)
+        CarDecelerationTime = v;
+    end, true);
+    local SmoothToggle = CarSection:NewToggle("🧈 Smooth Trailer", "Плавное движение прицепа", function(state)
+        UseSmoothMode = state;
+        if state then
+            CFrameToggle:SetState(false);
+            UseCFrameMode = false;
+        end
+    end);
+    local CFrameToggle = CarSection:NewToggle("✨ CFrame Trailer", "Телепортация прицепа", function(state)
+        UseCFrameMode = state;
+        if state then
+            SmoothToggle:SetState(false);
+            UseSmoothMode = false;
+        end
+    end);
+    local TrailerToggle = CarSection:NewToggle("🚛 Pricep", "Прицеп следует за машиной", function(state)
+        TrailerEnabled = state;
+        if state then
+            if not CarEnabled then
+                game.StarterGui:SetCore("SendNotification", {Title="❌ ВКЛЮЧИ МАШИНУ",Text="Сначала включи машину!",Duration=3});
+                TrailerToggle:SetState(false);
+                return;
+            end
+            if createTrailer() then
+                startTrailerControl();
+                game.StarterGui:SetCore("SendNotification", {Title="🚛 ПРИЦЕП ВКЛ!",Text=("Объект: " .. CurrentTrailerObjectType),Duration=3});
+            else
+                TrailerToggle:SetState(false);
+                TrailerEnabled = false;
+            end
+        else
+            stopTrailer();
+            game.StarterGui:SetCore("SendNotification", {Title="🚛 ПРИЦЕП ВЫКЛ",Duration=2});
+        end
+    end);
+    local TrailerObjectDropdown = CarSection:NewDropdown("📦 Объект прицепа", "Выбери объект для прицепа", {"GlassBoxGray\\Main","PalletLightBrown\\Main"}, function(selectedObject)
+        CurrentTrailerObjectType = selectedObject;
+        game.StarterGui:SetCore("SendNotification", {Title="📦 ОБЪЕКТ ИЗМЕНЕН",Text=("Прицеп: " .. selectedObject),Duration=2});
+        if TrailerEnabled then
+            stopTrailer();
+            if createTrailer() then
+                startTrailerControl();
+            else
+                TrailerToggle:SetState(false);
+            end
+        end
+    end);
+    local FunTab = Window:NewTab("Fun");
+    local FunSection = FunTab:NewSection("🎭 ФУНКЦИИ ДЛЯ РАЗВЛЕЧЕНИЯ");
+    FunSection:NewSlider("📏 Offset", "Расстояние между клонами 1-50", 50, 1, function(v)
+        decoyOffset = v;
+    end, true);
+    FunSection:NewTextBox("🎯 Circle Radius", "Радиус для режима окружения", function(Value)
+        circleRadius = tonumber(Value) or 10;
+    end);
+    FunSection:NewButton("👥 Decoy Follow", "Клоны следуют за тобой или окружают игроков", function()
+        startDecoyFollow();
+    end);
+    FunSection:NewButton("🔄 Toggle Mode", "Переключить режим Следование/Окружение", function()
+        toggleFollowMode();
+    end);
+    FunSection:NewButton("⏹️ Disconnect Clones", "Остановить движение клонов", function()
+        stopDecoyFollow();
+    end);
+
+--// R6 SELF RAGDOLL BY T (добавь в любой таб, например FunTab или MainTab)
+local SelfRagdollEnabled = false
+local SelfRagdollConnection = nil
+
+local function setRagdollState(state) -- true = рагдолл, false встать
+    local char = LocalPlayer.Character
+    if not char then return end
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return end
+
+    if state then
+        humanoid:ChangeState(Enum.HumanoidStateType.Physics) -- рагдолл
+        humanoid.PlatformStand = true
+        humanoid.Sit = true
+        -- Дополнительно ломаем состояние, чтобы точно лежал
+        humanoid:SetStateEnabled(Enum.HumanoidStateType.Running, false)
+        humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp, false)
+    else
+        humanoid.PlatformStand = false
+        humanoid.Sit = false
+        humanoid:ChangeState(Enum.HumanoidStateType.Running)
+        humanoid:SetStateEnabled(Enum.HumanoidStateType.Running, true)
+        humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp, true)
+    end
+end
+
+-- Добавляем чекбокс (например в FunTab)
+FunSection:NewToggle("Ragdoll Me (T)", "Включает рагдолл своего персонажа по клавише T (только R6)", function(state)
+    SelfRagdollEnabled = state
+
+    if state then
+        if SelfRagdollConnection then SelfRagdollConnection:Disconnect() end
+
+        SelfRagdollConnection = UserInputService.InputBegan:Connect(function(input, gp)
+            if gp then return end
+            if input.KeyCode == Enum.KeyCode.T then
+                local char = LocalPlayer.Character
+                if not char then return end
+                local humanoid = char:FindFirstChildOfClass("Humanoid")
+                if not humanoid or humanoid.Health <= 0 then return end
+
+                -- Переключаем состояние
+                if humanoid.PlatformStand then
+                    setRagdollState(false)
+                    game.StarterGui:SetCore("SendNotification", {Title="Встал", Text="Ты встал!", Duration=1.5})
+                else
+                    setRagdollState(true)
+                    game.StarterGui:SetCore("SendNotification", {Title="Рагдолл", Text="Ты упал в рагдолл!", Duration=1.5})
+                end
+            end
+        end)
+
+        game.StarterGui:SetCore("SendNotification", {
+            Title="Ragdoll Me",
+            Text="Нажми T чтобы упасть/встать (R6)",
+            Duration=3
+        })
+    else
+        if SelfRagdollConnection then
+            SelfRagdollConnection:Disconnect()
+            SelfRagdollConnection = nil
+        end
+        -- При выключении чекбокса — поднимаем игрока
+        setRagdollState(false)
+        game.StarterGui:SetCore("SendNotification", {Title="Ragdoll Me", Text="Бинд на T отключён", Duration=2})
+    end
+end)
+
+
+	local FlipSection = FunTab:NewSection("🌀 Salto (G)")
+	--[[ Info ]]--
+	local ver = "1.0"
+	local scriptname = "FE Flip"
+	--[[ Keybinds ]]--
+	local FlipKey = Enum.KeyCode.G
+	--[[ Dependencies ]]--
+	local ca = game:GetService("ContextActionService")
+	local player = game:GetService("Players").LocalPlayer
+	local uis = game:GetService("UserInputService")
+	local rs = game:GetService("RunService")
+	local h = 0.0174533 -- радианы на градус
+	--[[ Variables ]]--
+	local FlipEnabled = false
+	local SelectedFlip = "Forward"
+	local currentFlipConnection = nil
+	local isFlipping = false -- Флаг для предотвращения повторения
+	--[[ Functions ]]--
+	local function doFlip(direction)
+		-- Проверяем, не выполняется ли уже сальто
+		if isFlipping then return end
+		isFlipping = true
+		
+		local char = player.Character
+		if not char or not char:FindFirstChild("HumanoidRootPart") or not char:FindFirstChild("Humanoid") then 
+			isFlipping = false
+			return 
+		end
+		
+		local hrp = char.HumanoidRootPart
+		local hum = char.Humanoid
+		
+		-- Останавливаем предыдущий флип, если он есть
+		if currentFlipConnection then
+			currentFlipConnection:Disconnect()
+			currentFlipConnection = nil
+		end
+		
+		-- Прыжок с умеренной высотой
+		hum:ChangeState("Jumping")
+		hum.Sit = true
+		
+		-- Умеренный импульс для высоты
+		local velocity = hrp:FindFirstChild("BodyVelocity") or Instance.new("BodyVelocity")
+		velocity.Velocity = Vector3.new(0, 40, 0)
+		velocity.MaxForce = Vector3.new(0, math.huge, 0)
+		velocity.Parent = hrp
+		
+		-- Убираем импульс через короткое время
+		delay(0.12, function()
+			if velocity and velocity.Parent then
+				velocity:Destroy()
+			end
+		end)
+		
+		-- Параметры вращения (ПРАВИЛЬНЫЕ направления)
+		local rotations = {
+			Forward = -h,    -- Forward (вперед) = вращение назад относительно камеры
+			Backward = h,    -- Backward (назад) = вращение вперед относительно камеры
+			Left = -h,
+			Right = h
+		}
+		
+		local axis = {
+			Forward = {1, 0, 0},    -- Вращение вокруг оси X
+			Backward = {1, 0, 0},   -- Вращение вокруг оси X
+			Left = {0, 0, 1},       -- Вращение вокруг оси Z
+			Right = {0, 0, 1}       -- Вращение вокруг оси Z
+		}
+		
+		local rotValue = rotations[direction]
+		local rotAxis = axis[direction]
+		
+		-- Переменные для анимации
+		local startTime = tick()
+		local duration = 0.8 -- Увеличили длительность для более медленного вращения (было 0.5)
+		local totalRotation = 360 -- градусов
+		local completed = false
+		
+		-- Создаем подключение к RenderStepped для мгновенного вращения
+		currentFlipConnection = rs.RenderStepped:Connect(function(delta)
+			if not char or not hrp or not hum or not hrp.Parent then
+				if currentFlipConnection then
+					currentFlipConnection:Disconnect()
+					currentFlipConnection = nil
+				end
+				isFlipping = false
+				return
+			end
+			
+			local elapsed = tick() - startTime
+			
+			if elapsed >= duration then
+				if not completed then
+					completed = true
+					-- Завершаем анимацию
+					hum.Sit = false
+					if currentFlipConnection then
+						currentFlipConnection:Disconnect()
+						currentFlipConnection = nil
+					end
+					isFlipping = false
+				end
+				return
+			end
+			
+			-- Плавное вращение с контролем скорости
+			local progress = elapsed / duration
+			
+			-- Медленное начало и конец (ease in/out)
+			local easeProgress = progress
+			if progress < 0.5 then
+				easeProgress = 2 * progress * progress
+			else
+				easeProgress = 1 - math.pow(-2 * progress + 2, 2) / 2
+			end
+			
+			-- Вычисляем угол для этого кадра
+			local targetRotation = totalRotation * easeProgress
+			local lastRotation = totalRotation * math.max(0, (easeProgress - delta/duration))
+			local frameRotation = (targetRotation - lastRotation) * h
+			
+			-- Применяем вращение с учетом направления
+			local angle = CFrame.Angles(
+				rotAxis[1] * frameRotation * (rotations[direction] > 0 and 1 or -1),
+				rotAxis[2] * frameRotation * (rotations[direction] > 0 and 1 or -1),
+				rotAxis[3] * frameRotation * (rotations[direction] > 0 and 1 or -1)
+			)
+			
+			-- Применяем вращение к HRP
+			if hrp and hrp.Parent then
+				hrp.CFrame = hrp.CFrame * angle
+			end
+			
+			-- Удерживаем сидячее положение во время анимации
+			hum.Sit = true
+		end)
+		
+		-- Автоматическое отключение через duration + 0.2 секунд на всякий случай
+		delay(duration + 0.2, function()
+			if currentFlipConnection then
+				currentFlipConnection:Disconnect()
+				currentFlipConnection = nil
+			end
+			if char and hum then
+				hum.Sit = false
+			end
+			isFlipping = false
+		end)
+	end
+
+	local function onFlipAction(act, inp, obj)
+		if not FlipEnabled or inp ~= Enum.UserInputState.Begin then return end
+		if isFlipping then return end -- Предотвращаем повторное нажатие
+		doFlip(SelectedFlip)
+	end
+
+	--[[ Toggle: Включение/выключение системы флипов ]]--
+	FlipSection:NewToggle("🌀 Salto (G)", "Вкл/выкл сальто по клавише G", function(state)
+		FlipEnabled = state
+		
+		if state then
+			-- Используем ContextActionService вместо прямого InputBegan
+			ca:BindAction("FEFlipAction", onFlipAction, false, FlipKey)
+			game.StarterGui:SetCore("SendNotification", {
+				Title = "🌀 Salto", 
+				Text = "Сальто по G включено!", 
+				Duration = 3
+			})
+		else
+			ca:UnbindAction("FEFlipAction")
+			-- Останавливаем текущую анимацию при выключении
+			if currentFlipConnection then
+				currentFlipConnection:Disconnect()
+				currentFlipConnection = nil
+			end
+			isFlipping = false
+			game.StarterGui:SetCore("SendNotification", {
+				Title = "🌀 Salto", 
+				Text = "Сальто по G выключено", 
+				Duration = 2
+			})
+		end
+	end)
+
+	--[[ Dropdown: Выбор направления ]]--
+	-- Меняем местами Forward и Backward в комбобоксе и их переводы
+	FlipSection:NewDropdown("Направление сальто", "Выбери тип сальто", 
+		{"Forward", "Backward", "Left", "Right"}, 
+		function(choice)
+			SelectedFlip = choice
+			local rus = {
+				Forward = "вперёд (сальто назад)",  -- Forward = вращение назад
+				Backward = "назад (сальто вперёд)", -- Backward = вращение вперед
+				Left = "влево", 
+				Right = "вправо"
+			}
+			game.StarterGui:SetCore("SendNotification", {
+				Title = "🌀 Направление", 
+				Text = "Теперь: "..(rus[choice] or choice), 
+				Duration = 2
+			})
+		end
+	)
+
+	--[[ Загрузочное сообщение ]]--
+	task.wait(1)
+	print(scriptname .. " " .. ver .. " loaded successfully")
+	game.StarterGui:SetCore("SendNotification", {
+		Title = "FE Flip", 
+		Text = "FE Flip loaded successfully!",
+		Duration = 3
+	})
+    
+    -- Обработчик перезагрузки персонажа
+    LocalPlayer.CharacterAdded:Connect(function(character)
+        if RagdollEnabled then
+            -- Ждем загрузки персонажа
+            wait(1)
+            -- Перезапускаем ragdoll
+            RagdollEnabled = false
+            enableRagdoll()
+            RagdollEnabled = true
+        end
+    end)
+
+
+
+    local DevTab = Window:NewTab("Dev");
+    local DevSection = DevTab:NewSection("⚙️ ДЕВЕЛОПЕРСКИЕ ФУНКЦИИ");
+    DevSection:NewToggle("🍌 Ragdoll All (Experimental)", "Оригинальная логика Ragdoll All", function(enabled)
+        if enabled then
+            ragdollAllCoroutine = coroutine.create(ragdollAll);
+            coroutine.resume(ragdollAllCoroutine);
+            game.StarterGui:SetCore("SendNotification", {Title="🍌 RAGDOLL ALL ВКЛ!",Text="Оригинальная логика активирована",Duration=3});
+        else
+            if ragdollAllCoroutine then
+                coroutine.close(ragdollAllCoroutine);
+                ragdollAllCoroutine = nil;
+            end
+            game.StarterGui:SetCore("SendNotification", {Title="🍌 RAGDOLL ALL ВЫКЛ",Duration=2});
+        end
+    end);
+    spawn(function()
+        while true do
+            task.wait(10);
+            pcall(function()
+                playerDropdown:Refresh(updatePlayerList());
+            end);
+        end
+    end);
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then
+            return;
+        end
+        if ((input.KeyCode == Enum.KeyCode.Z) and TeleportZEnabled) then
+            teleportToMouse();
+        end
+    end);
+end
+
+refreshCache();
+createGUI();
